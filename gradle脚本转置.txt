@@ -1,0 +1,6 @@
+Android studio软件的安装目录下：  \AndroidStudio\plugins\Kotlin\kotlinc\bin  这个是kotlin 编译器的位置，把它放进环境变量，就可以在终端里使用kotlin编译器
+gradlekotlinconverter.kts：这个是转换工具，可以放到任意位置，方便使用的话把它放进应用目录
+上面弄好环境变量后，运行下面的命令，就能把某个groovy的gradle脚本转成kotlin脚本，但是转换完成后，仍需自己修复一些错误。
+kotlinc -script 路径/gradlekotlinconverter.kts 路径/某个gradle脚本
+例如转换app下的build.gradle
+kotlinc -script ./gradlekotlinconverter.kts ./app/build.gradle
