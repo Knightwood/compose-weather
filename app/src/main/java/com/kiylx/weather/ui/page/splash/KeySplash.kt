@@ -22,7 +22,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kiylx.weather.common.NextButton
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.icon.R
-import com.kiylx.weather.repo.AllPrefs
+import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.ui.activitys.MainViewModel
 
 /**
@@ -30,7 +30,7 @@ import com.kiylx.weather.ui.activitys.MainViewModel
  */
 @Composable
 fun KeySplash(navController: NavHostController, mainViewModel: MainViewModel) {
-    val key = AllPrefs.get().apiKey
+    val key = AllPrefs.apiKey
     //lottie动画
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(
@@ -59,7 +59,7 @@ fun KeySplash(navController: NavHostController, mainViewModel: MainViewModel) {
                 .padding(8.dp)
         ) {
             OutlinedTextField(value = key, onValueChange = {
-                AllPrefs.get().apiKey = it
+                AllPrefs.apiKey = it
             }, label = { Text("key") })
             Text(
                 modifier = Modifier

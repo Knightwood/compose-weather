@@ -39,6 +39,25 @@ data class Location(
     @SerialName("tz")
     var tz: String = "",
     @SerialName("utcOffset")
-    var utcOffset: String = ""
-)
+    var utcOffset: String = "",
+
+    //是否是默认位置
+    var default: Boolean = false,
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (other === this) return true
+        return if (other !is Location) {
+            false
+        } else {
+            //如果这两个默认位置，只比较位置
+            //在经纬度相同的时候，这是同一个位置信息
+            if (other.default == default) {
+                (other.lat == lat) && (other.lon == lon)
+            } else {
+                (other.lat == lat) && (other.lon == lon) && (other.id == id)
+            }
+        }
+    }
+}
 

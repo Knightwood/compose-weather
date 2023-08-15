@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
@@ -31,7 +32,7 @@ import com.kiylx.libx.tools.sonser.gps.GpsHolder
 import com.kiylx.libx.tools.sonser.gps.MyLocationListener
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.common.animatedComposable
-import com.kiylx.weather.repo.AllPrefs
+import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.ui.page.LocationPage
 import com.kiylx.weather.ui.page.MainPage
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        QWeatherGeoRepo.readAll()//读取本地存储的位置信息
         setContent {
             WeatherTheme {
                 val navController = rememberNavController()
@@ -69,7 +71,9 @@ class MainActivity : AppCompatActivity() {
                     //构建导航
                     NavHost(navController = navController, startDestination = Route.HOME) {
                         animatedComposable(route = Route.HOME) {
-                            val first = AllPrefs.get().firstEnter
+                            val first = remember {
+                                AllPrefs.firstEnter
+                            }
                             if (first) {
                                 navController.navigate(Route.SPLASH)
                             } else {
@@ -92,6 +96,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        //将位置信息存储
+        QWeatherGeoRepo.saveAll()
+    }
+
     private fun NavGraphBuilder.buildSplashPage(
         navController: NavHostController,
         mainViewModel: MainViewModel
@@ -107,12 +117,12 @@ class MainActivity : AppCompatActivity() {
                 AddLocationPage(::queryGps, ::stopGps) {
                     //完成定位设置，前往主页
                     //并设置默认位置
-                    AllPrefs.get().firstEnter = false
+                    AllPrefs.firstEnter = false
                     navController.navigate(Route.HOME, navOptions {
                         this.popUpTo(Route.HOME)
                         this.launchSingleTop = true
                     })
-                    QWeatherGeoRepo.addLocation(it,true)
+                    QWeatherGeoRepo.addLocation(it, true)
                 }
             }
         }
@@ -135,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //==========================gps=========================
-    private var gpsHolder:GpsHolder?=null
+    private var gpsHolder: GpsHolder? = null
 
     private fun stopGps() {
         gpsHolder?.unRegisterListener()
@@ -143,14 +153,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun queryGps() {
         this requestThese perms explainReason null goToSetting null finally { allGranted, grantedList, deniedList ->
-            if (gpsHolder==null){
-                gpsHolder=GpsHolder.Instance.configGps (application){
+            if (gpsHolder == null) {
+                gpsHolder = GpsHolder.Instance.configGps(application) {
                     myLocationListener = object : MyLocationListener {
-                        override fun locationChanged(holder: GpsHolder.DataHolder, location: Location) {
-                            val str = String.format("%.2f", location.longitude) + "," + String.format(
-                                "%.2f",
-                                location.latitude
-                            )
+                        override fun locationChanged(
+                            holder: GpsHolder.DataHolder,
+                            location: Location
+                        ) {
+                            val str =
+                                String.format("%.2f", location.longitude) + "," + String.format(
+                                    "%.2f",
+                                    location.latitude
+                                )
                             QWeatherGeoRepo.gpsDataFlow.tryEmit(str)
                         }
                     }

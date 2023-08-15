@@ -1,4 +1,4 @@
-package com.kiylx.weather.repo
+package com.kiylx.weather.repo.api
 
 import com.kiylx.weather.repo.bean.LocationListEntity
 import retrofit2.Call

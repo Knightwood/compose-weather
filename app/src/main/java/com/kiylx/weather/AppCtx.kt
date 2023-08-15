@@ -9,6 +9,11 @@ import com.kiylx.libx.http.okhttp_logger.LoggingInterceptor
 import com.kiylx.weather.http.KeyInterceptor
 import com.kiylx.weather.icon.WeatherIcon
 import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.plus
 import okhttp3.Dispatcher
 
 class AppCtx : Application() {
@@ -16,6 +21,7 @@ class AppCtx : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        scope = CoroutineScope(Dispatchers.IO) + SupervisorJob() + CoroutineName("GLOAB")
         //mmkv初始化
         MMKV.initialize(this)
         //图标加载
@@ -48,5 +54,6 @@ class AppCtx : Application() {
 
     companion object {
         lateinit var instance: AppCtx
+        lateinit var scope: CoroutineScope
     }
 }

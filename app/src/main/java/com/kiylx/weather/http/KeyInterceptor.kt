@@ -1,6 +1,6 @@
 package com.kiylx.weather.http
 
-import com.kiylx.weather.repo.QWeatherConf
+import com.kiylx.weather.common.AllPrefs
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -16,7 +16,7 @@ class KeyInterceptor :Interceptor{
             .url
             .newBuilder()
         //得到新的url（已经追加好了参数）
-        val newUrl: HttpUrl = builder.addQueryParameter("key", QWeatherConf.key)
+        val newUrl: HttpUrl = builder.addQueryParameter("key", AllPrefs.apiKey)
             .build()
         //利用新的Url，构建新的request，并发送给服务器
         val newRequest: Request = oldRequest
