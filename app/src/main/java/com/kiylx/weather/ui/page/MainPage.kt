@@ -103,14 +103,14 @@ fun DailyPage(location: Location, index: Int) {
     val vm: DailyViewModel = viewModel()
     val data by vm.daily.collectAsState()
     LaunchedEffect(key1 = Unit, block = {
-        vm.getDailyReport(location.id)
+        vm.getDailyReport(location)
     })
     //下拉刷新
     val refreshState = rememberSmartSwipeRefreshState()
     SmartSwipeRefresh(
         modifier = Modifier.fillMaxSize(),
         onRefresh = {
-            vm.getDailyReport(location.id)
+            vm.getDailyReport(location)
         },
         state = refreshState,
         isNeedRefresh = true,
@@ -133,7 +133,7 @@ class DailyViewModel : ViewModel() {
      * 查询实时天气
      */
     suspend fun getDailyReport(
-        location: String,
+        location: Location,
     ) {
         val response = QWeatherRepo.getDailyReport(location)
         _daily.emit(response)

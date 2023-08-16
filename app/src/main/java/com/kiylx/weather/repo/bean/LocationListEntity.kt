@@ -59,5 +59,29 @@ data class Location(
             }
         }
     }
+
+    override fun hashCode(): Int {
+        var result = adm1.hashCode()
+        result = 31 * result + adm2.hashCode()
+        result = 31 * result + country.hashCode()
+        result = 31 * result + fxLink.hashCode()
+        result = 31 * result + id.hashCode()
+        result = 31 * result + isDst.hashCode()
+        result = 31 * result + lat.hashCode()
+        result = 31 * result + lon.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + rank.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + tz.hashCode()
+        result = 31 * result + utcOffset.hashCode()
+        result = 31 * result + default.hashCode()
+        return result
+    }
+
+    companion object {
+        fun Location.toLatLonStr(): String =
+            String.format("%.2f", lon) + "," + String.format("%.2f", lat)
+
+    }
 }
 

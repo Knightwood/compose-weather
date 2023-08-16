@@ -14,5 +14,12 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
-        ):Call<DailyEntity>
+    ): Call<DailyEntity>
+
+    @GET("v7/grid-weather/now")
+    fun getGridDaily(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Query("unit") unit: String?,
+    ): Call<DailyEntity>
 }

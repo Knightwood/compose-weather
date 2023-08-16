@@ -96,12 +96,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        //将位置信息存储
-        QWeatherGeoRepo.saveAll()
-    }
-
     private fun NavGraphBuilder.buildSplashPage(
         navController: NavHostController,
         mainViewModel: MainViewModel

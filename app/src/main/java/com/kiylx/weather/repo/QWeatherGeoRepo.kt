@@ -32,6 +32,23 @@ object QWeatherGeoRepo {
     val allLocationsFlow: MutableStateFlow<MutableList<Location>> =
         MutableStateFlow(allLocations)
 
+//<editor-fold desc="网络接口">
+    /**
+     * 通过接口获取地理位置
+     */
+    suspend fun queryCityList(
+        location: String,
+        adm: String? = null,
+        range: String? = null,
+        number: String? = null,
+        lang: String? = null,
+    ): Resource2<LocationListEntity> {
+        return handleApi2(api.getCity(location, adm, range, number, lang))
+    }
+//</editor-fold>
+
+//<editor-fold desc="文件和数据同步，将本地文件读取到存储库，以及将存储库同步到本地">
+
     /**
      * 将位置信息保存到磁盘
      */
@@ -79,20 +96,9 @@ object QWeatherGeoRepo {
             LocalFile.deleteFile(path)
         }
     }
+//</editor-fold>
 
-    /**
-     * 通过接口获取地理位置
-     */
-    suspend fun queryCityList(
-        location: String,
-        adm: String? = null,
-        range: String? = null,
-        number: String? = null,
-        lang: String? = null,
-    ): Resource2<LocationListEntity> {
-        return handleApi2(api.getCity(location, adm, range, number, lang))
-    }
-
+//<editor-fold desc="存储库位置信息添加/删除，以及同步本地文件的中间方法">
     /**
      * 添加位置信息
      * @param data 位置信息
@@ -103,13 +109,18 @@ object QWeatherGeoRepo {
         if (default) {
             if (allLocations.isEmpty()) {
                 allLocations.add(data)
+                LocalFile.writeLocation(data)
             } else {
-                allLocations[0] = data
+                if (allLocations[0] != data) {
+                    allLocations[0] = data
+                    LocalFile.writeLocation(data)
+                }
             }
         } else {
             val b: Boolean = data in allLocations
             if (!b) {
                 allLocations.add(data)
+                LocalFile.writeLocation(data)
             }
         }
         allLocationsFlow.tryEmit(allLocations)
@@ -118,14 +129,21 @@ object QWeatherGeoRepo {
     fun deleteLocation(data: Location) {
         allLocations.remove(data)
         allLocationsFlow.tryEmit(allLocations)
+        LocalFile.deleteLocation(data)
+        QWeatherRepo.deleteWeather(data)
     }
 
+    /**
+     * 从存储库删除位置信息，删除本地文件，删除天气的本地文件
+     */
     fun deleteLocation(pos: Int) {
         if (pos > 0) {
-            allLocations.removeAt(pos)
+            val data= allLocations.removeAt(pos)
             allLocationsFlow.tryEmit(allLocations)
+            LocalFile.deleteLocation(data)
+            QWeatherRepo.deleteWeather(data)
         }
     }
-
+//</editor-fold>
 
 }
