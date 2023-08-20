@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kiylx.libx.http.kotlin.basic2.Resource2
+import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
@@ -124,9 +124,9 @@ fun DailyPage(location: Location, index: Int) {
 }
 
 class DailyViewModel : ViewModel() {
-    private val _daily: MutableStateFlow<Resource2<DailyEntity>> =
-        MutableStateFlow(Resource2.EmptyLoading)
-    val daily: StateFlow<Resource2<DailyEntity>>
+    private val _daily: MutableStateFlow<RawResponse<DailyEntity>> =
+        MutableStateFlow(RawResponse.EmptyLoading)
+    val daily: StateFlow<RawResponse<DailyEntity>>
         get() = _daily
 
     /**

@@ -1,7 +1,6 @@
 package com.kiylx.libx.http.kotlin.common
 
 import android.util.Log
-import com.kiylx.libx.http.kotlin.basic2.Resource2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -35,6 +34,7 @@ class RequestHandler {
                 is RawResponse.Success -> {
                     errorHandler?.OnSuccess(rawResponse)
                 }
+                else->{}
             }
             return rawResponse
         }

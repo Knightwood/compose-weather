@@ -10,5 +10,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class WeatherSub(
     val location: Location,
-    val dailyEntity: DailyEntity
+    var dailyEntity: DailyEntity?=null
 )

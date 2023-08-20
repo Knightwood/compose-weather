@@ -20,14 +20,14 @@ import kotlinx.coroutines.flow.StateFlow
  *              currentIndex + 1,
  *              pageSize
  *      )
- *      if (data is Resource2.Success && data.isSuccess()) {
+ *      if (data is RawResponse.Success && data.isSuccess()) {
  *          //如果数据加载成功
  *          val result = data.responseData?.data?.list ?: emptyList()
  *          //返回本次的分页数据
  *          Paging.PagerData<MemberBean>(
  *              result,//接口返回的list
  *              Paging.LoadState.NO_LOADING(hasMoreData = result.isNotEmpty()),//状态值，可以监听。（是否还有更多数据）
- *              data.responseData?.data?.total?:-1//总的total值
+ *              data.responseData?.data?.total?:-1//总的total值，可以不传
  *          )
  *      } else {
  *          Paging.PagerData(emptyList(), Paging.LoadState.FAILED)
@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.StateFlow
 class Paging<T>(
     var pageSize: Int = 10,
 ) {
+
     //记录当前的index，初始化时，还没有任何数据，为0
     var currentIndex: Int = 0
         private set
@@ -55,9 +56,7 @@ class Paging<T>(
     var sizeRecord = 0 to 0
         private set
 
-    //总的数据总量
-    var totalSize: Int = 0
-        private set
+
 
     //记录上一次的index，初始化时为0
     var oldIndex: Int = currentIndex
@@ -66,8 +65,22 @@ class Paging<T>(
     //加载状态
     var loadStatus: MutableStateFlow<LoadState> = MutableStateFlow(LoadState.INIT)
 
+    //总的数据总量
+    var totalSize: Int = 0
+        private set
+
+    /**
+     * 是否有下一页数据，与totalSize可以二选一
+     */
+    private var hasMoreData: Boolean=false
+
+    /**
+     * 判断是否有下一页数据
+     * 有两个条件，1，当前的数据集尺寸小于总大小。
+     *      或者，2，hasMoreData为true
+     */
     fun hasNext(): Boolean {
-        return datasList.value.size < totalSize
+        return (datasList.value.size < totalSize) || hasMoreData
     }
 
     /**
@@ -110,11 +123,16 @@ class Paging<T>(
             oldIndex = currentIndex//记录数据加载前的index
             this.currentIndex += 1//记录当前的index
 
-            this.totalSize = if (pair.total != this.totalSize && pair.total > 0) {
-                pair.total
-            } else {
-                this.totalSize //更新数据总量
-            }
+            if (pair.total>0){
+                this.totalSize=pair.total
+            }else{
+                this.hasMoreData = pair.state is LoadState.NO_LOADING && pair.state.hasMoreData
+            }//更新数据总量
+//            this.totalSize = if (pair.total != this.totalSize && pair.total > 0) {
+//                pair.total
+//            } else {
+//                this.totalSize //更新数据总量
+//            }
         }
         loadStatus.emit(pair.state)//可以令界面监听加载状态
     }

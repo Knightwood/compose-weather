@@ -89,7 +89,7 @@ object AllPrefs {
     var weatherAirInterval by mk.longM("weatherAirInterval", 30)
 
     /**
-     * 空气质量逐天 单位：分钟
+     * 逐天空气质量 单位：分钟
      */
     var weatherAirDayInterval by mk.longM("weatherAirDayInterval", 60*3)
 

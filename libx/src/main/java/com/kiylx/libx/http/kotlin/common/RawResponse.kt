@@ -2,23 +2,51 @@ package com.kiylx.libx.http.kotlin.common
 
 import java.lang.Exception
 import com.kiylx.libx.http.kotlin.basic.Resource
-import com.kiylx.libx.http.kotlin.basic2.Resource2
 
 /**
  * 执行网络请求时，包裹成功或失败，异常的原始值
  * 解析call得到response,生成response时成功或捕获到异常,由此产生原始的解析结果
  *
- * [RawResponse]经过处理后，将返回给网络请求者[Resource]或[Resource2]等真正的请求结果
+ * 也可以将[RawResponse]进一步处理处理，将返回给网络请求者[Resource]等额外的请求结果
  */
 sealed class RawResponse<out T> {
+    /**
+     * 加载数据中
+     */
+    data class Loading(val data: Any? = null) :RawResponse<Nothing>()
+
+    /**
+     * 空白加载，或是初始值
+     */
+    data object EmptyLoading : RawResponse<Nothing>()
+
+    /**
+     * 其他错误，手动生成
+     */
+    data class OtherError(
+        val code: Int = defaultErrorCode,
+        val msg: String = defaultErrorMsg
+    ) : RawResponse<Nothing>()
+
+    /**
+     * 请求成功，且服务器响应返回200。
+     */
     data class Success<out T>(
         val responseData: T?,
     ) : RawResponse<T>()
 
+    /**
+     * 网络请求失败，或是服务器响应非200
+     */
     data class Error(
         val errorMsg: ErrorResponse,
         val exception: Exception? = null,
     ) : RawResponse<Nothing>()
+
+    companion object {
+        const val defaultErrorCode = -1
+        const val defaultErrorMsg = ""
+    }
 }
 
 /**
@@ -33,9 +61,11 @@ data class ErrorResponse(
 
 enum class ErrorType {
     NETWORK_ERROR,//网络原因失败
-    SERVICE_ERROR,//请求失败
+    SERVICE_ERROR,//请求失败服务器响应非200
     DATE_FORMAT_ERROR//请求返回数据反序列化失败
 }
+
+typealias Resource2<T> =RawResponse<T>
 
 /**
  * 解析错误原因

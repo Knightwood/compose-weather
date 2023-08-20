@@ -1,7 +1,7 @@
 package com.kiylx.weather.repo
 
-import com.kiylx.libx.http.kotlin.basic2.Resource2
 import com.kiylx.libx.http.kotlin.basic2.handleApi2
+import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.api.GeoApi
@@ -42,7 +42,7 @@ object QWeatherGeoRepo {
         range: String? = null,
         number: String? = null,
         lang: String? = null,
-    ): Resource2<LocationListEntity> {
+    ): RawResponse<LocationListEntity> {
         return handleApi2(api.getCity(location, adm, range, number, lang))
     }
 //</editor-fold>

@@ -1,6 +1,5 @@
 package com.kiylx.libx.http.kotlin.basic
 
-import com.kiylx.libx.http.kotlin.basic2.LocalError
 import com.kiylx.libx.http.kotlin.common.RawResponse
 
 /**
