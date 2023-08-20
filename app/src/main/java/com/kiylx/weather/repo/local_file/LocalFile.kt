@@ -13,15 +13,19 @@ import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.UUID
 
 /**
  * 将数据存储到磁盘
  * 将文件从磁盘读取
  */
 object LocalFile {
+    private val json = Json {
+        encodeDefaults = true
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
-//<editor-fold desc="字段">
+    //<editor-fold desc="字段">
     const val TAG = "tty1-LocalFile"
 
     //存储位置
@@ -71,7 +75,7 @@ object LocalFile {
                     tmpFile.createNewFile()
                 }
                 FileOutputStream(tmpFile, false).use { out ->
-                    out.write(Json.encodeToString(location).toByteArray())
+                    out.write(json.encodeToString(location).toByteArray())
                     out.flush()
                 }
             }
@@ -91,7 +95,7 @@ object LocalFile {
                     dir.listFiles()?.forEach {
                         if (it.isFile) {
                             FileInputStream(it).use {
-                                val data = Json.decodeFromStream<Location>(it)
+                                val data = json.decodeFromStream<Location>(it)
                                 list.add(data)
                             }
                         }
@@ -106,7 +110,7 @@ object LocalFile {
      * 将此位置信息的文件删除
      */
     fun deleteLocation(location: Location) {
-        val path = locationDir+genLocationFileName(location)
+        val path = locationDir + genLocationFileName(location)
         deleteFile(path)
     }
 
@@ -136,7 +140,7 @@ object LocalFile {
                     dir.listFiles()?.forEach {
                         if (it.isFile) {
                             FileInputStream(it).use {
-                                val data = Json.decodeFromStream<WeatherSub>(it)
+                                val data = json.decodeFromStream<WeatherSub>(it)
                                 list.add(data)
                             }
                         }
@@ -160,7 +164,7 @@ object LocalFile {
                     tmpFile.createNewFile()
                 }
                 FileOutputStream(tmpFile, false).use { out ->
-                    out.write(Json.encodeToString(weatherSub).toByteArray())
+                    out.write(json.encodeToString(weatherSub).toByteArray())
                     out.flush()
                 }
             }

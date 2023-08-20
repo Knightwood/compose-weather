@@ -43,6 +43,8 @@ data class Location(
 
     //是否是默认位置
     var default: Boolean = false,
+    //排序
+    var sortIndex:Int=0
 ) {
 
     override fun equals(other: Any?): Boolean {
