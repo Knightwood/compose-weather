@@ -127,7 +127,7 @@ fun AppearancePreferences(
                 VideoCard(
                     modifier = Modifier.padding(18.dp), thumbnailUrl = image
                 )
-                val pageCount = colorList.size + 1
+                val pageCount = colorList.size
 
                 val pagerState =
                     rememberPagerState(initialPage = colorList.indexOf(
