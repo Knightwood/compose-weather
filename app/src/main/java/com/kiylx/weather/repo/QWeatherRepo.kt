@@ -2,6 +2,7 @@ package com.kiylx.weather.repo
 
 import com.kiylx.libx.http.kotlin.basic2.Resources2
 import com.kiylx.libx.http.kotlin.basic2.handleApi2
+import com.kiylx.libx.http.kotlin.basic3.handleApi3
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
 import com.kiylx.weather.common.AllPrefs
@@ -28,12 +29,12 @@ object QWeatherRepo {
         location: Location,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
-    ): Resources2<DailyEntity> {
+    ): RawResponse<DailyEntity> {
         val res = if (location.default && AllPrefs.gpsAuto) {
             //默认位置，需要使用经纬度获取数据
-            handleApi2(api.getGridDaily(location.toLatLonStr(), lang, unit))
+            handleApi3(api.getGridDaily(location.toLatLonStr(), lang, unit))
         } else {
-            handleApi2(api.getDaily(location.id, lang, unit))
+            handleApi3(api.getDaily(location.id, lang, unit))
         }
         return res
     }

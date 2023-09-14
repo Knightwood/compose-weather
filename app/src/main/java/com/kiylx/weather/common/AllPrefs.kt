@@ -145,7 +145,7 @@ enum class AUnit(val param: String, val flag: String) {
  * 语言设置
  */
 enum class Lang(val param: String, val names: String, val flag: String) {
-    Chinese("zh-han", "简体中文", "ZH_HANS"),
+    Chinese("zh-hans", "简体中文", "ZH_HANS"),
     English("en", "英语", "ENGLISH"),
     Japanese("ja", "日本语", "JAPANESE")
 }

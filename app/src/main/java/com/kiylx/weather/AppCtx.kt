@@ -55,7 +55,6 @@ class AppCtx : Application() {
 //            configCache(this@AppCtx)//配置缓存策略
         }
         QWeatherGeoRepo.readAll()//读取本地存储的位置信息
-        QWeatherRepo.readAll()//读取本地存储的天气信息
     }
 
     companion object {
