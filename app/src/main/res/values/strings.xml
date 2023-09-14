@@ -5,5 +5,12 @@
     <string name="loading_msg">正在加载</string>
     <string name="success_msg">加载成功</string>
     <string name="feels_like_str">体感温度</string>
+    <string name="wind_direction">风向</string>
+    <string name="wind_rating">风力等级</string>
+    <string name="wind_speed">风速</string>
+    <string name="wind_speed_unit">公里/小时</string>
+    <string name="relative_humidity">相对湿度</string>
+    <string name="pressure">大气压强</string>
+    <string name="vis">能见度</string>
 
 </resources>

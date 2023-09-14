@@ -108,6 +108,37 @@ fun IconText(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TwoText(
+    padding: Dp = 4.dp,
+    title: String,//icon side title
+    text: String,//icon side text
+    onClick: () -> Unit = {},
+) {
+    Card(
+        onClick = onClick, modifier = Modifier
+            .padding(padding)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                modifier = Modifier.padding(bottom = 4.dp),
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
 @Composable
 fun WeatherIcon(code: Int, iconSize: Dp = 48.dp, onClickListener: () -> Unit = {}) {
     val resId = WeatherIcon.getResId(code)
