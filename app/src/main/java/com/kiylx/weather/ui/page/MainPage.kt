@@ -2,8 +2,11 @@ package com.kiylx.weather.ui.page
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRowScopeInstance.align
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +18,9 @@ import androidx.compose.material.icons.rounded.AddLocation
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -29,16 +35,18 @@ import androidx.constraintlayout.compose.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kiylx.libx.http.kotlin.common.RawResponse
+import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.icon.WeatherIcon
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.successData
 import com.kiylx.weather.ui.activitys.MainViewModel
 import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalDate
 
 class MainPage {
     companion object {
@@ -95,8 +103,13 @@ fun PagerFragment(locations: MutableList<Location>) {
     }
 
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
-        DailyPage(location = QWeatherGeoRepo.allLocations[it],it)
+        DailyPage(location = QWeatherGeoRepo.allLocations[it], it)
     }
+}
+
+@Composable
+fun Content(){
+
 }
 
 /**
@@ -107,6 +120,13 @@ fun PagerFragment(locations: MutableList<Location>) {
 fun DailyPage(location: Location, index: Int) {
     val vm: DailyViewModel = viewModel()
     var data by vm.daily
+    //location text
+    val locationText = if (location.default && AllPrefs.gpsAuto) {
+        "${location.lat},${location.lon}"
+    } else {
+        "${location.adm1},${location.adm2}"
+    }
+    val nowTimeText = LocalDate.now().format(AllPrefs.dateFormatter)
 
     LaunchedEffect(key1 = Unit, block = {
         vm.getDailyReport(location)
@@ -125,7 +145,57 @@ fun DailyPage(location: Location, index: Int) {
             MyRefreshHeader(refreshState.refreshFlag, true)
         },
     ) {
-//        MotionLayout()
+        val scene = MotionScene() {
+            val title = createRefFor("title")
+            val time = createRefFor("time")
+            val weatherInfo = createRefFor("weatherInfo")
+
+            val set1 = ConstraintSet {
+
+            }
+            val endSet = ConstraintSet {
+
+            }
+        }
+        MotionLayout(
+            modifier = Modifier.fillMaxSize(), motionScene = scene
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = locationText,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .padding(16.dp)
+                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(text = "")
+                    Box {
+                        //icon and weather info
+                        WeatherIcon.getResId()
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.SpaceAround) {
+                    Text(
+                        text = nowTimeText,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .padding(16.dp)
+                    )
+                    Text(
+                        text = "",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .padding(16.dp)
+                    )
+
+                }
+
+            }
+        }
     }
 }
 
@@ -133,12 +203,12 @@ class DailyViewModel : ViewModel() {
     val daily: MutableState<RawResponse<DailyEntity>> = mutableStateOf(RawResponse.EmptyLoading)
 
     /**
-     * 查询实时天气
+     * query daily weather
      */
     suspend fun getDailyReport(
         location: Location,
     ) {
         val response = QWeatherRepo.getDailyReport(location)
-        daily.value=response
+        daily.value = response
     }
 }

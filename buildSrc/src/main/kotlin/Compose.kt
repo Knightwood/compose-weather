@@ -27,7 +27,7 @@ object ComposeLibs{
     const val composeMaterial3WindowSizeClass = "androidx.compose.material3:material3-window-size-class:1.2.0-alpha03"
     const val activityCompose = "androidx.activity:activity-compose:1.7.2"
 
-    const val composeConstraintLayout ="androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    const val composeConstraintLayout ="androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha07"
 
     const val nav_version = "2.7.0"
     const val navigation = "androidx.navigation:navigation-compose:$nav_version"
