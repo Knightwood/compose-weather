@@ -14,4 +14,7 @@ object Route {
     const val SETTINGS = "settings"
     //设置页面
     const val SETTINGS_PAGE = "settings_page"
+
+    const val DARK_THEME = "dark_theme"
+    const val THEME = "theme"
 }

@@ -9,7 +9,6 @@ import com.kiylx.compose_lib.R
 import com.kiylx.compose_lib.common.boolM
 import com.kiylx.compose_lib.common.doubleM
 import com.kiylx.compose_lib.common.intM
-import com.kiylx.compose_lib.common.longM
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,8 +20,8 @@ import kotlinx.coroutines.launch
 data class ThemeSettings(
     val darkTheme: DarkThemePrefs = DarkThemePrefs(),//暗色模式的设置
     val isDynamicColorEnabled: Boolean = false, //是否使用动态颜色
-    val highContrastValue: Double = ThemeHelper.DEFAULT_HIGH_CONTRAST_VALUE,//默认对比度为0
-    val themeColorSeed: Long = ThemeHelper.DEFAULT_COLOR_SEED, //主题种子
+    val lightHighContrastValue: Double = ThemeHelper.DEFAULT_HIGH_CONTRAST_VALUE,//默认对比度为0
+    val themeColorSeed: Int = ThemeHelper.DEFAULT_COLOR_SEED, //主题种子
     val paletteStyleIndex: Int = PaletteStyle.TonalSpot.ordinal //主题调色板样式index
 )
 
@@ -35,7 +34,7 @@ class ThemeStr {
         const val DYNAMIC_COLOR = "dynamic_color"
         const val HIGH_CONTRAST = "high_contrast"
         const val dark_theme_mode = "dark_theme_mode"
-        const val theme_high_contrast_value = "dark_theme_high_contrast_value"
+        const val dark_use_contrast_mode="dark_use_contrast_mode"
         const val light_theme_high_contrast_value = "light_theme_high_contrast_value"
         const val seed_color_int = "theme_seed_color_int"
     }
@@ -50,16 +49,19 @@ class ThemeStr {
  * ```
  */
 object ThemeHelper {
-    const val DEFAULT_COLOR_SEED = 0xFF6750A4
-    const val DEFAULT_HIGH_CONTRAST_VALUE = 0.3
+    const val DEFAULT_COLOR_SEED:Int = 0xFF6750A4.toInt()
+    const val DEFAULT_HIGH_CONTRAST_VALUE = 0.0
 
     //<editor-fold desc="偏好值">
     val kv = MMKV.defaultMMKV()
 
     var darkThemeMode by kv.intM(ThemeStr.dark_theme_mode, DarkThemePrefs.FOLLOW_SYSTEM)
 
-    var themeHighContrastValue by kv.doubleM(
-        ThemeStr.theme_high_contrast_value,
+    /**
+     * 用于亮色主题
+     */
+    var lightThemeHighContrastValue by kv.doubleM(
+        ThemeStr.light_theme_high_contrast_value,
         DEFAULT_HIGH_CONTRAST_VALUE
     )
 
@@ -68,7 +70,15 @@ object ThemeHelper {
         DynamicColors.isDynamicColorAvailable()
     )
 
-    var seedColorInt by kv.longM(ThemeStr.seed_color_int, DEFAULT_COLOR_SEED)
+    /**
+     * 暗色模式是否使用高对比度
+     */
+    var isDarkUseContrastMode by kv.boolM(
+        ThemeStr.dark_use_contrast_mode,
+        false
+    )
+
+    var seedColorInt by kv.intM(ThemeStr.seed_color_int, DEFAULT_COLOR_SEED)
 
     var paletteStyleInt by kv.intM(ThemeStr.PALETTE_STYLE, PaletteStyle.TonalSpot.ordinal)
 
@@ -79,9 +89,9 @@ object ThemeHelper {
         ThemeSettings(
             darkTheme = DarkThemePrefs(
                 darkThemeMode = darkThemeMode,
-
+                isHighContrastModeEnabled = false
                 ),
-            highContrastValue = themeHighContrastValue,
+            lightHighContrastValue = lightThemeHighContrastValue,
             isDynamicColorEnabled = isUseDynamicColor,
             themeColorSeed = seedColorInt,
             paletteStyleIndex = paletteStyleInt
@@ -93,38 +103,37 @@ object ThemeHelper {
 //<editor-fold desc="主题修改功能，调用下面的方法动态切换主题">
     fun CoroutineScope.modifyDarkThemePreference(
         darkThemeMode: Int = AppSettingsStateFlow.value.darkTheme.darkThemeMode,
-        highContrastValue: Double = AppSettingsStateFlow.value.highContrastValue
+        isHighContrastModeEnabled: Boolean = AppSettingsStateFlow.value.darkTheme.isHighContrastModeEnabled
     ) {
         launch(Dispatchers.IO) {
             themeSettingsFlow.update {
                 it.copy(
                     darkTheme = AppSettingsStateFlow.value.darkTheme.copy(
-                        darkThemeMode = darkThemeMode
+                        darkThemeMode = darkThemeMode,
+                        isHighContrastModeEnabled = isHighContrastModeEnabled
                     ),
-                    highContrastValue = highContrastValue
                 )
             }
             this@ThemeHelper.darkThemeMode = darkThemeMode
-            this@ThemeHelper.themeHighContrastValue = highContrastValue
         }
     }
 
     fun CoroutineScope.modifyThemeSeedColor(
-        colorArgb: Long,
+        colorArgb: Int,
         paletteStyleIndex: Int,
-        highContrastValue: Double = AppSettingsStateFlow.value.highContrastValue
+        highContrastValue: Double = AppSettingsStateFlow.value.lightHighContrastValue
     ) {
         launch(Dispatchers.IO) {
             themeSettingsFlow.update {
                 it.copy(
                     themeColorSeed = colorArgb,
                     paletteStyleIndex = paletteStyleIndex,
-                    highContrastValue = highContrastValue
+                    lightHighContrastValue = highContrastValue
                 )
             }
             this@ThemeHelper.seedColorInt = colorArgb
             this@ThemeHelper.paletteStyleInt = paletteStyleIndex
-            this@ThemeHelper.themeHighContrastValue = highContrastValue
+            this@ThemeHelper.lightThemeHighContrastValue = highContrastValue
         }
     }
 
@@ -141,6 +150,7 @@ object ThemeHelper {
 
 data class DarkThemePrefs(
     val darkThemeMode: Int = FOLLOW_SYSTEM,//暗色模式
+    val isHighContrastModeEnabled: Boolean =false
 ) {
     companion object {
         const val FOLLOW_SYSTEM = 1
@@ -167,7 +177,7 @@ data class DarkThemePrefs(
 
 }
 
-inline val Long.toColor: Color
+inline val Int.toColor: Color
     @Composable get() {
         return Color(this)
     }

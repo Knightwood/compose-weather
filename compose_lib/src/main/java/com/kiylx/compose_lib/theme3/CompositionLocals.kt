@@ -28,7 +28,7 @@ val LocalColorScheme = staticCompositionLocalOf {
         Color(ThemeHelper.seedColorInt),
         false,
         PaletteStyle.TonalSpot,
-        ThemeHelper.themeHighContrastValue
+        ThemeHelper.lightThemeHighContrastValue
     )
 }
 //</editor-fold>
@@ -58,12 +58,17 @@ fun ThemeSettingsProvider(
                     dynamicLightColorScheme(LocalContext.current)
                 }
             } else {
+                val contrastValue = if (isDark) {
+                    1.0
+                } else {
+                    lightHighContrastValue
+                }
                 //手动的主题设置
                 mDynamicColorScheme(
                     themeColorSeed.toColor,
                     isDark,
                     PaletteStyle.values()[paletteStyleIndex],
-                    highContrastValue
+                    contrastValue
                 )
             },
             LocalWindowWidthState provides windowWidthSizeClass,

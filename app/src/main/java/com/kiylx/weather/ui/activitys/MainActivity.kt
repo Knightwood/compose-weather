@@ -27,6 +27,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
+import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
@@ -81,7 +83,9 @@ class MainActivity : AppCompatActivity() {
                                 navController.navigate(Route.SPLASH)
                             } else {
                                 MainPage(
-                                    navigateToSettings = { navController.navigate(Route.SETTINGS) },
+                                    navigateToSettings = {
+                                        navController.navigate(Route.THEME)
+                                                         },
                                     navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
                                     viewModel = mainViewModel
                                 )
@@ -137,6 +141,16 @@ class MainActivity : AppCompatActivity() {
         navigation(startDestination = Route.SETTINGS_PAGE, route = Route.SETTINGS) {
             animatedComposable(Route.SETTINGS_PAGE) {
                 SettingPage(navController)
+            }
+            animatedComposable(Route.THEME) {
+                AppearancePreferences(navController = navController) {
+                    navController.navigate(Route.DARK_THEME)
+                }
+            }
+            animatedComposable(Route.DARK_THEME) {
+                DarkThemePreferences {
+                    navController.popBackStack()
+                }
             }
         }
     }
