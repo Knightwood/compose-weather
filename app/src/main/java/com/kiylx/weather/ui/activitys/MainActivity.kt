@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -41,6 +42,7 @@ import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
 import com.kiylx.weather.ui.theme.WeatherTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel

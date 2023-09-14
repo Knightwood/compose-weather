@@ -34,7 +34,6 @@ class RequestHandler {
                 is RawResponse.Success -> {
                     errorHandler?.OnSuccess(rawResponse)
                 }
-                else->{}
             }
             return rawResponse
         }

@@ -103,7 +103,7 @@ object AllPrefs {
     /**
      * 单位
      */
-    var unit by mk.strM("unit", Unit.MetricUnits.param)
+    var unit by mk.strM("unit", AUnit.MetricUnits.param)
 
     /**
      * 语言
@@ -136,7 +136,7 @@ class PrefKeyName {
  * @param param 请求时所用参数
  * @param flag Android属性
  */
-enum class Unit(val param: String, val flag: String) {
+enum class AUnit(val param: String, val flag: String) {
     MetricUnits("m", "METRIC"),
     ImperialUnits("i", "IMPERIAL"),
 }

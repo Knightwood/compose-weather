@@ -10,23 +10,7 @@ import com.kiylx.libx.http.kotlin.basic.Resource
  * 也可以将[RawResponse]进一步处理处理，将返回给网络请求者[Resource]等额外的请求结果
  */
 sealed class RawResponse<out T> {
-    /**
-     * 加载数据中
-     */
-    data class Loading(val data: Any? = null) :RawResponse<Nothing>()
 
-    /**
-     * 空白加载，或是初始值
-     */
-    data object EmptyLoading : RawResponse<Nothing>()
-
-    /**
-     * 其他错误，手动生成
-     */
-    data class OtherError(
-        val code: Int = defaultErrorCode,
-        val msg: String = defaultErrorMsg
-    ) : RawResponse<Nothing>()
 
     /**
      * 请求成功，且服务器响应返回200。
@@ -43,10 +27,6 @@ sealed class RawResponse<out T> {
         val exception: Exception? = null,
     ) : RawResponse<Nothing>()
 
-    companion object {
-        const val defaultErrorCode = -1
-        const val defaultErrorMsg = ""
-    }
 }
 
 /**

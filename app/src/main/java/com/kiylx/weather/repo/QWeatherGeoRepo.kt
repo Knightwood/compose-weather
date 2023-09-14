@@ -1,7 +1,7 @@
 package com.kiylx.weather.repo
 
+import com.kiylx.libx.http.kotlin.basic2.Resources2
 import com.kiylx.libx.http.kotlin.basic2.handleApi2
-import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.api.GeoApi
@@ -42,7 +42,7 @@ object QWeatherGeoRepo {
         range: String? = null,
         number: String? = null,
         lang: String? = null,
-    ): RawResponse<LocationListEntity> {
+    ): Resources2<LocationListEntity> {
         return handleApi2(api.getCity(location, adm, range, number, lang))
     }
 //</editor-fold>
@@ -139,7 +139,6 @@ object QWeatherGeoRepo {
         allLocations.remove(data)
         allLocationsFlow.tryEmit(allLocations)
         LocalFile.deleteLocation(data)
-        QWeatherRepo.deleteWeather(data)
     }
 
     /**
@@ -150,7 +149,6 @@ object QWeatherGeoRepo {
             val data= allLocations.removeAt(pos)
             allLocationsFlow.tryEmit(allLocations)
             LocalFile.deleteLocation(data)
-            QWeatherRepo.deleteWeather(data)
         }
     }
 //</editor-fold>

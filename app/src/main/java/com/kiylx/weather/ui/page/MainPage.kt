@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,12 +20,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kiylx.libx.http.kotlin.basic3.DataUiState
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.icon.WeatherIcon
@@ -103,40 +106,27 @@ fun PagerFragment(locations: MutableList<Location>) {
     }
 
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
-        DailyPage(location = QWeatherGeoRepo.allLocations[it], it)
+        MainPageContent(location = QWeatherGeoRepo.allLocations[it], it)
     }
-}
-
-@Composable
-fun Content(){
-
 }
 
 /**
  * @param index 0即默认位置，如果开启了gps更新，就得定位刷新
+ *
  */
-@OptIn(ExperimentalMotionApi::class)
 @Composable
-fun DailyPage(location: Location, index: Int) {
-    val vm: DailyViewModel = viewModel()
-    var data by vm.daily
-    //location text
-    val locationText = if (location.default && AllPrefs.gpsAuto) {
-        "${location.lat},${location.lon}"
-    } else {
-        "${location.adm1},${location.adm2}"
-    }
-    val nowTimeText = LocalDate.now().format(AllPrefs.dateFormatter)
-
-    LaunchedEffect(key1 = Unit, block = {
-        vm.getDailyReport(location)
+fun MainPageContent(location: Location, index: Int) {
+    var data = remember { DataUiState<DailyEntity>() }
+    LaunchedEffect(key1 = location, block = {
+        val response = QWeatherRepo.getDailyReport(location)
     })
+    data.asUiStateFlow().collectAsState()
     //下拉刷新
     val refreshState = rememberSmartSwipeRefreshState()
     SmartSwipeRefresh(
         modifier = Modifier.fillMaxSize(),
         onRefresh = {
-            vm.getDailyReport(location)
+            val response = QWeatherRepo.getDailyReport(location)
         },
         state = refreshState,
         isNeedRefresh = true,
@@ -145,70 +135,85 @@ fun DailyPage(location: Location, index: Int) {
             MyRefreshHeader(refreshState.refreshFlag, true)
         },
     ) {
-        val scene = MotionScene() {
-            val title = createRefFor("title")
-            val time = createRefFor("time")
-            val weatherInfo = createRefFor("weatherInfo")
 
-            val set1 = ConstraintSet {
+    }
+}
 
-            }
-            val endSet = ConstraintSet {
 
-            }
+@OptIn(ExperimentalMotionApi::class)
+@Composable
+fun MainPageContent(location: Location, data: DailyEntity) {
+    //location text
+    val locationText = if (location.default && AllPrefs.gpsAuto) {
+        "${location.lat},${location.lon}"
+    } else {
+        "${location.adm1},${location.adm2}"
+    }
+    val nowTimeText = LocalDate.now().format(AllPrefs.dateFormatter)
+
+    val scene = MotionScene() {
+        val title = createRefFor("title")
+        val time = createRefFor("time")
+        val weatherInfo = createRefFor("weatherInfo")
+
+        val set1 = ConstraintSet {
+
         }
-        MotionLayout(
-            modifier = Modifier.fillMaxSize(), motionScene = scene
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+        val endSet = ConstraintSet {
+
+        }
+    }
+    MotionLayout(
+        modifier = Modifier.fillMaxSize(), motionScene = scene
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = locationText,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(text = "")
+                Box {
+                    //icon and weather info
+                    WeatherIcon.getResId()
+                }
+            }
+            Row(horizontalArrangement = Arrangement.SpaceAround) {
                 Text(
-                    text = locationText,
+                    text = nowTimeText,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
                         .padding(16.dp)
                 )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier
-                        .fillMaxWidth()
+                Text(
+                    text = "",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
                         .padding(16.dp)
-                ) {
-                    Text(text = "")
-                    Box {
-                        //icon and weather info
-                        WeatherIcon.getResId()
-                    }
-                }
-                Row(horizontalArrangement = Arrangement.SpaceAround) {
-                    Text(
-                        text = nowTimeText,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier
-                            .padding(16.dp)
-                    )
-                    Text(
-                        text = "",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier
-                            .padding(16.dp)
-                    )
-
-                }
+                )
 
             }
+
         }
     }
 }
 
 class DailyViewModel : ViewModel() {
-    val daily: MutableState<RawResponse<DailyEntity>> = mutableStateOf(RawResponse.EmptyLoading)
-
-    /**
-     * query daily weather
-     */
-    suspend fun getDailyReport(
-        location: Location,
-    ) {
-        val response = QWeatherRepo.getDailyReport(location)
-        daily.value = response
-    }
+//    val daily: MutableState<RawResponse<DailyEntity>> = mutableStateOf(RawResponse.EmptyLoading)
+//
+//    /**
+//     * query daily weather
+//     */
+//    suspend fun getDailyReport(
+//        location: Location,
+//    ) {
+//        val response = QWeatherRepo.getDailyReport(location)
+//        daily.value = response
+//    }
 }

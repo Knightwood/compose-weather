@@ -73,10 +73,9 @@ fun KeySplash(navController: NavHostController, mainViewModel: MainViewModel) {
                 .padding(
                     bottom = 32.dp,
                     end = 16.dp
-                ),
-            onClick = {
-                navController.navigate(Route.SPLASH_LOCATION__PAGE)
-            }
-        )
+                )
+        ) {
+            navController.navigate(Route.SPLASH_LOCATION__PAGE)
+        }
     }
 }

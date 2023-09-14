@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kiylx.libx.http.kotlin.common.RawResponse
+import com.kiylx.libx.http.kotlin.basic2.Resources2
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.Location
 import com.kiylx.weather.repo.bean.LocationListEntity
@@ -179,7 +179,7 @@ class AddLocationViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             val response = QWeatherGeoRepo.queryCityList(location)
-            if (response is RawResponse.Success) {
+            if (response is Resources2.Success) {
                 _location.emit(response.responseData)
             }
         }

@@ -71,11 +71,10 @@ fun MainSplashPage(navController: NavHostController, mainViewModel: MainViewMode
                 .padding(
                     bottom = 32.dp,
                     end = 16.dp
-                ),
-            onClick = {
-                navController.navigate(Route.KEY_PAGE)
-            }
-        )
+                )
+        ) {
+            navController.navigate(Route.KEY_PAGE)
+        }
         Text(
             text = "天气服务由和风天气驱动",
             modifier = Modifier.align(Alignment.BottomCenter),
