@@ -773,6 +773,22 @@ fun PreferenceSubtitle(
 }
 
 @Composable
+fun PreferenceSubtitleNotFillWidth(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(start = 18.dp, top = 24.dp, bottom = 12.dp),
+    text: String,
+    color: Color = MaterialTheme.colorScheme.primary,
+) {
+    Text(
+        text = text,
+        modifier = modifier
+            .padding(contentPadding),
+        color = color,
+        style = MaterialTheme.typography.labelLarge
+    )
+}
+
+@Composable
 fun PreferenceInfo(
     modifier: Modifier = Modifier,
     text: String,

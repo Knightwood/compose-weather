@@ -58,10 +58,10 @@ fun ThemeSettingsProvider(
                     dynamicLightColorScheme(LocalContext.current)
                 }
             } else {
-                val contrastValue = if (isDark) {
-                    1.0
+                val contrastValue = if (isDark && darkTheme.isHighContrastModeEnabled) {
+                    ThemeHelper.darkThemeHighContrastValue
                 } else {
-                    lightHighContrastValue
+                    ThemeHelper.lightThemeHighContrastValue
                 }
                 //手动的主题设置
                 mDynamicColorScheme(

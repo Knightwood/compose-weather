@@ -45,7 +45,7 @@ fun mDynamicColorScheme(
     keyColor: Color,
     isDark: Boolean,
     style: PaletteStyle = PaletteStyle.TonalSpot,
-    contrastLevel: Double = ThemeHelper.DEFAULT_HIGH_CONTRAST_VALUE
+    contrastLevel: Double = ThemeHelper.DEFAULT_HIGH_CONTRAST_VALUE_0
 ): ColorScheme {
     val hct = Hct.fromInt(keyColor.toArgb())
     val colors = MaterialDynamicColors()
