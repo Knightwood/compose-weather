@@ -123,13 +123,13 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
                         ) {
                             PreferenceSubtitleNotFillWidth(
                                 modifier = Modifier.align(Alignment.CenterVertically),
-                                contentPadding = PaddingValues(start = 2.dp, top = 24.dp, bottom = 8.dp),
+                                contentPadding = PaddingValues(0.dp),
                                 text = stringResource(R.string.contrast)
                             )
                             Text(
-                                modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp),
+                                modifier = Modifier.align(Alignment.Bottom).padding(end = 16.dp, top = 8.dp),
                                 fontWeight = FontWeight.Bold,
-                                text = String.format("%.2f", darkHighContrastProgress)
+                                text = String.format("%.1f", darkHighContrastProgress)
                             )
                         }
                     }
@@ -137,7 +137,7 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
                         //修改暗色模式下的高对比度值
                         Slider(
                             value = darkHighContrastProgress,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                             onValueChange = {
                                 darkHighContrastProgress = it
                             },

@@ -135,6 +135,20 @@ fun AppearancePreferences(
                     ).run { if (this == -1) 0 else this }) {
                         pageCount
                     }
+                HorizontalPager(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clearAndSetSemantics { },
+                    state = pagerState,
+                    contentPadding = PaddingValues(horizontal = 12.dp)
+                ) { page ->
+                    if (page < pageCount - 1) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) { ColorButtons(colorList[page], scope) }
+                    }
+                }
                 Row(
                     Modifier
                         .height(50.dp)
@@ -152,20 +166,6 @@ fun AppearancePreferences(
                                 .size(10.dp)
 
                         )
-                    }
-                }
-                HorizontalPager(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clearAndSetSemantics { },
-                    state = pagerState,
-                    contentPadding = PaddingValues(horizontal = 12.dp)
-                ) { page ->
-                    if (page < pageCount - 1) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) { ColorButtons(colorList[page], scope) }
                     }
                 }
 
