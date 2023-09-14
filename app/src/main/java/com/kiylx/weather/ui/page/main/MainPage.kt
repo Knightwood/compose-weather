@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
+import com.kiylx.compose_lib.theme3.PaletteStyle
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
@@ -99,7 +100,6 @@ fun MainPage(
                     .align(Alignment.TopStart),
                 onClick = {
                     navigateToLocations()
-
                 }) {
                 Icon(Icons.Rounded.AddLocation, contentDescription = "定位")
             }

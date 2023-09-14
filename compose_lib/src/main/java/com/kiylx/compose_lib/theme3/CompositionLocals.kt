@@ -24,7 +24,12 @@ val LocalPaletteStyleIndex = compositionLocalOf { ThemeHelper.paletteStyleInt }
  * 存储当前的主题色，其实作用跟[MaterialTheme.colorScheme]一样
  */
 val LocalColorScheme = staticCompositionLocalOf {
-    mDynamicColorScheme(Color(ThemeHelper.seedColorInt), false, PaletteStyle.values()[0], 0.0)
+    mDynamicColorScheme(
+        Color(ThemeHelper.seedColorInt),
+        false,
+        PaletteStyle.TonalSpot,
+        ThemeHelper.themeHighContrastValue
+    )
 }
 //</editor-fold>
 
@@ -58,7 +63,7 @@ fun ThemeSettingsProvider(
                     themeColorSeed.toColor,
                     isDark,
                     PaletteStyle.values()[paletteStyleIndex],
-                    darkTheme.highContrastValue
+                    highContrastValue
                 )
             },
             LocalWindowWidthState provides windowWidthSizeClass,

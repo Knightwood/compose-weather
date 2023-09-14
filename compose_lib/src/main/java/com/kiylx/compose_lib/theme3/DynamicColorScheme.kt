@@ -17,6 +17,14 @@ import com.kyant.m3color.scheme.SchemeVibrant
 
 /**
  * 支持的主题色调色板
+ * 1. TONAL_SPOT 是一种明艳度中等的调色板，使用与 system_accent1_0 颜色类似的 system_accent3_0 颜色（从 Android 12 版本继承而来，并进行了略微调整）。
+ * 2. VIBRANT 是一种明艳度偏高的调色板，和谐地融合了颜色之间的细微变化。
+ * 3. EXPRESSIVE 是一种明艳度偏高的调色板，用于将各种意想不到的独特强调色搭配在一起。
+ * 4. SPRITZ 是一种明艳度偏低的调色板，可在不同颜色之间产生一种柔和的水洗效果。
+ * 5. RAINBOW 同时使用了彩色色调和中性表面，可为用户打造更微妙的色彩体验。
+ * 不建议与基于壁纸的颜色提取过程一起使用，而应与静态的颜色主题搭配使用。
+ * 6. FRUIT_SALAD 提供了两种色调，让用户更具表现力。
+ * 不建议与基于壁纸的颜色提取过程一起使用，而应与静态的颜色主题搭配使用。
  */
 enum class PaletteStyle {
     TonalSpot,
@@ -37,7 +45,7 @@ fun mDynamicColorScheme(
     keyColor: Color,
     isDark: Boolean,
     style: PaletteStyle = PaletteStyle.TonalSpot,
-    contrastLevel: Double = 0.0
+    contrastLevel: Double = ThemeHelper.DEFAULT_HIGH_CONTRAST_VALUE
 ): ColorScheme {
     val hct = Hct.fromInt(keyColor.toArgb())
     val colors = MaterialDynamicColors()

@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
-            val windowSizeClass = calculateWindowSizeClass(this)
             DynamicTheme {
                 val navController = rememberNavController()
                 val systemUiController = rememberSystemUiController()
