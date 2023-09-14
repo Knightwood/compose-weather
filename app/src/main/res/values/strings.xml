@@ -4,5 +4,6 @@
     <string name="empty_msg">暂无更多数据</string>
     <string name="loading_msg">正在加载</string>
     <string name="success_msg">加载成功</string>
+    <string name="feels_like_str">体感温度</string>
 
 </resources>

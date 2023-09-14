@@ -43,8 +43,10 @@ sealed class UiState {
  *             mainViewModel.dataState.asUiStateFlow().collect {
  *                 //这里可以观察界面状态
  *                 //界面状态处理...
- *
- *                 //还可以这样手动获取成功时设置的最新数据
+ *                  if (it is UiState.Success<*>){//success状态下可以拿取服务器返回的数据，可能业务状态不是成功
+ *                     val responseData=it.data
+ *                 }
+ *                 //还可以这样手动获取上此获取成功时设置的最新数据
  *                 mainViewModel.dataState.getData()
  *             }
  *         }
@@ -63,7 +65,8 @@ sealed class UiState {
  *     suspend fun test(location: Location) {
  *         //1. 接收到网络数据后更新数据和界面状态，网络请求成功后数据会更新，界面状态会更新为成功
  *         //请求失败，数据不会更新，界面状态会更新为失败
- *         dataState.setStateWithData(QWeatherRepo.test(location))
+ *         val rawResponse = QWeatherRepo.test(location)
+ *         dataState.setStateWithData(rawResponse)
  *         //2. 也可以单独更新界面状态，而不更新数据
  *         dataState.setUiState(UiState.Loading)
  *         //3. 也可以单独控制数据和界面的更新
@@ -76,12 +79,15 @@ sealed class UiState {
  *     }
  * ```
  */
-open class DataUiState<T> {
+class DataUiState<T>(
+    initValue: T? = null,//可选的初始数据
+    initUiState: UiState = UiState.INIT,//可选的初始界面状态
+) {
     //不论界面状态更新与否，使用在这里保存了一份数据副本
-    protected var _data: MutableStateFlow<T?> = MutableStateFlow(null);
+    protected var _data: MutableStateFlow<T?> = MutableStateFlow(initValue);
 
     //界面状态，当然在success状态时会持有一份数据副本
-    protected var _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
+    protected var _uiState: MutableStateFlow<UiState> = MutableStateFlow(initUiState)
 
     /**
      * 更新数据和界面状态，且如果RawResponse为success，则对_data更新值，否则不更新值

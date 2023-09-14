@@ -2,9 +2,11 @@ package com.kiylx.weather.ui.page
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddLocation
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,15 +33,20 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
 import com.kiylx.libx.http.kotlin.basic3.DataUiState
 import com.kiylx.libx.http.kotlin.basic3.UiState
-import com.kiylx.libx.http.kotlin.common.RawResponse
+import com.kiylx.weather.common.AUnit
 import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.icon.IconText
 import com.kiylx.weather.icon.WeatherIcon
+import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.Location
 import com.kiylx.weather.ui.activitys.MainViewModel
@@ -46,6 +55,7 @@ import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
 import java.time.LocalDate
+import com.kiylx.weather.R
 
 class MainPage {
     companion object {
@@ -90,7 +100,7 @@ fun MainPage(
         }
         //根据地点数量显示pager页面
         val allLocations = QWeatherGeoRepo.allLocationsFlow.collectAsState()
-        PagerFragment(allLocations,viewModel)
+        PagerFragment(allLocations, viewModel)
     }
 }
 
@@ -106,7 +116,7 @@ fun PagerFragment(locations: State<MutableList<Location>>, viewModel: MainViewMo
     }
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
         Surface(modifier = Modifier.fillMaxSize()) {
-            MainPagePager(location = QWeatherGeoRepo.allLocations[it], it,viewModel)
+            MainPagePager(location = QWeatherGeoRepo.allLocations[it], it, viewModel)
         }
     }
 }
@@ -120,7 +130,7 @@ fun PagerFragment(locations: State<MutableList<Location>>, viewModel: MainViewMo
 fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
     val data = remember { DataUiState<DailyEntity>() }
     LaunchedEffect(key1 = location, block = {
-//        viewModel.getDailyData()
+        viewModel.getDailyData(data, location)
     })
     val pageData = data.asDataFlow().collectAsState()//页面数据
 
@@ -132,7 +142,7 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
     SmartSwipeRefresh(
         modifier = Modifier.fillMaxSize(),
         onRefresh = {
-            viewModel.getDailyData(data,location)
+            viewModel.getDailyData(data, location)
         },
         state = refreshState,
         isNeedRefresh = true,
@@ -144,6 +154,7 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
         //观察界面状态，修改下拉刷新状态
         LaunchedEffect(uiState.value) {
             uiState.value.let {
+
                 when (it) {
                     is UiState.Success<*> -> {
                         refreshState.refreshFlag = SmartSwipeStateFlag.SUCCESS
@@ -165,60 +176,110 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
         Column(
             Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())) {
-            MainPageContent(location = location, data = pageData)
+                .verticalScroll(rememberScrollState())
+        ) {
+            MainPageContent(location = location, state = pageData)
         }
     }
 }
 
 /**
- * 天气信息页面
+ * weather info content
  */
-@OptIn(ExperimentalMotionApi::class)
 @Composable
-fun MainPageContent(location: Location, data: State<DailyEntity?>) {
-
-    //location text
-    val locationText = if (location.default && AllPrefs.gpsAuto) {
-        "${location.lat},${location.lon}"
-    } else {
-        "${location.adm1},${location.adm2}"
-    }
-    val nowTimeText = LocalDate.now().format(AllPrefs.dateFormatter)
-    Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = locationText,
-            style = MaterialTheme.typography.titleLarge,
+fun MainPageContent(location: Location, state: State<DailyEntity?>) {
+    state.value?.let { data ->
+        //location text
+        val locationText = if (location.default && AllPrefs.gpsAuto) {
+            "${location.lat},${location.lon}"
+        } else {
+            "${location.adm1},${location.adm2}"
+        }
+        val unit = if (AllPrefs.unit == AUnit.MetricUnits.param) {
+            "℃"
+        } else {
+            "℉"
+        }
+        val nowTimeText = LocalDate.now().format(AllPrefs.dateFormatter)
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+                .fillMaxSize()
+                .padding(8.dp)
         ) {
-            Text(text = "")
-            Box {
-                //icon and weather info
-                WeatherIcon.getResId()
+            Surface(modifier = Modifier.padding(bottom = 32.dp)) {
+                //顶部信息
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        text = locationText,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .padding(16.dp, 4.dp)
+                    )
+                    //icon and weather info
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(32.dp, 8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        WeatherIconNoRound(
+                            data.data.icon.toInt(),
+                            Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = data.data.temp,
+                            style = MaterialTheme.typography.displayLarge
+                        )
+                        Text(
+                            text = unit,
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    }
+                    Text(
+                        text = "${data.data.text} " +
+                                "${stringResource(id = R.string.feels_like_str)}: ${data.data.feelsLike} $unit",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
             }
+            //上面是大概的信息
+            //下面是其他数据,每行都是双列
+            //tab切换页
+            DailyWeatherInfo(location = location, dailyEntity = data)
         }
-        Row(horizontalArrangement = Arrangement.SpaceAround) {
-            Text(
-                text = nowTimeText,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(16.dp)
-            )
-            Text(
-                text = "",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(16.dp)
-            )
-
-        }
-
     }
+
+}
+
+class DayWeatherType {
+    companion object {
+        const val threeDayWeather = 1
+        const val sevenDayWeather = 2
+    }
+}
+
+@Composable
+fun ColumnScope.DailyWeatherInfo(location: Location, dailyEntity: DailyEntity) {
+    Row(modifier =Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        IconText(
+            icon = painterResource(WeatherIcon.getResId()),
+            title = "title",
+            text = "text body",
+        )
+        IconText(
+            icon = painterResource(WeatherIcon.getResId()),
+            title = "title",
+            text = "text body"
+        )
+    }
+}
+
+/**
+ * get three or seven day weather and show info
+ */
+@Composable
+fun DayWeather(location: Location, type: Int = DayWeatherType.threeDayWeather) {
 
 }
