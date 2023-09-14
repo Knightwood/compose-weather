@@ -7,7 +7,10 @@ import com.kiylx.libx.http.kotlin.common.OkhttpClientProvider
 import com.kiylx.libx.http.okhttp_logger.Level
 import com.kiylx.libx.http.okhttp_logger.LoggingInterceptor
 import com.kiylx.weather.http.KeyInterceptor
+import com.kiylx.weather.http.NetworkCacheInterceptor.Companion.configCache
 import com.kiylx.weather.icon.WeatherIcon
+import com.kiylx.weather.repo.QWeatherGeoRepo
+import com.kiylx.weather.repo.QWeatherRepo
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -49,7 +52,10 @@ class AppCtx : Application() {
             }
             //请求带上key
             addInterceptor(KeyInterceptor())
+//            configCache(this@AppCtx)//配置缓存策略
         }
+        QWeatherGeoRepo.readAll()//读取本地存储的位置信息
+        QWeatherRepo.readAll()//读取本地存储的天气信息
     }
 
     companion object {

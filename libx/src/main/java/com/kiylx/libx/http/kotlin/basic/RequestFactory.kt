@@ -49,9 +49,14 @@ suspend inline fun <reified T : Any, reified E : BaseErrorHandler> handleApi(
         is RawResponse.Error -> {
             Resource.error(rawResponse)
         }
+
         is RawResponse.Success -> {
             val info = rawResponse.responseData
             Resource.success(info)
+        }
+
+        else -> {
+            throw IllegalArgumentException("参数类型不允许")
         }
     }
 }

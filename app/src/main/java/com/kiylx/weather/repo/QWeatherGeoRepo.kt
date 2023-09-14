@@ -47,7 +47,7 @@ object QWeatherGeoRepo {
     }
 //</editor-fold>
 
-//<editor-fold desc="文件和数据同步，将本地文件读取到存储库，以及将存储库同步到本地">
+//<editor-fold desc="序列化和反序列化，将本地文件读取到存储库，以及将存储库同步到本地">
 
     /**
      * 将位置信息保存到磁盘
@@ -99,7 +99,7 @@ object QWeatherGeoRepo {
         } else {
             allLocations.remove(location)
             allLocationsFlow.tryEmit(allLocations)
-            val path = LocalFile.locationDir + location.id + LocalFile.locationSuffix
+            val path = LocalFile.locationDir + LocalFile.genLocationFileName(location)
             LocalFile.deleteFile(path)
         }
     }

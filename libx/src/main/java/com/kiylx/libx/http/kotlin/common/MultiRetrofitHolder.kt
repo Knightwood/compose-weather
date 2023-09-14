@@ -52,7 +52,7 @@ object MultiRetrofitHolder {
 ```
  */
 @OptIn(ExperimentalSerializationApi::class)
-class Retrofit2Holder(
+open class Retrofit2Holder(
     var baseUrl: String,
 ) {
     var json: Json = Json {
@@ -99,6 +99,9 @@ object OkhttpClientProvider {
             return field
         }
 
+    /**
+     * 需要在application种调用，去初始化OkhttpClient
+     */
     fun configOkHttpClient(block: OkHttpClient.Builder.() -> Unit) {
         if (this::builder.isInitialized) {
             if (reCreate) {

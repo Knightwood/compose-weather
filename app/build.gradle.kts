@@ -67,20 +67,19 @@ dependencies {
     implementation(project(":icon"))
 
     //compose
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.compose.ui:ui:${Android.compose_version}")
-    implementation("androidx.compose.ui:ui-tooling-preview:${Android.compose_version}")
-    implementation("androidx.compose.foundation:foundation:1.5.0")
-    implementation("androidx.compose.material3:material3:1.2.0-alpha03")
-//    implementation("androidx.compose.material3:material3-window-size-class:1.2.0-alpha03")
-    implementation("androidx.compose.runtime:runtime:1.5.0")
-    val nav_version = "2.7.0"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation(ComposeLibs.activityCompose)
+    implementation(ComposeLibs.composeUi)
+    implementation(ComposeLibs.composeUiToolingPreview)
+    implementation(ComposeLibs.composeFoundation)
+    implementation(ComposeLibs.composeMaterial3)
+    implementation(ComposeLibs.composeRuntime)
+    implementation(ComposeLibs.navigation)
     implementation(Accompanist.systemuicontroller)
-//    implementation(Accompanist.pagerLayouts)
+    implementation(ComposeLibs.composeConstraintLayout)
     implementation(ComposeLibs.composeMaterialIconsExtended)
     //下拉刷新，上拉加载
     implementation("io.github.loren-moon:composesmartrefresh:1.2.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     //test
     testImplementation("junit:junit:4.13.2")

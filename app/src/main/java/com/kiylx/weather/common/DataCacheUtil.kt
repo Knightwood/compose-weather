@@ -2,7 +2,6 @@ package com.kiylx.weather.common
 
 import com.kiylx.weather.repo.bean.DailyEntity
 import java.time.LocalDateTime
-import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
 /**
@@ -17,8 +16,8 @@ class DataCacheUtil {
             val outOfData: Boolean
             val mins = AllPrefs.dailyInterval
             val now = LocalDateTime.now()
-            val up = LocalDateTime.parse(dailyEntity.updateTime)
-            outOfData = (up.isBefore(now) && up.until(now, ChronoUnit.MINUTES) >= mins)
+            val lastUpdateTime = LocalDateTime.parse(dailyEntity.updateTime)
+            outOfData = (lastUpdateTime.isBefore(now) && lastUpdateTime.until(now, ChronoUnit.MINUTES) >= mins)
             return outOfData
         }
     }

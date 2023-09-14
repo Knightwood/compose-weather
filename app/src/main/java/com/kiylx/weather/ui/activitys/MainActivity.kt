@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        QWeatherGeoRepo.readAll()//读取本地存储的位置信息
         setContent {
             WeatherTheme {
                 val navController = rememberNavController()

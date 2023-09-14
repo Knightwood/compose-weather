@@ -1,8 +1,12 @@
 package com.kiylx.weather.repo.api
 
+import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.http.CustomHeader
+import com.kiylx.weather.http.minutesToSeconds
 import com.kiylx.weather.repo.bean.DailyEntity
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Query
 
 interface Api {
@@ -14,6 +18,7 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long =  AllPrefs.dailyInterval.minutesToSeconds()
     ): Call<DailyEntity>
 
     @GET("v7/grid-weather/now")
@@ -21,5 +26,6 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long =  AllPrefs.dailyInterval.minutesToSeconds()
     ): Call<DailyEntity>
 }

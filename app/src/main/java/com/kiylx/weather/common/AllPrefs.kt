@@ -57,17 +57,17 @@ object AllPrefs {
     /**
      *实时天气缓存时长，单位：分钟
      */
-    var dailyInterval by mk.longM("dailyInterval", 30)
+    var dailyInterval by mk.longM("dailyInterval", 20)
 
     /**
      *逐小时预报缓存时长，单位：分钟
      */
-    var hourWeatherInterval by mk.longM("hourWeatherInterval", 60)
+    var hourWeatherInterval by mk.longM("hourWeatherInterval", 30)
 
     /**
      * 逐天天气预报 单位：分钟
      */
-    var dayWeatherInterval by mk.longM("dayWeatherInterval", 2*60)
+    var dayWeatherInterval by mk.longM("dayWeatherInterval", 180)
 
     /**
      * 天气预警 单位：分钟
@@ -77,7 +77,7 @@ object AllPrefs {
     /**
      * 天气指数 单位：分钟
      */
-    var weatherIndicesInterval by mk.longM("weatherIndicesInterval", 3*60)
+    var weatherIndicesInterval by mk.longM("weatherIndicesInterval", 360)
     /**
      * 分钟降水 单位：分钟
      */
@@ -91,7 +91,7 @@ object AllPrefs {
     /**
      * 逐天空气质量 单位：分钟
      */
-    var weatherAirDayInterval by mk.longM("weatherAirDayInterval", 60*3)
+    var weatherAirDayInterval by mk.longM("weatherAirDayInterval", 8*60)
 
 //</editor-fold>
 
