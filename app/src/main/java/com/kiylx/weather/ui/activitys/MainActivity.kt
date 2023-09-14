@@ -27,10 +27,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.kiylx.compose_lib.common.LocalDarkTheme
-import com.kiylx.compose_lib.common.LocalDynamicColorSwitch
-import com.kiylx.compose_lib.common.SettingsProvider
-import com.kiylx.compose_lib.theme.SealTheme
+import com.kiylx.compose_lib.theme3.DynamicTheme
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
 import com.kiylx.libx.tools.goToSetting
@@ -58,53 +55,46 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)
-            SettingsProvider(windowSizeClass.widthSizeClass) {
-                SealTheme(
-                    darkTheme = LocalDarkTheme.current.isDarkTheme(),
-                    isHighContrastModeEnabled = LocalDarkTheme.current.isHighContrastModeEnabled,
-                    isDynamicColorEnabled = LocalDynamicColorSwitch.current,
+            DynamicTheme {
+                val navController = rememberNavController()
+                val systemUiController = rememberSystemUiController()
+                val useDarkIcons = !isSystemInDarkTheme()
+                SideEffect() {
+                    systemUiController.setSystemBarsColor(
+                        color = Color.Transparent,
+                        darkIcons = useDarkIcons,
+                        isNavigationBarContrastEnforced = false,
+                    )
+                }
+                Surface(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .systemBarsPadding()
                 ) {
-                    val navController = rememberNavController()
-                    val systemUiController = rememberSystemUiController()
-                    val useDarkIcons = !isSystemInDarkTheme()
-                    SideEffect() {
-                        systemUiController.setSystemBarsColor(
-                            color = Color.Transparent,
-                            darkIcons = useDarkIcons,
-                            isNavigationBarContrastEnforced = false,
-                        )
-                    }
-                    Surface(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.background)
-                            .fillMaxSize()
-                            .systemBarsPadding()
-                    ) {
-                        //构建导航
-                        NavHost(navController = navController, startDestination = Route.HOME) {
-                            animatedComposable(route = Route.HOME) {
-                                val first = remember {
-                                    AllPrefs.firstEnter
-                                }
-                                if (first) {
-                                    navController.navigate(Route.SPLASH)
-                                } else {
-                                    MainPage(
-                                        navigateToSettings = { navController.navigate(Route.SETTINGS) },
-                                        navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
-                                        viewModel = mainViewModel
-                                    )
-                                }
+                    //构建导航
+                    NavHost(navController = navController, startDestination = Route.HOME) {
+                        animatedComposable(route = Route.HOME) {
+                            val first = remember {
+                                AllPrefs.firstEnter
                             }
-                            animatedComposable(route = Route.LOCATION_PAGE) {
-                                LocationPage()
+                            if (first) {
+                                navController.navigate(Route.SPLASH)
+                            } else {
+                                MainPage(
+                                    navigateToSettings = { navController.navigate(Route.SETTINGS) },
+                                    navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
+                                    viewModel = mainViewModel
+                                )
                             }
-                            //构建设置页面的嵌套导航
-                            buildSettingsPage(navController, mainViewModel)
-                            buildSplashPage(navController, mainViewModel)
                         }
+                        animatedComposable(route = Route.LOCATION_PAGE) {
+                            LocationPage()
+                        }
+                        //构建设置页面的嵌套导航
+                        buildSettingsPage(navController, mainViewModel)
+                        buildSplashPage(navController, mainViewModel)
                     }
-
                 }
             }
         }

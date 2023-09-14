@@ -33,17 +33,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
+import com.kiylx.compose_lib.theme3.DarkThemePrefs
+import com.kiylx.compose_lib.theme3.ThemeHelper
+import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
+import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
+import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
 import com.kiylx.libx.http.kotlin.basic3.DataUiState
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.common.AUnit
@@ -59,6 +66,7 @@ import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
 import com.kiylx.weather.R
 import com.kiylx.weather.ui.page.UiStateToastMsg
+import kotlinx.coroutines.launch
 
 class MainPage {
     companion object {
@@ -77,6 +85,8 @@ fun MainPage(
     navigateToSettings: () -> Unit,
     navigateToLocations: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -89,6 +99,7 @@ fun MainPage(
                     .align(Alignment.TopStart),
                 onClick = {
                     navigateToLocations()
+
                 }) {
                 Icon(Icons.Rounded.AddLocation, contentDescription = "定位")
             }

@@ -2,15 +2,15 @@ package com.kiylx.compose_lib.component
 
 import android.util.Log
 import androidx.annotation.CheckResult
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.kyant.monet.TonalPalettes
 
 private const val TAG = "SVGString"
 
 @CheckResult
 fun String.parseDynamicColor(
-    tonalPalettes: TonalPalettes,
+    tonalPalettes: ColorScheme,
     isDarkTheme: Boolean
 ): String =
     replace("fill=\"(.+?)\"".toRegex()) {
@@ -20,11 +20,11 @@ fun String.parseDynamicColor(
         runCatching {
             val (scheme, tone) = value.split("(?<=\\d)(?=\\D)|(?=\\d)(?<=\\D)".toRegex())
             val argb = when (scheme) {
-                "p" -> tonalPalettes accent1 tone.autoDark(isDarkTheme)
-                "s" -> tonalPalettes accent2 tone.autoDark(isDarkTheme)
-                "t" -> tonalPalettes accent3 tone.autoDark(isDarkTheme)
-                "n" -> tonalPalettes neutral1 tone.autoDark(isDarkTheme)
-                "nv" -> tonalPalettes neutral2 tone.autoDark(isDarkTheme)
+                "p" -> tonalPalettes.primary
+                "s" -> tonalPalettes.secondary
+                "t" -> tonalPalettes.tertiary
+                "n" -> tonalPalettes.surface
+                "nv" -> tonalPalettes.surfaceVariant
                 else -> Color.Transparent
             }.toArgb()
             "fill=\"${String.format("#%06X", 0xFFFFFF and argb)}\""

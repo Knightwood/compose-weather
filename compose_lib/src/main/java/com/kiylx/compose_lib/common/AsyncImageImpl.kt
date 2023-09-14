@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,8 +32,9 @@ import coil.request.ImageRequest
 import com.caverock.androidsvg.SVG
 import com.kiylx.compose_lib.R
 import com.kiylx.compose_lib.component.parseDynamicColor
-import com.kyant.monet.LocalTonalPalettes
-import com.kyant.monet.TonalPalettes
+import com.kiylx.compose_lib.theme3.LocalColorScheme
+import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
+import com.kiylx.compose_lib.theme3.LocalWindowWidthState
 
 
 @Composable
@@ -47,8 +49,8 @@ fun SVGImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DrawScope.DefaultFilterQuality,
-    tonalPalettes: TonalPalettes = LocalTonalPalettes.current,
-    isDarkTheme: Boolean = LocalDarkTheme.current.isDarkTheme()
+    tonalPalettes: ColorScheme = LocalColorScheme.current,
+    isDarkTheme: Boolean = LocalDarkThemePrefs.current.isDarkTheme()
 ) {
     val horizontalPadding =
         PaddingValues(horizontal = if (LocalWindowWidthState.current != WindowWidthSizeClass.Compact) 100.dp else 0.dp)

@@ -51,12 +51,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kiylx.compose_lib.R
-import com.kiylx.compose_lib.theme.FixedAccentColors
-import com.kiylx.compose_lib.theme.PreviewThemeLight
-import com.kiylx.compose_lib.theme.Surfaces
-import com.kiylx.compose_lib.theme.applyOpacity
-import com.kiylx.compose_lib.theme.harmonizeWithPrimary
-import com.kiylx.compose_lib.theme.preferenceTitle
+import com.kiylx.compose_lib.theme3.LocalColorScheme
+import com.kiylx.compose_lib.theme3.PreviewThemeLight
+import com.kiylx.compose_lib.theme3.applyOpacity
+import com.kiylx.compose_lib.theme3.harmonizeWithPrimary
+import com.kiylx.compose_lib.theme3.preferenceTitle
 
 private const val horizontal = 8
 private const val vertical = 16
@@ -518,8 +517,8 @@ fun PreferencesHintCard(
     title: String = "Title ".repeat(2),
     description: String? = "Description text ".repeat(3),
     icon: ImageVector? = Icons.Outlined.Translate,
-    backgroundColor: Color = FixedAccentColors.secondaryFixed,
-    contentColor: Color = FixedAccentColors.onSecondaryFixed,
+    backgroundColor: Color = LocalColorScheme.current.secondary,
+    contentColor: Color = LocalColorScheme.current.onSecondary,
     onClick: () -> Unit = {},
 ) {
     Row(
@@ -603,7 +602,7 @@ fun PreferenceSwitchWithContainer(
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .clip(MaterialTheme.shapes.extraLarge)
             .background(
-                if (isChecked) FixedAccentColors.primaryFixed else MaterialTheme.colorScheme.outline
+                if (isChecked) LocalColorScheme.current.primary else MaterialTheme.colorScheme.outline
             )
             .toggleable(value = isChecked) { onClick() }
             .padding(horizontal = 16.dp, vertical = 20.dp),
@@ -616,7 +615,7 @@ fun PreferenceSwitchWithContainer(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 16.dp)
                     .size(24.dp),
-                tint = if (isChecked) FixedAccentColors.onPrimaryFixed else Surfaces.surface
+                tint = if (isChecked) LocalColorScheme.current.onPrimary else LocalColorScheme.current.surface
             )
         }
         Column(
@@ -629,7 +628,7 @@ fun PreferenceSwitchWithContainer(
                     text = title,
                     maxLines = 2,
                     style = preferenceTitle,
-                    color = if (isChecked) FixedAccentColors.onPrimaryFixed else colorScheme.surface
+                    color = if (isChecked) LocalColorScheme.current.onPrimary else colorScheme.surface
                 )
             }
         }
@@ -639,9 +638,9 @@ fun PreferenceSwitchWithContainer(
             modifier = Modifier.padding(start = 12.dp, end = 6.dp),
             thumbContent = thumbContent,
             colors = SwitchDefaults.colors(
-                checkedIconColor = FixedAccentColors.onPrimaryFixed,
-                checkedThumbColor = FixedAccentColors.primaryFixed,
-                checkedTrackColor = FixedAccentColors.onPrimaryFixedVariant,
+                checkedIconColor = LocalColorScheme.current.onPrimary,
+                checkedThumbColor = LocalColorScheme.current.primary,
+                checkedTrackColor = LocalColorScheme.current.onPrimary,
                 uncheckedBorderColor = Color.Transparent
             )
         )

@@ -66,4 +66,5 @@ dependencies {
     implementation("com.tencent:mmkv:1.3.0")
     implementation("com.caverock:androidsvg-aar:1.4")
     api(ComposeOhterLibs.Coil.coil)
+    api("com.github.Kyant0:m3color:2023.8.1")
 }

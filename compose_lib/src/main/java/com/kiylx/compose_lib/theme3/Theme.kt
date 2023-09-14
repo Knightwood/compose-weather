@@ -1,24 +1,23 @@
-package com.kiylx.compose_lib.theme
+package com.kiylx.compose_lib.theme3
 
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.Window
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.material.color.MaterialColors
-import com.kyant.monet.dynamicColorScheme
 
 fun Color.applyOpacity(enabled: Boolean): Color {
     return if (enabled) this else this.copy(alpha = 0.62f)
@@ -40,52 +39,46 @@ private tailrec fun Context.findWindow(): Window? =
         else -> null
     }
 
-@OptIn(ExperimentalTextApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun SealTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    isHighContrastModeEnabled: Boolean = false,
-    isDynamicColorEnabled: Boolean = false,
+fun Activity.DynamicTheme(
     content: @Composable () -> Unit
 ) {
-    val colorScheme =
-        dynamicColorScheme(!darkTheme).run {
-            if (isHighContrastModeEnabled && darkTheme) copy(
-                surface = Color.Black,
-                background = Color.Black,
-            )
-            else this
+    val windowSizeClass = calculateWindowSizeClass(this)
+    ThemeSettingsProvider(windowWidthSizeClass = windowSizeClass.widthSizeClass) {
+        val colorScheme = LocalColorScheme.current
+
+        val window = LocalView.current.context.findWindow()
+        val view = LocalView.current
+        val isDark = LocalDarkThemePrefs.current.isDarkTheme()
+        window?.let {
+            WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = isDark
         }
-    val window = LocalView.current.context.findWindow()
-    val view = LocalView.current
-
-    window?.let {
-        WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = darkTheme
+        rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
+        ProvideTextStyle(
+            value = LocalTextStyle.current.copy(
+                lineBreak = LineBreak.Paragraph,
+                textDirection = TextDirection.Content
+            )
+        ) {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = Typography,
+                content = content
+            )
+        }
     }
 
-    rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !darkTheme)
-
-    ProvideTextStyle(
-        value = LocalTextStyle.current.copy(
-            lineBreak = LineBreak.Paragraph,
-            textDirection = TextDirection.Content
-        )
-    ) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = Typography,
-            shapes = Shapes,
-            content = content
-        )
-    }
 }
 
 @Composable
 fun PreviewThemeLight(
+    color: Color=Color(ThemeHelper.DEFAULT_COLOR_SEED),
     content: @Composable () -> Unit
 ) {
+   val colorsScheme= mDynamicColorScheme(color, false, PaletteStyle.values()[0], 0.0)
     MaterialTheme(
-        colorScheme = dynamicColorScheme(),
+        colorScheme = colorsScheme,
         typography = Typography,
         shapes = Shapes,
         content = content

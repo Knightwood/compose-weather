@@ -40,11 +40,10 @@ android {
 
 dependencies {
     //compose
-    implementation("androidx.activity:activity-compose:1.7.0")
+    implementation(ComposeLibs.activityCompose)
     implementation("androidx.compose.ui:ui:${Android.compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Android.compose_version}")
-    implementation("androidx.compose.material3:material3:1.0.1")
-
+    implementation(ComposeLibs.composeMaterial3)
     implementation(AndroidX.appCompat)
     implementation(AndroidX.Core.core)
     testImplementation("junit:junit:4.13.2")

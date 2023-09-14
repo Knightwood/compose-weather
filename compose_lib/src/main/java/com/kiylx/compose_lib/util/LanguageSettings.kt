@@ -61,7 +61,7 @@ fun getLanguageNumber(): Int {
         getLanguageNumberByCode(
             LocaleListCompat.getAdjustedDefault()[0]?.toLanguageTag().toString()
         )
-    else  ThemeAndLangs.kv.decodeInt(LANGUAGE, 0)
+    else  LangsPref.kv.decodeInt(LANGUAGE, 0)
 }
 
 

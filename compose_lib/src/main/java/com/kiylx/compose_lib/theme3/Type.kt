@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalTextApi::class, ExperimentalTextApi::class, ExperimentalTextApi::class)
 
-package com.kiylx.compose_lib.theme
+package com.kiylx.compose_lib.theme3
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
