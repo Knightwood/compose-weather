@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="follow_system">跟随系统</string>
+    <string name="on">打开</string>
+    <string name="off">关闭</string>
+    <string name="confirm">确认</string>
+    <string name="dismiss">取消</string>
+    <string name="remove">移除</string>
+    <string name="open_url">打开链接</string>
+    <string name="open_settings">打开设置</string>
+    <string name="edit">编辑</string>
+    <string name="remove_template">移除模板</string>
+    <string name="clear">清除</string>
+    <string name="back">返回</string>
+    <string name="paste">粘贴</string>
+    <string name="add">添加</string>
+    <string name="how_does_it_work">使用说明</string>
+    <string name="got_it">好</string>
+</resources>

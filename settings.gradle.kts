@@ -19,3 +19,4 @@ rootProject.name = "Weather"
 include(":app")
 include(":icon")
 include(":libx")
+include(":compose_lib")

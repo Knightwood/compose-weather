@@ -65,6 +65,7 @@ dependencies {
     //lib
     implementation(project(":libx"))
     implementation(project(":icon"))
+    implementation(project(":compose_lib"))
 
     //compose
     implementation(ComposeLibs.activityCompose)

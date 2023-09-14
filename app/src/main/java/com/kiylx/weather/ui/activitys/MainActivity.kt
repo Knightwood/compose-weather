@@ -9,8 +9,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -24,72 +27,84 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.kiylx.compose_lib.common.LocalDarkTheme
+import com.kiylx.compose_lib.common.LocalDynamicColorSwitch
+import com.kiylx.compose_lib.common.SettingsProvider
+import com.kiylx.compose_lib.theme.SealTheme
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
 import com.kiylx.libx.tools.goToSetting
 import com.kiylx.libx.tools.requestThese
 import com.kiylx.libx.tools.sonser.gps.GpsHolder
 import com.kiylx.libx.tools.sonser.gps.MyLocationListener
+import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.common.animatedComposable
-import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.ui.page.LocationPage
-import com.kiylx.weather.ui.page.main.MainPage
 import com.kiylx.weather.ui.page.SettingPage
+import com.kiylx.weather.ui.page.main.MainPage
 import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
-import com.kiylx.weather.ui.theme.WeatherTheme
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
-            WeatherTheme {
-                val navController = rememberNavController()
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = !isSystemInDarkTheme()
-                SideEffect() {
-                    systemUiController.setSystemBarsColor(
-                        color = Color.Transparent,
-                        darkIcons = useDarkIcons,
-                        isNavigationBarContrastEnforced = false,
-                    )
-                }
-                Surface(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize()
-                        .systemBarsPadding()
+            val windowSizeClass = calculateWindowSizeClass(this)
+            SettingsProvider(windowSizeClass.widthSizeClass) {
+                SealTheme(
+                    darkTheme = LocalDarkTheme.current.isDarkTheme(),
+                    isHighContrastModeEnabled = LocalDarkTheme.current.isHighContrastModeEnabled,
+                    isDynamicColorEnabled = LocalDynamicColorSwitch.current,
                 ) {
-                    //构建导航
-                    NavHost(navController = navController, startDestination = Route.HOME) {
-                        animatedComposable(route = Route.HOME) {
-                            val first = remember {
-                                AllPrefs.firstEnter
-                            }
-                            if (first) {
-                                navController.navigate(Route.SPLASH)
-                            } else {
-                                MainPage(
-                                    navigateToSettings = { navController.navigate(Route.SETTINGS) },
-                                    navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
-                                    viewModel = mainViewModel
-                                )
-                            }
-                        }
-                        animatedComposable(route = Route.LOCATION_PAGE) {
-                            LocationPage()
-                        }
-                        //构建设置页面的嵌套导航
-                        buildSettingsPage(navController, mainViewModel)
-                        buildSplashPage(navController, mainViewModel)
+                    val navController = rememberNavController()
+                    val systemUiController = rememberSystemUiController()
+                    val useDarkIcons = !isSystemInDarkTheme()
+                    SideEffect() {
+                        systemUiController.setSystemBarsColor(
+                            color = Color.Transparent,
+                            darkIcons = useDarkIcons,
+                            isNavigationBarContrastEnforced = false,
+                        )
                     }
+                    Surface(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxSize()
+                            .systemBarsPadding()
+                    ) {
+                        //构建导航
+                        NavHost(navController = navController, startDestination = Route.HOME) {
+                            animatedComposable(route = Route.HOME) {
+                                val first = remember {
+                                    AllPrefs.firstEnter
+                                }
+                                if (first) {
+                                    navController.navigate(Route.SPLASH)
+                                } else {
+                                    MainPage(
+                                        navigateToSettings = { navController.navigate(Route.SETTINGS) },
+                                        navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
+                                        viewModel = mainViewModel
+                                    )
+                                }
+                            }
+                            animatedComposable(route = Route.LOCATION_PAGE) {
+                                LocationPage()
+                            }
+                            //构建设置页面的嵌套导航
+                            buildSettingsPage(navController, mainViewModel)
+                            buildSplashPage(navController, mainViewModel)
+                        }
+                    }
+
                 }
             }
         }

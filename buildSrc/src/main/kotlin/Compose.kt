@@ -38,3 +38,10 @@ object ComposeTest{
     const val composeUiTooling = "androidx.compose.ui:ui-tooling:${Android.compose_version}"
     const val composeTestManifist="androidx.compose.ui:ui-test-manifest:${Android.compose_version}"
 }
+
+object ComposeOhterLibs{
+    object Coil {
+        private const val coilVersion = "2.4.0"
+        const val coil = "io.coil-kt:coil-compose:$coilVersion"
+    }
+}
