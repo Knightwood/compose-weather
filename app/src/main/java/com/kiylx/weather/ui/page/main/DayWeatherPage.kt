@@ -8,10 +8,10 @@ import androidx.compose.ui.unit.dp
 import com.kiylx.weather.repo.bean.Location
 
 /**
- * get three or seven day weather and show info
+ * get multi day weather and show info
  */
 @Composable
-fun DayWeather(location: Location, type: Int = DayWeatherType.threeDayWeather) {
+fun DayWeather(location: Location, type: Int = DayWeatherType.sevenDayWeather) {
     Surface(modifier = Modifier.padding(horizontal = 8.dp)) {
 
     }

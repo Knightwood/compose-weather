@@ -81,15 +81,14 @@ class MainActivity : AppCompatActivity() {
                             }
                             if (first) {
                                 navController.navigate(Route.SPLASH)
-                            } else {
-                                MainPage(
-                                    navigateToSettings = {
-                                        navController.navigate(Route.THEME)
-                                                         },
-                                    navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
-                                    viewModel = mainViewModel
-                                )
                             }
+                            MainPage(
+                                navigateToSettings = {
+                                    navController.navigate(Route.THEME)
+                                },
+                                navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
+                                viewModel = mainViewModel
+                            )
                         }
                         animatedComposable(route = Route.LOCATION_PAGE) {
                             LocationPage()

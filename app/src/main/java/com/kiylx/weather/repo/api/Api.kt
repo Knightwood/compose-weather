@@ -18,7 +18,7 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
-        @Header(CustomHeader.cacheTime) cacheTime: Long =  AllPrefs.dailyInterval.minutesToSeconds()
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<DailyEntity>
 
     @GET("v7/grid-weather/now")
@@ -26,6 +26,6 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
-        @Header(CustomHeader.cacheTime) cacheTime: Long =  AllPrefs.dailyInterval.minutesToSeconds()
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<DailyEntity>
 }

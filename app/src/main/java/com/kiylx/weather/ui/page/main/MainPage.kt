@@ -1,6 +1,7 @@
 package com.kiylx.weather.ui.page.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
+import com.kiylx.compose_lib.common.recomposeHighlighter
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
 import com.kiylx.compose_lib.theme3.PaletteStyle
 import com.kiylx.compose_lib.theme3.ThemeHelper
@@ -71,7 +73,7 @@ import kotlinx.coroutines.launch
 
 class MainPage {
     companion object {
-        val TAG = "主页"
+        val TAG = "tty1-主页"
     }
 }
 
@@ -86,8 +88,6 @@ fun MainPage(
     navigateToSettings: () -> Unit,
     navigateToLocations: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -150,7 +150,7 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
     SmartSwipeRefresh(
         modifier = Modifier.fillMaxSize(),
         onRefresh = {
-            viewModel.getDailyData(data, location)
+            viewModel.getDailyData(data, location,true)
         },
         state = refreshState,
         isNeedRefresh = true,
@@ -193,7 +193,7 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
             var tabIndex by remember {
                 mutableIntStateOf(0)
             }
-            val tabs = listOf("当前", "未来三天", "未来七天")
+            val tabs = listOf("当前", "未来七天", "未来十五天")
             TabRow(
                 selectedTabIndex = tabIndex,
                 modifier = Modifier.padding(8.dp),
@@ -228,11 +228,11 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
                 }
 
                 1 -> {
-                    DayWeather(location, DayWeatherType.threeDayWeather)
+                    DayWeather(location, DayWeatherType.sevenDayWeather)
                 }
 
                 2 -> {
-                    DayWeather(location, DayWeatherType.sevenDayWeather)
+                    DayWeather(location, DayWeatherType.fifteenDayWeather)
                 }
             }
         }
@@ -244,5 +244,6 @@ class DayWeatherType {
     companion object {
         const val threeDayWeather = 1
         const val sevenDayWeather = 2
+        const val fifteenDayWeather = 3
     }
 }

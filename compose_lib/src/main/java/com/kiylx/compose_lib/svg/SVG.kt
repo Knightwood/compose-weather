@@ -1,4 +1,4 @@
-package com.junkfood.seal.ui.svg
+package com.kiylx.compose_lib.svg
 
 const val LoveSVG = """<svg xmlns="http://www.w3.org/2000/svg"
     width="524.67"

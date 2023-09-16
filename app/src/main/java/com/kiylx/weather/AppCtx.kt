@@ -34,7 +34,7 @@ class AppCtx : Application() {
             val dispatcher = Dispatcher()
             dispatcher.maxRequests = 3
             dispatcher(dispatcher)
-
+            configCache(this@AppCtx)//配置缓存策略
             var loggerInterceptor: LoggingInterceptor? = null
             val isDebug = AppUtils.isAppDebug()
             if (isDebug) {
@@ -42,7 +42,7 @@ class AppCtx : Application() {
                     .setLevel(Level.BASIC)
                     .log(Log.VERBOSE)
                     .singleTag(true)
-                    .tag("tty1-HttpLogger")
+                    .tag("tty0-HttpLogger")
                     .build()
             }
             if (isDebug) {//debug模式添加日志打印
@@ -52,7 +52,6 @@ class AppCtx : Application() {
             }
             //请求带上key
             addInterceptor(KeyInterceptor())
-//            configCache(this@AppCtx)//配置缓存策略
         }
         QWeatherGeoRepo.readAll()//读取本地存储的位置信息
     }

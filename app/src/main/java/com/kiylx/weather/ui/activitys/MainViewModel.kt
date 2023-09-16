@@ -12,9 +12,9 @@ class MainViewModel : ViewModel() {
     /**
      * get weather info and update UiState
      */
-    suspend fun getDailyData(data: DataUiState<DailyEntity>, location: Location) {
+    suspend fun getDailyData(data: DataUiState<DailyEntity>, location: Location,noCache:Boolean=false) {
         data.setUiState(UiState.Loading)
-        when (val response = QWeatherRepo.getDailyReport(location)) {
+        when (val response = QWeatherRepo.getDailyReport(location,noCache=noCache)) {
             is RawResponse.Error -> {
                 data.setUiState(UiState.RequestErr(response))
             }

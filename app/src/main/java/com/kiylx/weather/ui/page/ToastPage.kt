@@ -26,9 +26,7 @@ fun UiStateToastMsg(state: State<UiState>) {
         }
 
         UiState.INIT -> {}
-        UiState.Loading -> {
-            ToastMsg(R.string.loading_msg)
-        }
+        UiState.Loading -> {}
 
         is UiState.OtherErr -> {
             val msg = (state.value as UiState.OtherErr).msg
@@ -49,13 +47,13 @@ fun UiStateToastMsg(state: State<UiState>) {
 }
 
 @Composable
-fun ToastMsg(resId: Int, duration: Int = Toast.LENGTH_LONG) {
+fun ToastMsg(resId: Int, duration: Int = Toast.LENGTH_SHORT) {
     val ctx = LocalContext.current
     Toast.makeText(ctx, resId, duration).show()
 }
 
 @Composable
-fun ToastMsg(msg: String, duration: Int = Toast.LENGTH_LONG) {
+fun ToastMsg(msg: String, duration: Int = Toast.LENGTH_SHORT) {
     val ctx = LocalContext.current
     Toast.makeText(ctx, msg, duration).show()
 }

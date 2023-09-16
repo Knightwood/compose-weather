@@ -1,4 +1,4 @@
-package com.junkfood.seal.ui.svg
+package com.kiylx.compose_lib.svg
 
 const val SponsorSVG =
     """<svg width="100%" height="100%" viewBox="0 0 888 678" fill="none" xmlns="http://www.w3.org/2000/svg">
