@@ -123,7 +123,7 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
                         ) {
                             PreferenceSubtitleNotFillWidth(
                                 modifier = Modifier.align(Alignment.CenterVertically),
-                                contentPadding = PaddingValues(0.dp),
+                                contentPadding = PaddingValues(start=8.dp),
                                 text = stringResource(R.string.contrast)
                             )
                             Text(

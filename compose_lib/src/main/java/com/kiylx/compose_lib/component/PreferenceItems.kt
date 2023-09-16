@@ -215,7 +215,7 @@ fun PreferenceSingleChoiceItem(
     modifier: Modifier = Modifier,
     text: String,
     selected: Boolean,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 18.dp),
+    contentPadding: PaddingValues = PaddingValues(start = 8.dp, top =8.dp,bottom= 12.dp, end = 8.dp),
     onClick: () -> Unit
 ) {
     Surface(

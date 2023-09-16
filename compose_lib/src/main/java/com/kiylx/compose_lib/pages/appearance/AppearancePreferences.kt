@@ -79,7 +79,7 @@ import kotlinx.coroutines.launch
 
 // 外观页面，动态主题使用的https://github.com/Kyant0/m3color
 
-val colorList = ((4..10) + (1..3)).map { it * 35.0 }.map { Color(Hct.from(it, 40.0, 40.0).toInt()) }
+val colorList = (1..10).map { it * 35.0 }.map { Color(Hct.from(it, 40.0, 40.0).toInt()) }
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
@@ -130,28 +130,29 @@ fun AppearancePreferences(
                 val pageCount = colorList.size
 
                 val pagerState =
-                    rememberPagerState(initialPage = colorList.indexOf(
-                        Color(LocalSeedColor.current)
-                    ).run { if (this == -1) 0 else this }) {
-                        pageCount
-                    }
+                    rememberPagerState(
+                        initialPage = colorList.indexOf(
+                            Color(LocalSeedColor.current)
+                        ).run { if (this == -1) 0 else this },
+                        pageCount = {
+                            pageCount
+                        })
                 HorizontalPager(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clearAndSetSemantics { },
                     state = pagerState,
                     contentPadding = PaddingValues(horizontal = 12.dp)
-                ) { page ->
-                    if (page < pageCount - 1) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) { ColorButtons(colorList[page], scope) }
-                    }
+                ) { pageIndex ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) { ColorButtons(colorList[pageIndex], scope) }
                 }
                 Row(
                     Modifier
                         .height(50.dp)
+                        .padding(top = 4.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -205,8 +206,8 @@ fun RowScope.ColorButtons(color: Color, scope: CoroutineScope) {
     listOf<PaletteStyle>(
         PaletteStyle.TonalSpot,
         PaletteStyle.Monochrome,
-        PaletteStyle.Content,
-        PaletteStyle.Rainbow
+        PaletteStyle.Neutral,
+        PaletteStyle.Vibrant
     ).forEachIndexed { index, style: PaletteStyle ->
         ColorButton(color = color, index = index, tonalStyle = style, scope = scope)
     }

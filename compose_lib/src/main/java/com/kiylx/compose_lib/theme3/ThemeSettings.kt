@@ -56,7 +56,7 @@ object ThemeHelper {
     //<editor-fold desc="偏好值">
     val kv = MMKV.defaultMMKV()
 
-    var darkThemeMode by kv.intM(ThemeStr.dark_theme_mode, DarkThemePrefs.FOLLOW_SYSTEM)
+    var darkThemeMode by kv.intM(ThemeStr.dark_theme_mode, DarkThemePrefs.OFF)
 
     /**
      * 用于亮色主题
@@ -88,7 +88,7 @@ object ThemeHelper {
 
     var seedColorInt by kv.intM(ThemeStr.seed_color_int, DEFAULT_COLOR_SEED)
 
-    var paletteStyleInt by kv.intM(ThemeStr.PALETTE_STYLE, PaletteStyle.TonalSpot.ordinal)
+    var paletteStyleInt by kv.intM(ThemeStr.PALETTE_STYLE, PaletteStyle.Monochrome.ordinal)
 
     //</editor-fold>
 
@@ -160,7 +160,7 @@ object ThemeHelper {
 }
 
 data class DarkThemePrefs(
-    val darkThemeMode: Int = FOLLOW_SYSTEM,//暗色模式
+    val darkThemeMode: Int = OFF,//暗色模式
     val isHighContrastModeEnabled: Boolean =false,
     val contrastValue :Double =0.0,
 ) {

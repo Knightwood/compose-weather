@@ -27,7 +27,7 @@ val LocalColorScheme = staticCompositionLocalOf {
     mDynamicColorScheme(
         Color(ThemeHelper.seedColorInt),
         false,
-        PaletteStyle.TonalSpot,
+        PaletteStyle.values()[ThemeHelper.paletteStyleInt],
         ThemeHelper.lightThemeHighContrastValue
     )
 }
@@ -59,7 +59,7 @@ fun ThemeSettingsProvider(
                 }
             } else {
                 val contrastValue = if (isDark && darkTheme.isHighContrastModeEnabled) {
-                    ThemeHelper.darkThemeHighContrastValue
+                    darkTheme.contrastValue
                 } else {
                     ThemeHelper.lightThemeHighContrastValue
                 }
