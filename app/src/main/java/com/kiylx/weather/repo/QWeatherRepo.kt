@@ -56,7 +56,7 @@ object QWeatherRepo {
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<HourWeatherEntity> {
-        val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
+        val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
         val res = handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
         return res
     }
