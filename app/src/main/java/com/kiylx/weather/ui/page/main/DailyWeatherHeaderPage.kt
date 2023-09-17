@@ -51,7 +51,7 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
             Column(verticalArrangement = Arrangement.Center) {
                 Text(
                     text = locationText,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier
                         .padding(16.dp, 4.dp)
                 )
@@ -88,35 +88,47 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
                         .padding(top = 32.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(modifier = Modifier
-                        .align(Alignment.Bottom)
-                        .padding(horizontal = 8.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Bottom)
+                            .padding(horizontal = 12.dp)
+                    ) {
                         Text(
                             text = "${stringResource(id = R.string.relative_humidity)}: ${data.data.humidity} %",
-                            modifier = Modifier.padding(vertical = 8.dp),
+                            modifier = Modifier.padding(vertical = 4.dp),
                             style = MaterialTheme.typography.labelMedium,
                         )
                         Text(
-                            text =stringResource(id = R.string.vis)+ data.data.vis + " 公里",
+                            text = "${stringResource(id = R.string.vis)}: ${data.data.vis} 公里",
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }
 
-
-                    //wind
-                    Text(
+                    Column(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            .padding(horizontal = 8.dp),
-                        text = "${stringResource(id = R.string.wind_direction)}: ${data.data.windDir} \n" +
-                                "${stringResource(id = R.string.wind_rating)}: ${data.data.windScale} \n" +
-                                "${stringResource(id = R.string.wind_speed)}: ${data.data.windSpeed} ${
-                                    stringResource(
-                                        id = R.string.wind_speed_unit
-                                    )
-                                }",
-                        style = MaterialTheme.typography.labelMedium,
-                    )
+                            .padding(horizontal = 12.dp)
+                    ) {
+                        //wind
+                        Text(
+                            text = "${stringResource(id = R.string.wind_direction)}: ${data.data.windDir} ",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                        Text(
+                            text = "${stringResource(id = R.string.wind_rating)}: ${data.data.windScale} ",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+
+                        Text(
+                            text = "${stringResource(id = R.string.wind_speed)}: ${data.data.windSpeed} ${
+                                stringResource(
+                                    id = R.string.wind_speed_unit
+                                )
+                            }",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+
                 }
 
             }

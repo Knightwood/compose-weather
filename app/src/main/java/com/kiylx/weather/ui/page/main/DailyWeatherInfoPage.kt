@@ -2,6 +2,7 @@ package com.kiylx.weather.ui.page.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,6 +48,9 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
             val toDayWeather = toDayWeatherState.value.data[0]
             //日出日落
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -64,6 +68,9 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
 
             //月相，月初月落
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -73,6 +80,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                 )
                 IconText(
                     title = stringResource(id = R.string.moonPhase),
+                    padding= PaddingValues(horizontal = 0.dp, vertical = 4.dp),
                     icon = painterResource(id = WeatherIcon.getResId(toDayWeather.moonPhaseIcon.toInt())),
                     text = toDayWeather.moonPhase
                 )
@@ -112,11 +120,13 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
 //            }
 
             //天气指数
-            Surface {//运动指数1 洗车指数2 穿衣指数3 感冒指数9
+            Surface (modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),){//运动指数1 洗车指数2 穿衣指数3 感冒指数9
                 val indiectMap =todayIndicesState.value.data.stream().collect(Collectors.toMap(IndicesEntity.Daily::type,
                     Function.identity()))
 
-                Card(modifier = Modifier.padding(8.dp)) {
+                Card() {
                     Column {
                         Row {
                             IconText(
