@@ -5,6 +5,7 @@ import com.kiylx.weather.repo.bean.DailyAirEntity
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
+import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import retrofit2.Call
 import retrofit2.http.GET
@@ -30,6 +31,14 @@ interface Api {
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<DailyEntity>
+
+    @GET("v7/weather/24h")
+    fun getHourWeather(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Query("unit") unit: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
+    ): Call<HourWeatherEntity>
 
     @GET("v7/weather/3d")
     fun getDayWeather3d(

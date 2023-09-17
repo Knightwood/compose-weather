@@ -106,7 +106,7 @@ fun IconText(
     description: String? = null,//icon description
 ) {
     Card(
-        onClick = onClick, modifier = Modifier
+        onClick = onClick, modifier = modifier
             .padding(padding)
     ) {
         Row(

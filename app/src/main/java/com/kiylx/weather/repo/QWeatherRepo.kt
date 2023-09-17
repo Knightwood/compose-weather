@@ -10,6 +10,7 @@ import com.kiylx.weather.repo.bean.DailyAirEntity
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
+import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.Location
 import com.kiylx.weather.repo.bean.Location.Companion.toLatLonStr
@@ -42,6 +43,21 @@ object QWeatherRepo {
         } else {
             handleApi3(api.getDaily(location.id, lang, unit, cacheTime))
         }
+        return res
+    }
+
+    /**
+     * 获取小时天气
+     * 会查询本地副本
+     */
+    suspend fun getDailyHourReport(
+        location: Location,
+        unit: String = AllPrefs.unit,
+        lang: String = AllPrefs.lang,
+        noCache: Boolean = false
+    ): RawResponse<HourWeatherEntity> {
+        val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
+        val res = handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
         return res
     }
 
