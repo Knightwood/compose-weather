@@ -114,7 +114,6 @@ object QWeatherGeoRepo {
     fun addLocation(data: Location, default: Boolean = false) {
         data.default = default
         if (default) {
-            data.sortIndex=0
             if (allLocations.isEmpty()) {
                 allLocations.add(data)
                 LocalFile.writeLocation(data)
@@ -127,7 +126,6 @@ object QWeatherGeoRepo {
         } else {
             val b: Boolean = data in allLocations
             if (!b) {
-                data.sortIndex = allLocations.size
                 allLocations.add(data)
                 LocalFile.writeLocation(data)
             }

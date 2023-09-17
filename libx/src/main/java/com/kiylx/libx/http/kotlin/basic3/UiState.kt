@@ -80,11 +80,11 @@ sealed class UiState {
  * ```
  */
 class DataUiState<T>(
-    initValue: T? = null,//可选的初始数据
+    initValue: T,//可选的初始数据
     initUiState: UiState = UiState.INIT,//可选的初始界面状态
 ) {
     //不论界面状态更新与否，使用在这里保存了一份数据副本
-    protected var _data: MutableStateFlow<T?> = MutableStateFlow(initValue);
+    protected var _data: MutableStateFlow<T> = MutableStateFlow(initValue);
 
     //界面状态，当然在success状态时会持有一份数据副本
     protected var _uiState: MutableStateFlow<UiState> = MutableStateFlow(initUiState)
@@ -101,7 +101,7 @@ class DataUiState<T>(
             }
 
             is RawResponse.Success -> {
-                _data.tryEmit(value.responseData)
+                value.responseData?.let { _data.tryEmit(it) }
                 _uiState.tryEmit(UiState.Success(value.responseData))
             }
         }
@@ -123,7 +123,7 @@ class DataUiState<T>(
     /**
      * 单独设置数据
      */
-    fun setData(data: T?) {
+    fun setData(data: T) {
         _data.tryEmit(data)
     }
 
@@ -134,7 +134,7 @@ class DataUiState<T>(
         _uiState.tryEmit(uiState)
     }
 
-    fun asDataFlow(): StateFlow<T?> = _data
+    fun asDataFlow(): StateFlow<T> = _data
     fun asUiStateFlow(): StateFlow<UiState> = _uiState
-    fun getData(): T? = _data.value
+    fun getData(): T = _data.value
 }

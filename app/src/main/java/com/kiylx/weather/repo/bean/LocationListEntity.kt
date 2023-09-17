@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LocationListEntity(
-    override var code: String,
-    override var refer: Refer = Refer(),
+    override val code: String,
+    override val refer: Refer = Refer(),
     @SerialName("location")
     override val data: List<Location> = listOf(),
 ) : BaseResponse()
@@ -15,36 +15,34 @@ data class LocationListEntity(
 @Serializable
 data class Location(
     @SerialName("adm1")
-    var adm1: String = "",
+    val adm1: String = "山东省",
     @SerialName("adm2")
-    var adm2: String = "",
+    val adm2: String = "泰安",
     @SerialName("country")
-    var country: String = "",
+    val country: String = "中国",
     @SerialName("fxLink")
-    var fxLink: String = "",
+    val fxLink: String = "",
     @SerialName("id")
-    var id: String = "",
+    val id: String = "",
     @SerialName("isDst")
-    var isDst: String = "",
+    val isDst: String = "",
     @SerialName("lat")
-    var lat: String = "",
+    val lat: String = "36.18931",
     @SerialName("lon")
-    var lon: String = "",
+    val lon: String = "117.12998",
     @SerialName("name")
-    var name: String = "",
+    val name: String = "",
     @SerialName("rank")
-    var rank: String = "",
+    val rank: String = "",
     @SerialName("type")
-    var type: String = "",
+    val type: String = "",
     @SerialName("tz")
-    var tz: String = "",
+    val tz: String = "",
     @SerialName("utcOffset")
-    var utcOffset: String = "",
+    val utcOffset: String = "",
 
     //是否是默认位置
-    var default: Boolean = false,
-    //排序
-    var sortIndex:Int=0
+    var default: Boolean = false
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -81,8 +79,9 @@ data class Location(
     }
 
     companion object {
-        fun Location.toLatLonStr(): String =
-            String.format("%.2f", lon) + "," + String.format("%.2f", lat)
+        fun Location.toLatLonStr(): String {
+           return String.format("%.2f", lon.toDouble()) + "," + String.format("%.2f", lat.toDouble())
+        }
 
     }
 }

@@ -1,16 +1,14 @@
 package com.kiylx.weather.ui.page.main
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -28,48 +26,28 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.PrimaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
-import com.kiylx.compose_lib.common.recomposeHighlighter
-import com.kiylx.compose_lib.theme3.DarkThemePrefs
-import com.kiylx.compose_lib.theme3.PaletteStyle
-import com.kiylx.compose_lib.theme3.ThemeHelper
-import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
-import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
-import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
-import com.kiylx.libx.http.kotlin.basic3.DataUiState
 import com.kiylx.libx.http.kotlin.basic3.UiState
-import com.kiylx.weather.common.AUnit
-import com.kiylx.weather.common.AllPrefs
-import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.bean.DailyEntity
-import com.kiylx.weather.repo.bean.Location
 import com.kiylx.weather.ui.activitys.MainViewModel
+import com.kiylx.weather.ui.page.UiStateToastMsg
 import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
-import com.kiylx.weather.R
-import com.kiylx.weather.ui.page.UiStateToastMsg
-import kotlinx.coroutines.launch
 
 class MainPage {
     companion object {
@@ -110,7 +88,7 @@ fun MainPage(
                 onClick = {
                     navigateToSettings()
                 }) {
-                Icon(Icons.Rounded.Settings, contentDescription = "定位")
+                Icon(Icons.Rounded.Settings, contentDescription = "设置")
             }
         }
         //根据地点数量显示pager页面
@@ -121,9 +99,12 @@ fun MainPage(
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
             Surface(modifier = Modifier.fillMaxSize()) {
                 val locationData by remember {
-                    mutableStateOf(QWeatherGeoRepo.allLocations[it])
+                    mutableStateOf(allLocations.value[it])
                 }
-                MainPagePager(location = locationData, it, viewModel)
+                val weatherPagerStateHolder = remember {
+                    mutableStateOf(viewModel.getWeatherStateHolder(locationData))
+                }
+                MainPagePager(weatherPagerStateHolder.value, it)
             }
         }
     }
@@ -135,10 +116,13 @@ fun MainPage(
  *
  */
 @Composable
-fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
-    val data = remember { DataUiState<DailyEntity>() }
+fun MainPagePager(weatherPagerStateHolder:WeatherPagerStateHolder, index: Int) {
+    //位置信息
+    val location=weatherPagerStateHolder.location.value
+    //当天的天气状况
+    val data = remember { weatherPagerStateHolder.dailyUiState }
     LaunchedEffect(key1 = location, block = {
-        viewModel.getDailyData(data, location)
+        weatherPagerStateHolder.getDailyData()
     })
     val pageData = data.asDataFlow().collectAsState()//页面数据
 
@@ -150,7 +134,7 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
     SmartSwipeRefresh(
         modifier = Modifier.fillMaxSize(),
         onRefresh = {
-            viewModel.getDailyData(data, location,true)
+            weatherPagerStateHolder.getDailyData(true)
         },
         state = refreshState,
         isNeedRefresh = true,
@@ -180,62 +164,64 @@ fun MainPagePager(location: Location, index: Int, viewModel: MainViewModel) {
                 }
             }
         }
-        //只有可滑动的时候，下载刷新才能生效，所以，这里配置了垂直滑动
-        Column(
-            Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            DailyWeatherHeaderPage(location = location, state = pageData)
-            //上面是大概的信息
-            //下面是其他数据,每行都是双列
-            //tab切换页
-            var tabIndex by remember {
-                mutableIntStateOf(0)
-            }
-            val tabs = listOf("当前", "未来七天", "未来十五天")
-            TabRow(
-                selectedTabIndex = tabIndex,
-                modifier = Modifier.padding(8.dp),
-                indicator = { tabPositions ->
-                    TabRowDefaults.PrimaryIndicator(
-                        Modifier
-                            .tabIndicatorOffset(tabPositions[tabIndex])
-                            .height(4.dp),
-                    )
-                }
+
+            //只有可滑动的时候，下载刷新才能生效，所以，这里配置了垂直滑动
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                tabs.forEachIndexed { index, name ->
-                    Tab(
-                        selected = tabIndex == index,
-                        onClick = { tabIndex = index },
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp, vertical = 8.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.background,
-                                RoundedCornerShape(2.dp)
-                            ),
-                        selectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    ) {
-                        Text(name)
+                DailyWeatherHeaderPage(location = location, state = pageData)
+                //上面是大概的信息
+                //下面是其他数据,每行都是双列
+                //tab切换页
+                var tabIndex by remember {
+                    mutableIntStateOf(0)
+                }
+                val tabs = listOf("今天", "未来七天")
+                TabRow(
+                    selectedTabIndex = tabIndex,
+                    modifier = Modifier.padding(8.dp),
+                    indicator = { tabPositions ->
+                        TabRowDefaults.PrimaryIndicator(
+                            Modifier
+                                .tabIndicatorOffset(tabPositions[tabIndex])
+                                .height(4.dp),
+                        )
+                    }
+                ) {
+                    tabs.forEachIndexed { index, name ->
+                        Tab(
+                            selected = tabIndex == index,
+                            onClick = { tabIndex = index },
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp, vertical = 8.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    RoundedCornerShape(8.dp)
+                                ).heightIn(min=36.dp),
+                            selectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            unselectedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        ) {
+                            Text(name)
+                        }
+                    }
+                }
+                when (tabIndex) {
+                    0 -> {
+                        DailyWeatherInfo(weatherPagerStateHolder)
+                    }
+
+                    1 -> {
+                        DayWeather(weatherPagerStateHolder, DayWeatherType.sevenDayWeather)
+                    }
+
+                    2 -> {
+                        DayWeather(weatherPagerStateHolder, DayWeatherType.fifteenDayWeather)
                     }
                 }
             }
-            when (tabIndex) {
-                0 -> {
-                    DailyWeatherInfo(location, pageData)
-                }
 
-                1 -> {
-                    DayWeather(location, DayWeatherType.sevenDayWeather)
-                }
-
-                2 -> {
-                    DayWeather(location, DayWeatherType.fifteenDayWeather)
-                }
-            }
-        }
     }
 }
 

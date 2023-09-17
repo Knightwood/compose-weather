@@ -26,14 +26,13 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kiylx.weather.AppCtx
 import com.kiylx.weather.common.NextButton
 import com.kiylx.weather.common.Route
-import com.kiylx.weather.ui.activitys.MainViewModel
 import kotlin.system.exitProcess
 
 /**
  * 引导页主页
  */
 @Composable
-fun MainSplashPage(navController: NavHostController, mainViewModel: MainViewModel) {
+fun MainSplashPage(navController: NavHostController) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(com.kiylx.weather.icon.R.raw.girl_cycling_autumn))
     val progress by animateLottieCompositionAsState(
         composition,

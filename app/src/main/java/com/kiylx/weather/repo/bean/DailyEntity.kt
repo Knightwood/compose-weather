@@ -7,47 +7,47 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DailyEntity(
     @SerialName("code")
-    override var code: String = "",
+    override val code: String = "999",
     @SerialName("fxLink")
-    var fxLink: String = "",
+    val fxLink: String = "",
     @SerialName("now")
-    override var data: Now = Now(),
+    override val data: Now = Now(),
     @SerialName("refer")
-    override var refer: Refer = Refer(),
+    override val refer: Refer = Refer(),
     @SerialName("updateTime")
-    var updateTime: String = ""
+    val updateTime: String = ""
 ) : BaseResponse()
 
 @Serializable
 data class Now(
     @SerialName("cloud")
-    var cloud: String = "",
+    val cloud: String = "",
     @SerialName("dew")
-    var dew: String = "",
+    val dew: String = "",
     @SerialName("feelsLike")
-    var feelsLike: String = "",
+    val feelsLike: String = "",
     @SerialName("humidity")
-    var humidity: String = "",
+    val humidity: String = "",
     @SerialName("icon")
-    var icon: String = "",
+    val icon: String = "999",
     @SerialName("obsTime")
-    var obsTime: String = "",
+    val obsTime: String = "",
     @SerialName("precip")
-    var precip: String = "",
+    val precip: String = "",
     @SerialName("pressure")
-    var pressure: String = "",
+    val pressure: String = "",
     @SerialName("temp")
-    var temp: String = "",
+    val temp: String = "",
     @SerialName("text")
-    var text: String = "",
+    val text: String = "",
     @SerialName("vis")
-    var vis: String = "",
+    val vis: String = "",
     @SerialName("wind360")
-    var wind360: String = "",
+    val wind360: String = "",
     @SerialName("windDir")
-    var windDir: String = "",
+    val windDir: String = "",
     @SerialName("windScale")
-    var windScale: String = "",
+    val windScale: String = "",
     @SerialName("windSpeed")
-    var windSpeed: String = ""
+    val windSpeed: String = ""
 )

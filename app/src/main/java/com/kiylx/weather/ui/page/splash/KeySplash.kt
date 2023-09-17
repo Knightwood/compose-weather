@@ -19,17 +19,16 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.NextButton
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.icon.R
-import com.kiylx.weather.common.AllPrefs
-import com.kiylx.weather.ui.activitys.MainViewModel
 
 /**
  * 填写QWeather私有key的页面
  */
 @Composable
-fun KeySplash(navController: NavHostController, mainViewModel: MainViewModel) {
+fun KeySplash(navController: NavHostController) {
     val key = AllPrefs.apiKey
     //lottie动画
     val composition by rememberLottieComposition(

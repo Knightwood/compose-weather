@@ -13,7 +13,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -94,8 +93,8 @@ class MainActivity : AppCompatActivity() {
                             LocationPage()
                         }
                         //构建设置页面的嵌套导航
-                        buildSettingsPage(navController, mainViewModel)
-                        buildSplashPage(navController, mainViewModel)
+                        buildSettingsPage(navController)
+                        buildSplashPage(navController)
                     }
                 }
             }
@@ -103,15 +102,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun NavGraphBuilder.buildSplashPage(
-        navController: NavHostController,
-        mainViewModel: MainViewModel
+        navController: NavHostController
     ) {
         navigation(startDestination = Route.SPLASH_PAGE, route = Route.SPLASH) {
             animatedComposable(Route.SPLASH_PAGE) {
-                MainSplashPage(navController, mainViewModel)
+                MainSplashPage(navController)
             }
             animatedComposable(Route.KEY_PAGE) {
-                KeySplash(navController, mainViewModel)
+                KeySplash(navController)
             }
             animatedComposable(Route.SPLASH_LOCATION__PAGE) {
                 AddLocationPage(::queryGps, ::stopGps) {
@@ -134,7 +132,6 @@ class MainActivity : AppCompatActivity() {
      */
     private fun NavGraphBuilder.buildSettingsPage(
         navController: NavHostController,
-        mainViewModel: MainViewModel,
         onBackPressed: () -> Unit = { navController.popBackStack() }
     ) {
         navigation(startDestination = Route.SETTINGS_PAGE, route = Route.SETTINGS) {

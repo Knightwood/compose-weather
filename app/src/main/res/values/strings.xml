@@ -11,6 +11,15 @@
     <string name="wind_speed_unit">公里/小时</string>
     <string name="relative_humidity">相对湿度</string>
     <string name="pressure">大气压强</string>
-    <string name="vis">能见度</string>
+    <string name="vis">能见度 </string>
+    <string name="today" type="id">今天</string>
+    <string name="tomorrow">明天</string>
+    <string name="uvIndex">紫外线强度</string>
+    <string name="sunrise">日出时间</string>
+    <string name="sunset">日落时间</string>
+    <string name="moonrise">月出</string>
+    <string name="moonset">月落</string>
+    <string name="moonPhase">月相</string>
+
 
 </resources>

@@ -1,7 +1,6 @@
 package com.kiylx.weather.repo.bean
 
 import com.kiylx.libx.http.kotlin.basic2.Resources2
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -22,15 +21,8 @@ fun <T : BaseResponse> Resources2<T>.successData(): T? {
 
 @Serializable
 sealed class BaseResponse {
-    abstract var code: String
-    abstract var refer: Refer
+    abstract val code: String
+    abstract val refer: Refer
     abstract val data: Any?
 }
 
-@Serializable
-data class Refer(
-    @SerialName("license")
-    var license: List<String> = listOf(),
-    @SerialName("sources")
-    var sources: List<String> = listOf()
-)
