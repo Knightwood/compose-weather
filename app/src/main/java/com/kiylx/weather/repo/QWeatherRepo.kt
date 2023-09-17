@@ -122,8 +122,8 @@ object QWeatherRepo {
      */
     suspend fun getIndices1d(
         location: Location,
-        lang: String = AllPrefs.lang,
         type: String,
+        lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<IndicesEntity> {
         val cacheTime = if (noCache) null else AllPrefs.weatherIndicesInterval.minutesToSeconds()

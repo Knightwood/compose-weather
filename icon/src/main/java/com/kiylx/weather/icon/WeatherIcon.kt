@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -61,12 +63,45 @@ object WeatherIcon {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IconText(
-    icon: Painter,
-    modifier: Modifier=Modifier,
+    iconRes: ImageVector,
+    modifier: Modifier = Modifier,
     iconSize: Dp = 42.dp,
     padding: PaddingValues = PaddingValues(4.dp),
     title: String,//icon side title
     text: String,//icon side text
+    tint: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    backgroundShape: Shape = CircleShape,
+    onClick: () -> Unit = {},
+    description: String? = null,//icon description
+) {
+    IconText(
+        icon = rememberVectorPainter(iconRes),
+        modifier,
+        iconSize,
+        padding,
+        title,
+        text,
+        tint,
+        backgroundColor,
+        backgroundShape,
+        onClick,
+        description
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IconText(
+    icon: Painter,
+    modifier: Modifier = Modifier,
+    iconSize: Dp = 42.dp,
+    padding: PaddingValues = PaddingValues(4.dp),
+    title: String,//icon side title
+    text: String,//icon side text
+    tint: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    backgroundShape: Shape = CircleShape,
     onClick: () -> Unit = {},
     description: String? = null,//icon description
 ) {
@@ -82,11 +117,11 @@ fun IconText(
             Icon(
                 painter = icon,
                 contentDescription = description,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                tint = tint,
                 modifier = Modifier
                     .background(
-                        MaterialTheme.colorScheme.secondaryContainer,
-                        CircleShape
+                        backgroundColor,
+                        backgroundShape
                     )
                     .padding(10.dp)
                     .size(iconSize)
@@ -115,7 +150,7 @@ fun IconText(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TwoText(
-    modifier: Modifier =Modifier,
+    modifier: Modifier = Modifier,
     padding: PaddingValues = PaddingValues(8.dp),
     title: String,//icon side title
     text: String,//icon side text
@@ -125,7 +160,7 @@ fun TwoText(
         onClick = onClick,
         modifier = modifier
             .padding(padding)
-            .widthIn(min=100.dp)
+            .widthIn(min = 100.dp)
     ) {
         Column(
             modifier = Modifier
@@ -136,7 +171,7 @@ fun TwoText(
             Text(
                 modifier = Modifier.padding(bottom = 4.dp),
                 text = title,
-                overflow =TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
@@ -148,11 +183,13 @@ fun TwoText(
 }
 
 @Composable
-fun WeatherIcon(code: Int, modifier: Modifier= Modifier,
-                tint: Color =MaterialTheme.colorScheme.onPrimary,
-                backgroundColor: Color =MaterialTheme.colorScheme.secondaryContainer,
-                backgroundShape :Shape =CircleShape,
-                iconSize: Dp = 42.dp, onClickListener: () -> Unit = {}) {
+fun WeatherIcon(
+    code: Int, modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onPrimary,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    backgroundShape: Shape = CircleShape,
+    iconSize: Dp = 42.dp, onClickListener: () -> Unit = {}
+) {
     val resId = WeatherIcon.getResId(code)
     Icon(
         painter = painterResource(id = resId),
@@ -166,8 +203,7 @@ fun WeatherIcon(code: Int, modifier: Modifier= Modifier,
                 onClickListener()
             }
             .padding(8.dp)
-            .size(iconSize)
-        ,
+            .size(iconSize),
         tint = MaterialTheme.colorScheme.primary,
     )
 }
@@ -176,7 +212,7 @@ fun WeatherIcon(code: Int, modifier: Modifier= Modifier,
 fun WeatherIconNoRound(
     code: Int,
     modifier: Modifier = Modifier,
-    tint: Color =MaterialTheme.colorScheme.primary,
+    tint: Color = MaterialTheme.colorScheme.primary,
     iconSize: Dp = 48.dp,
     onClickListener: () -> Unit = {}
 ) {

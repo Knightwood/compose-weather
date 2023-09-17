@@ -88,13 +88,21 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
                         .padding(top = 32.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "${stringResource(id = R.string.relative_humidity)}: ${data.data.humidity} %",
-                        modifier = Modifier
-                            .align(Alignment.Bottom)
-                            .padding(horizontal = 8.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                    )
+                    Column(modifier = Modifier
+                        .align(Alignment.Bottom)
+                        .padding(horizontal = 8.dp)) {
+                        Text(
+                            text = "${stringResource(id = R.string.relative_humidity)}: ${data.data.humidity} %",
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                        Text(
+                            text =stringResource(id = R.string.vis)+ data.data.vis + " 公里",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+
+
                     //wind
                     Text(
                         modifier = Modifier

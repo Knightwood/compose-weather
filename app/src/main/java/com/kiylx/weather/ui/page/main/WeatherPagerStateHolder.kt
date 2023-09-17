@@ -9,6 +9,7 @@ import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
+import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.Location
 
 class WeatherPagerStateHolder(location: Location) {
@@ -20,9 +21,14 @@ class WeatherPagerStateHolder(location: Location) {
     val dailyUiState: DataUiState<DailyEntity> = DataUiState(DailyEntity())
 
     // todo 逐小时预报
-    // 5天的空气质量
-    val fiveDayAirData :DataUiState<DayAirEntity> = DataUiState(DayAirEntity())
     // todo 天气预警
+
+    //当天的天气指数
+    val todayIndicesData: DataUiState<IndicesEntity> = DataUiState(IndicesEntity())
+
+    // 5天的空气质量
+    val fiveDayAirData: DataUiState<DayAirEntity> = DataUiState(DayAirEntity())
+
     //三天的天气
     val threeDayWeatherData: DataUiState<DayWeather> = DataUiState(DayWeather())
 
@@ -94,7 +100,7 @@ class WeatherPagerStateHolder(location: Location) {
     /**
      * 获取5天的空气质量
      */
-   suspend fun get5DAir() {
+    suspend fun get5DAir() {
         fiveDayAirData.setUiState(UiState.Loading)
         when (val response = QWeatherRepo.getDayAir(location.value)) {
             is RawResponse.Error -> {
@@ -109,6 +115,36 @@ class WeatherPagerStateHolder(location: Location) {
                     )
                 } else {
                     fiveDayAirData.setUiState(
+                        UiState.OtherErr(
+                            response.responseData?.code?.toInt(),
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取当天的天气指数
+     */
+    suspend fun getTodayIndices() {
+        todayIndicesData.setUiState(UiState.Loading)
+        when (val response = QWeatherRepo.getIndices1d(
+            location.value,
+            "1,2,3,9"
+        )) {
+            is RawResponse.Error -> {
+                todayIndicesData.setUiState(UiState.RequestErr(response))
+            }
+
+            is RawResponse.Success -> {
+                if (response.responseData?.code == "200") {
+                    todayIndicesData.setDataOrState(
+                        response.responseData,
+                        UiState.Success(response.responseData)
+                    )
+                } else {
+                    todayIndicesData.setUiState(
                         UiState.OtherErr(
                             response.responseData?.code?.toInt(),
                         )

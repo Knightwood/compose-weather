@@ -17,9 +17,13 @@
     <string name="uvIndex">紫外线强度</string>
     <string name="sunrise">日出时间</string>
     <string name="sunset">日落时间</string>
-    <string name="moonrise">月出</string>
+    <string name="moonrise">月升</string>
     <string name="moonset">月落</string>
     <string name="moonPhase">月相</string>
+    <string name="sportIndex">运动指数</string>
+    <string name="wash_car_index">洗车指数</string>
+    <string name="dress_index">穿衣指数</string>
+    <string name="cold_index">感冒指数</string>
 
 
 </resources>
