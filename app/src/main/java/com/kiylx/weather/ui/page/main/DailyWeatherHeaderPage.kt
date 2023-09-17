@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.weather.R
-import com.kiylx.weather.common.AUnit
 import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.common.unit
 import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.Location
@@ -37,11 +37,7 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
         } else {
             "${location.adm1},${location.adm2}"
         }
-        val unit = if (AllPrefs.unit == AUnit.MetricUnits.param) {
-            "℃"
-        } else {
-            "℉"
-        }
+        val unit = unit()
         Surface(
             modifier = Modifier
                 .fillMaxSize()

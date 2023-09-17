@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
+import com.kiylx.weather.common.unit
 import com.kiylx.weather.icon.IconText
 import com.kiylx.weather.icon.TwoText
 import com.kiylx.weather.icon.WeatherIcon
@@ -55,31 +56,43 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
             // 当前的天气变化横向列表
             Surface(modifier = Modifier) {
                 val data = todayHourWeatherState.value.data
+                val unit = unit()
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
+                        .background(
+                            MaterialTheme.colorScheme.tertiaryContainer,
+                            RoundedCornerShape(8.dp)
+                        )
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     repeat(data.size) {
-                        Card(modifier = Modifier
-                            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                            .heightIn(min = 120.dp)
-                            ,
-                            ){
+                        Card(
+                            modifier = Modifier
+                                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                                .heightIn(min = 120.dp),
+                        ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.SpaceBetween
                             ) {
+                                //天气状况
                                 Text(
                                     data[it].text,
                                     modifier = Modifier
                                         .padding(8.dp),
                                 )
+                                //温度
+                                Text(
+                                    text = "${data[it].temp}$unit",
+                                )
+
+                                //图标
                                 WeatherIcon(code = data[it].icon.toInt(), iconSize = 24.dp)
+                                //时间
                                 Text(
                                     modifier = Modifier
                                         .padding(8.dp),
@@ -88,6 +101,11 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                         DateTimeFormatter.ISO_OFFSET_DATE_TIME
                                     ).toLocalTime()
                                         .format(LocalDateUtil.hmFormatter)
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .padding(8.dp),
+                                    text = data[it].windDir + " " + data[it].windScale + "级"
                                 )
                             }
                         }
@@ -153,7 +171,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                 IconText(
                     title = stringResource(id = R.string.pressure),
                     icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
-                    iconSize = 40.dp,
+                    iconSize = 38.dp,
                     text = dailyState.value.data.pressure + " 百帕",
                 )
                 IconText(
@@ -193,7 +211,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 modifier = Modifier.weight(1f),
                                 title = stringResource(id = R.string.sportIndex),
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sport),
-                                iconSize = 40.dp,
+                                iconSize = 38.dp,
                                 text = indiectMap["1"]?.category ?: "",
                                 backgroundColor = Color.Transparent
                             )
@@ -201,7 +219,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 modifier = Modifier.weight(1f),
                                 title = stringResource(id = R.string.wash_car_index),
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.wash_car),
-                                iconSize = 40.dp,
+                                iconSize = 38.dp,
                                 text = indiectMap["2"]?.category ?: "",
                                 backgroundColor = Color.Transparent
                             )
@@ -211,7 +229,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 modifier = Modifier.weight(1f),
                                 title = stringResource(id = R.string.dress_index),
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.wear_dress),
-                                iconSize = 40.dp,
+                                iconSize = 38.dp,
                                 text = indiectMap["3"]?.category ?: "",
                                 backgroundColor = Color.Transparent
 
@@ -220,7 +238,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 modifier = Modifier.weight(1f),
                                 title = stringResource(id = R.string.cold_index),
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.cold),
-                                iconSize = 40.dp,
+                                iconSize = 38.dp,
                                 text = indiectMap["9"]?.category ?: "",
                                 backgroundColor = Color.Transparent
                             )
