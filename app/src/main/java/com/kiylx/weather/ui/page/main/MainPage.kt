@@ -200,8 +200,6 @@ fun MainPagePager(weatherPagerStateHolder:WeatherPagerStateHolder, index: Int) {
                                     color = MaterialTheme.colorScheme.background,
                                     RoundedCornerShape(8.dp)
                                 ).heightIn(min=36.dp),
-                            selectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            unselectedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
                         ) {
                             Text(name)
                         }

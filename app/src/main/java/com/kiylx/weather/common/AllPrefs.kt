@@ -110,6 +110,11 @@ object AllPrefs {
      */
     var lang by mk.strM("lang", Lang.Chinese.param)
 
+    /**
+     * 风力等级还是mk/h
+     */
+    var windUnit by mk.intM("wind_unit",WindUnit.Km)
+
 //</editor-fold>
 
 }
@@ -128,6 +133,16 @@ class PrefKeyName {
     companion object {
         const val api_key: String = "api_key"
         const val play_plan: String = "play_plan"
+    }
+}
+
+/**
+ * 风力等级还是km/h
+ */
+class WindUnit {
+    companion object {
+        const val Km = 1
+        const val BeaufortScale = 2
     }
 }
 

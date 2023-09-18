@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,13 +24,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
-import com.kiylx.weather.common.unit
+import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.common.WindUnit
+import com.kiylx.weather.common.tempUnit
+import com.kiylx.weather.common.windUnit
 import com.kiylx.weather.icon.IconText
 import com.kiylx.weather.icon.TwoText
 import com.kiylx.weather.icon.WeatherIcon
@@ -54,65 +62,73 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // todo 实时天气预警卡片
             // 当前的天气变化横向列表
-            Surface(modifier = Modifier) {
-                val data = todayHourWeatherState.value.data
-                val unit = unit()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .background(
-                            MaterialTheme.colorScheme.tertiaryContainer,
-                            RoundedCornerShape(8.dp)
-                        )
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    repeat(data.size) {
-                        Card(
+            val data = todayHourWeatherState.value.data
+            val unit = tempUnit()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .background(
+                        MaterialTheme.colorScheme.tertiaryContainer,
+                        RoundedCornerShape(8.dp)
+                    )
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(data.size) {
+                    //这里的surface很宽，会把上面的内容覆盖，所以上面的背景色设置会看起来像是没有生效
+                    Surface {
+                        Column(
                             modifier = Modifier
-                                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                                .heightIn(min = 120.dp),
+                                .padding(horizontal = 4.dp, vertical = 8.dp)
+                                .heightIn(min = 120.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.secondaryContainer,
+                                    RoundedCornerShape(8.dp)
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                //天气状况
-                                Text(
-                                    data[it].text,
-                                    modifier = Modifier
-                                        .padding(8.dp),
-                                )
-                                //温度
-                                Text(
-                                    text = "${data[it].temp}$unit",
-                                )
-
-                                //图标
-                                WeatherIcon(code = data[it].icon.toInt(), iconSize = 24.dp)
-                                //时间
-                                Text(
-                                    modifier = Modifier
-                                        .padding(8.dp),
-                                    text = LocalDateTime.parse(
-                                        data[it].fxTime,
-                                        DateTimeFormatter.ISO_OFFSET_DATE_TIME
-                                    ).toLocalTime()
-                                        .format(LocalDateUtil.hmFormatter)
-                                )
-                                Text(
-                                    modifier = Modifier
-                                        .padding(8.dp),
-                                    text = data[it].windDir + " " + data[it].windScale + "级"
-                                )
+                            //weather info
+                            Text(
+                                text = data[it].text,
+                                modifier = Modifier
+                                    .padding(4.dp),
+                            )
+                            //temp
+                            Text(
+                                text = "${data[it].temp}$unit",
+                            )
+                            //图标
+                            WeatherIcon(code = data[it].icon.toInt(), iconSize = 24.dp)
+                            //time
+                            Text(
+                                modifier = Modifier
+                                    .padding(4.dp),
+                                text = LocalDateTime.parse(
+                                    data[it].fxTime,
+                                    DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                                ).toLocalTime()
+                                    .format(LocalDateUtil.hmFormatter)
+                            )
+                            val windText = if (AllPrefs.windUnit == WindUnit.Km) {
+                                data[it].windSpeed + windUnit(WindUnit.Km)
+                            } else {
+                                data[it].windScale + windUnit(WindUnit.BeaufortScale)
                             }
+                            Text(
+                                modifier = Modifier
+                                    .padding(4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                text = data[it].windDir + "\n" + windText
+                            )
                         }
-
                     }
+
                 }
             }
+
             // 三天的天气状况列表
             DayWeather(stateHolder = stateHolder)
             // 空气质量信息和杂项

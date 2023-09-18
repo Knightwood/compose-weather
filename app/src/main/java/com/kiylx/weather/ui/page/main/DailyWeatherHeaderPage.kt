@@ -17,7 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AllPrefs
-import com.kiylx.weather.common.unit
+import com.kiylx.weather.common.WindUnit
+import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.Location
@@ -37,11 +38,11 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
         } else {
             "${location.adm1},${location.adm2}"
         }
-        val unit = unit()
+        val unit = tempUnit()
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 24.dp)
+                .padding(bottom = 16.dp)
         ) {
             //顶部信息
             Column(verticalArrangement = Arrangement.Center) {
@@ -110,19 +111,25 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
                             text = "${stringResource(id = R.string.wind_direction)}: ${data.data.windDir} ",
                             style = MaterialTheme.typography.labelMedium,
                         )
-                        Text(
-                            text = "${stringResource(id = R.string.wind_rating)}: ${data.data.windScale} ",
-                            style = MaterialTheme.typography.labelMedium,
-                        )
-
-                        Text(
-                            text = "${stringResource(id = R.string.wind_speed)}: ${data.data.windSpeed} ${
-                                stringResource(
-                                    id = R.string.wind_speed_unit
-                                )
-                            }",
-                            style = MaterialTheme.typography.labelMedium,
-                        )
+                        if (AllPrefs.windUnit == WindUnit.Km) {
+                            Text(
+                                text = "${stringResource(id = R.string.wind_speed)}: ${data.data.windSpeed} ${
+                                    stringResource(
+                                        id = R.string.wind_speed_unit
+                                    )
+                                }",
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        } else {
+                            Text(
+                                text = "${stringResource(id = R.string.wind_rating)}: ${data.data.windScale} ${
+                                    stringResource(
+                                        id = R.string.wind_rating_unit
+                                    )
+                                }",
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
                     }
 
                 }

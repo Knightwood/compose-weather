@@ -8,7 +8,8 @@
     <string name="wind_direction">风向</string>
     <string name="wind_rating">风力等级</string>
     <string name="wind_speed">风速</string>
-    <string name="wind_speed_unit">公里/小时</string>
+    <string name="wind_speed_unit">km/h</string>
+    <string name="wind_rating_unit">级</string>
     <string name="relative_humidity">相对湿度</string>
     <string name="pressure">大气压强</string>
     <string name="vis">能见度 </string>
