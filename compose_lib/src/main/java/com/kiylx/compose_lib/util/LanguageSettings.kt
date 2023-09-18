@@ -2,11 +2,13 @@ package com.kiylx.compose_lib.util
 
 import android.os.Build
 import androidx.core.os.LocaleListCompat
+import com.kiylx.compose_lib.common.intM
+import com.tencent.mmkv.MMKV
 
 /*
 //使用方式： 写如下一个方法，根据语言序号返回不同的翻译文件
 @Composable
-fun getLanguageDesc(language: Int = getLanguageNumber()): String {
+fun getLanguageDesc(language: Int = LanguagePref.getLanguageNumber()): String {
     return stringResource(
         when (language) {
             SIMPLIFIED_CHINESE -> R.string.la_zh_CN
@@ -53,18 +55,24 @@ fun getLanguageDesc(language: Int = getLanguageNumber()): String {
 */
 
 
-private fun getLanguageNumberByCode(languageCode: String): Int =
-    languageMap.entries.find { it.value == languageCode }?.key ?: SYSTEM_DEFAULT
+object LanguageSettings {
+    const val LANGUAGE = "language"
+    const val SYSTEM_DEFAULT = 0
+    val kv = MMKV.defaultMMKV()
 
-fun getLanguageNumber(): Int {
-    return if (Build.VERSION.SDK_INT >= 33)
-        getLanguageNumberByCode(
-            LocaleListCompat.getAdjustedDefault()[0]?.toLanguageTag().toString()
-        )
-    else  LangsPref.kv.decodeInt(LANGUAGE, 0)
+    var languageConfiguration by kv.intM(LANGUAGE, SYSTEM_DEFAULT)
+
+    fun getLanguageNumber(): Int {
+        return if (Build.VERSION.SDK_INT >= 33)
+            getLanguageNumberByCode(
+                LocaleListCompat.getAdjustedDefault()[0]?.toLanguageTag().toString()
+            )
+        else languageConfiguration
+    }
+
+    private fun getLanguageNumberByCode(languageCode: String): Int =
+        languageMap.entries.find { it.value == languageCode }?.key ?: SYSTEM_DEFAULT
 }
-
-
 
 
 // Do not modify
