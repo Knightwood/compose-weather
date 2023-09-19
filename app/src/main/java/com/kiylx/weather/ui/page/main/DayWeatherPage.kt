@@ -123,7 +123,7 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                             .align(Alignment.CenterVertically)
                     ) {
                         //早晚温度
-                        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                        Column(modifier = Modifier.align(Alignment.CenterVertically).padding(end=8.dp)) {
                             Text(text = "${oneDayWeather.tempMax} $unit")
                             Text(text = "${oneDayWeather.tempMin} $unit")
                         }
@@ -131,12 +131,14 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                         if (nowTime.hour in 6..18) {
                             WeatherIcon(
                                 code = oneDayWeather.iconDay.toInt(),
-                                modifier = Modifier.align(Alignment.CenterVertically)
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         } else {
                             WeatherIcon(
                                 code = oneDayWeather.iconNight.toInt(),
-                                modifier = Modifier.align(Alignment.CenterVertically)
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         // todo 未来还可以添加按钮跳转详情页

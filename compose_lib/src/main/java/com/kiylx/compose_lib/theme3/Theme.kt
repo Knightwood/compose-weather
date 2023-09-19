@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
-import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.material.color.MaterialColors
 
@@ -51,10 +50,7 @@ fun Activity.DynamicTheme(
         val window = LocalView.current.context.findWindow()
         val view = LocalView.current
         val isDark = LocalDarkThemePrefs.current.isDarkTheme()
-        window?.let {
-            WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = isDark
-        }
-        rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
+        rememberSystemUiController(window).setSystemBarsColor(Color.Transparent,!isDark)
         ProvideTextStyle(
             value = LocalTextStyle.current.copy(
                 lineBreak = LineBreak.Paragraph,

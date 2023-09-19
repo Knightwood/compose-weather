@@ -27,4 +27,5 @@
     <string name="additional_settings">附加设置</string>
     <string name="high_contrast">高对比度深色主题</string>
     <string name="contrast">对比度</string>
+    <string name="use_default_theme">使用默认主题</string>
 </resources>

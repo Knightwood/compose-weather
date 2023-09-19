@@ -6,17 +6,14 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavGraphBuilder
@@ -25,7 +22,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
@@ -57,15 +53,6 @@ class MainActivity : AppCompatActivity() {
         setContent {
             DynamicTheme {
                 val navController = rememberNavController()
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = !isSystemInDarkTheme()
-                SideEffect() {
-                    systemUiController.setSystemBarsColor(
-                        color = Color.Transparent,
-                        darkIcons = useDarkIcons,
-                        isNavigationBarContrastEnforced = false,
-                    )
-                }
                 Surface(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background)

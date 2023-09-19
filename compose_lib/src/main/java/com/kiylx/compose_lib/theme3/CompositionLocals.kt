@@ -10,8 +10,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.kiylx.compose_lib.theme3.default_theme.DefaultColorScheme
 
 //<editor-fold desc="提供的compose函数中全局可用的主题配置">
 val LocalDarkThemePrefs = compositionLocalOf { DarkThemePrefs() }
@@ -24,12 +24,7 @@ val LocalPaletteStyleIndex = compositionLocalOf { ThemeHelper.paletteStyleInt }
  * 存储当前的主题色，其实作用跟[MaterialTheme.colorScheme]一样
  */
 val LocalColorScheme = staticCompositionLocalOf {
-    mDynamicColorScheme(
-        Color(ThemeHelper.seedColorInt),
-        false,
-        PaletteStyle.values()[ThemeHelper.paletteStyleInt],
-        ThemeHelper.lightThemeHighContrastValue
-    )
+    DefaultColorScheme.LightColorScheme
 }
 //</editor-fold>
 
@@ -63,13 +58,21 @@ fun ThemeSettingsProvider(
                 } else {
                     ThemeHelper.lightThemeHighContrastValue
                 }
-                //手动的主题设置
-                mDynamicColorScheme(
-                    themeColorSeed.toColor,
-                    isDark,
-                    PaletteStyle.values()[paletteStyleIndex],
-                    contrastValue
-                )
+                if(useDefaultTheme){
+                    if (isDark) {
+                        DefaultColorScheme.DarkColorScheme
+                    } else {
+                        DefaultColorScheme.LightColorScheme
+                    }
+                }else{
+                    //手动的主题设置
+                    mDynamicColorScheme(
+                        themeColorSeed.toColor,
+                        isDark,
+                        PaletteStyle.values()[paletteStyleIndex],
+                        contrastValue
+                    )
+                }
             },
             LocalWindowWidthState provides windowWidthSizeClass,
             LocalDynamicColorSwitch provides isDynamicColorEnabled,

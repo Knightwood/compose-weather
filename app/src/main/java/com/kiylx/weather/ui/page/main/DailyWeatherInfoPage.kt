@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -287,7 +286,6 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sport),
                                 iconSize = 38.dp,
                                 text = indiectMap["1"]?.category ?: "",
-                                backgroundColor = Color.Transparent
                             )
                             IconText(
                                 modifier = Modifier.weight(1f),
@@ -295,7 +293,6 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.wash_car),
                                 iconSize = 38.dp,
                                 text = indiectMap["2"]?.category ?: "",
-                                backgroundColor = Color.Transparent
                             )
                         }
                         Row {
@@ -305,8 +302,6 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.wear_dress),
                                 iconSize = 38.dp,
                                 text = indiectMap["3"]?.category ?: "",
-                                backgroundColor = Color.Transparent
-
                             )
                             IconText(
                                 modifier = Modifier.weight(1f),
@@ -314,7 +309,6 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                 icon = painterResource(id = com.kiylx.weather.icon.R.drawable.cold),
                                 iconSize = 38.dp,
                                 text = indiectMap["9"]?.category ?: "",
-                                backgroundColor = Color.Transparent
                             )
                         }
                     }

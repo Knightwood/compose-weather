@@ -215,7 +215,12 @@ fun PreferenceSingleChoiceItem(
     modifier: Modifier = Modifier,
     text: String,
     selected: Boolean,
-    contentPadding: PaddingValues = PaddingValues(start = 8.dp, top =8.dp,bottom= 12.dp, end = 8.dp),
+    contentPadding: PaddingValues = PaddingValues(
+        start = 8.dp,
+        top = 8.dp,
+        bottom = 12.dp,
+        end = 8.dp
+    ),
     onClick: () -> Unit
 ) {
     Surface(
@@ -321,7 +326,7 @@ fun PreferenceSwitch(
     enabled: Boolean = true,
     isChecked: Boolean = true,
     checkedIcon: ImageVector = Icons.Outlined.Check,
-    onClick: (() -> Unit) = {},
+    onClick: ((it: Boolean) -> Unit) = {},
 ) {
     val thumbContent: (@Composable () -> Unit)? = if (isChecked) {
         {
@@ -337,7 +342,9 @@ fun PreferenceSwitch(
     Surface(
         modifier = Modifier.toggleable(value = isChecked,
             enabled = enabled,
-            onValueChange = { onClick() })
+            onValueChange = {
+                onClick(it)
+            })
     ) {
         Row(
             modifier = Modifier
@@ -388,7 +395,7 @@ fun PreferenceSwitchWithDivider(
     isChecked: Boolean = true,
     checkedIcon: ImageVector = Icons.Outlined.Check,
     onClick: (() -> Unit) = {},
-    onChecked: () -> Unit = {}
+    onChecked: (it:Boolean) -> Unit = {}
 ) {
     val thumbContent: (@Composable () -> Unit)? = if (isChecked) {
         {
@@ -444,7 +451,7 @@ fun PreferenceSwitchWithDivider(
             )
             Switch(
                 checked = isChecked,
-                onCheckedChange = { onChecked() },
+                onCheckedChange = { onChecked(it) },
                 modifier = Modifier
                     .padding(start = 12.dp, end = 6.dp)
                     .semantics {

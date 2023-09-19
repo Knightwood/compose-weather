@@ -1,18 +1,18 @@
 package com.kiylx.weather.ui.page.splash
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.LocationCity
+import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -121,22 +120,29 @@ fun AddLocationPage(
                     .fillMaxWidth()
                     .padding(top = 4.dp)
             ) {
-                val modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+
                 locations.value?.data?.apply {
                     items(this) {
-                        Surface(onClick = {
-                            //点击某个item后，设置默认位置，并跳转到主页面
-                            complete(it)
-                        }) {
-                            Row(modifier = modifier) {
+                        Surface(modifier = Modifier.padding(bottom = 8.dp),
+                            onClick = {
+                                //点击某个item后，设置默认位置，并跳转到主页面
+                                complete(it)
+                            }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        MaterialTheme.colorScheme.secondaryContainer,
+                                        RoundedCornerShape(4.dp)
+                                    )
+                                    .padding(8.dp)
+                            ) {
                                 Icon(
                                     modifier = Modifier
                                         .align(Alignment.CenterVertically)
-                                        .padding(start = 4.dp),
-                                    imageVector = Icons.Rounded.LocationCity,
+                                        .padding(start = 4.dp)
+                                        .size(36.dp),
+                                    imageVector = Icons.Filled.LocationCity,
                                     contentDescription = null
                                 )
                                 Column(modifier = Modifier.padding(start = 4.dp)) {

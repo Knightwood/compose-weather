@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
@@ -70,6 +71,7 @@ import com.kiylx.compose_lib.theme3.PaletteStyle
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
+import com.kiylx.compose_lib.theme3.ThemeHelper.recoveryDefaultTheme
 import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
 import com.kiylx.compose_lib.theme3.mDynamicColorScheme
 import com.kyant.m3color.hct.Hct
@@ -189,11 +191,20 @@ fun AppearancePreferences(
                     isChecked = isDarkTheme,
                     description = LocalDarkThemePrefs.current.getDarkThemeDesc(),
                     onChecked = {
-                        scope.launch {
-                            modifyDarkThemePreference(if (isDarkTheme) DarkThemePrefs.OFF else DarkThemePrefs.ON)
-                        }
+                        scope.modifyDarkThemePreference(if (it) DarkThemePrefs.ON else DarkThemePrefs.OFF)
+
                     },
                     onClick = { navToDarkMode() })
+
+                val useDefaultThemeChecked = ThemeHelper.useDefaultTheme
+                PreferenceSwitch(
+                    title = stringResource(R.string.use_default_theme),
+                    icon = Icons.Outlined.Contrast,
+                    isChecked = useDefaultThemeChecked, onClick = {
+                        scope.recoveryDefaultTheme(useDefaultTheme = it)
+                    }
+                )
+
             }
         })
 }
@@ -238,6 +249,7 @@ fun RowScope.ColorButton(
     ColorButtonImpl(modifier = modifier, colorScheme = tonalPalettes, isSelected = { isSelect }) {
         scope.switchDynamicColor(enabled = false)
         scope.modifyThemeSeedColor(color.toArgb(), index)
+        scope.recoveryDefaultTheme(useDefaultTheme = false)
     }
 
 }

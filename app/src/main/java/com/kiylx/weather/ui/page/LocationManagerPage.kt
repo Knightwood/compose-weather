@@ -1,6 +1,5 @@
 package com.kiylx.weather.ui.page
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,22 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DeleteForever
-import androidx.compose.material.icons.rounded.LocationCity
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -94,8 +86,9 @@ fun LocationItem(location: Location) {
             Icon(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(start = 4.dp),
-                imageVector = Icons.Rounded.LocationCity,
+                    .padding(start = 4.dp)
+                    .size(36.dp),
+                imageVector = Icons.Filled.LocationCity,
                 contentDescription = null
             )
             Column(modifier = Modifier.padding(start = 4.dp)) {
@@ -119,7 +112,7 @@ fun LocationItem(location: Location) {
                     .clickable {
                         QWeatherGeoRepo.deleteLocation(location)
                     },
-                imageVector = Icons.Rounded.DeleteForever,
+                imageVector = Icons.Filled.DeleteForever,
                 contentDescription = null,
             )
         }
