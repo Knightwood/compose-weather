@@ -111,7 +111,11 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                             dateStr + " - " + it.category
                         } ?: dateStr
                         Text(dateAndAir)
-                        Text(oneDayWeather.textDay + "转" + oneDayWeather.textNight)
+                        if (oneDayWeather.textDay==oneDayWeather.textNight){
+                            Text(oneDayWeather.textDay)
+                        } else{
+                            Text(oneDayWeather.textDay + "转" + oneDayWeather.textNight)
+                        }
                     }
                     Row(
                         modifier = Modifier
