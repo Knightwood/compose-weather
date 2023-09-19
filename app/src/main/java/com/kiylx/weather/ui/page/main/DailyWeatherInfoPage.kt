@@ -7,37 +7,43 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.material.icons.filled.ArrowCircleRight
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
+import com.kiylx.compose_lib.component.BottomSheet
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AllPrefs
@@ -49,12 +55,14 @@ import com.kiylx.weather.icon.TwoText
 import com.kiylx.weather.icon.WeatherIcon
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.function.Function
 import java.util.stream.Collectors
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
     val dailyState: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()
@@ -67,10 +75,16 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
         stateHolder.getDailyHourWeatherData() //逐小时预报
         stateHolder.getWarningNow()//天气预警
     }
-
+    val scope = rememberCoroutineScope()
+    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var skipPartiallyExpanded by remember { mutableStateOf(false) }
+    var edgeToEdgeEnabled by remember { mutableStateOf(true) }
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = skipPartiallyExpanded
+    )
     Surface {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            //  实时天气预警卡片
+            //warning card
             if (warningNowState.value.data.isNotEmpty()) {
                 Row(
                     modifier = Modifier
@@ -80,8 +94,8 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                             MaterialTheme.colorScheme.errorContainer,
                             RoundedCornerShape(8.dp)
                         )
-                        .clickable { //todo 打开底部弹窗显示预警列表
-
+                        .clickable {
+                            openBottomSheet = !openBottomSheet
                         },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -180,8 +194,6 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                     }
                 }
             }
-
-
             // 三天的天气状况列表
             DayWeather(stateHolder = stateHolder)
             // 空气质量信息和杂项
@@ -320,4 +332,68 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
         }
     }
 
+    if (openBottomSheet) {
+        val windowInsets = if (edgeToEdgeEnabled)
+            WindowInsets(0) else BottomSheetDefaults.windowInsets
+        ModalBottomSheet(
+            onDismissRequest = {
+                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                    if (!bottomSheetState.isVisible) {
+                        openBottomSheet = false
+                    }
+                }
+            },
+            sheetState = bottomSheetState,
+            windowInsets = windowInsets
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+            ) {
+                items(warningNowState.value.data.size) {
+                    val warningNote = warningNowState.value.data[it]
+                    Surface {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Row {
+                                WeatherIcon(code = warningNote.type.toInt())
+                                Text(
+                                    text = warningNote.title,
+                                    style = MaterialTheme.typography.titleLarge,
+                                            modifier = Modifier.padding(start =8.dp)
+                                )
+                            }
+                            Text(text = warningNote.text, modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp))
+                            val pubTime=LocalDateTime.parse(
+                                warningNote.pubTime,
+                                DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                            ).format(LocalDateUtil.ymdhmsFormatter)
+                            Text(text = pubTime, modifier = Modifier.align(Alignment.End).padding(4.dp))
+                        }
+                    }
+                }
+                item {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp), horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            // Note: If you provide logic outside of onDismissRequest to remove the sheet,
+                            // you must additionally handle intended state cleanup, if any.
+                            onClick = {
+                                scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
+                                    if (!bottomSheetState.isVisible) {
+                                        openBottomSheet = false
+                                    }
+                                }
+                            }
+                        ) {
+                            Text("确定")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

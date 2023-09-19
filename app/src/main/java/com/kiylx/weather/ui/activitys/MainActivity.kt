@@ -45,6 +45,7 @@ import com.kiylx.weather.ui.page.main.MainPage
 import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
