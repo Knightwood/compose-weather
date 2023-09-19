@@ -20,7 +20,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kiylx.weather.common.AllPrefs
-import com.kiylx.weather.common.FloatIconTextButton
+import com.kiylx.compose_lib.component.FloatIconTextButton
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.icon.R
 

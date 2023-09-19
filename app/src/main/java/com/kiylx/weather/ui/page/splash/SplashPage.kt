@@ -24,7 +24,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kiylx.weather.AppCtx
-import com.kiylx.weather.common.FloatIconTextButton
+import com.kiylx.compose_lib.component.FloatIconTextButton
 import com.kiylx.weather.common.Route
 import kotlin.system.exitProcess
 

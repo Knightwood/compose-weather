@@ -132,13 +132,11 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                             WeatherIcon(
                                 code = oneDayWeather.iconDay.toInt(),
                                 modifier = Modifier.align(Alignment.CenterVertically),
-                                tint = MaterialTheme.colorScheme.primary
                             )
                         } else {
                             WeatherIcon(
                                 code = oneDayWeather.iconNight.toInt(),
                                 modifier = Modifier.align(Alignment.CenterVertically),
-                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         // todo 未来还可以添加按钮跳转详情页

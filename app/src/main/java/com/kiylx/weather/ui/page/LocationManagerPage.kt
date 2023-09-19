@@ -2,7 +2,6 @@ package com.kiylx.weather.ui.page
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kiylx.compose_lib.component.FloatIconTextButton
 import com.kiylx.weather.R
-import com.kiylx.weather.common.FloatIconTextButton
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.Location
@@ -80,18 +79,17 @@ fun LocationItem(location: Location) {
                     RoundedCornerShape(8.dp)
                 )
                 .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(start = 4.dp)
-                    .size(36.dp),
+                    .size(36.dp).weight(1f),
                 imageVector = Icons.Filled.LocationCity,
                 contentDescription = null
             )
-            Column(modifier = Modifier.padding(start = 4.dp)) {
+            Column(modifier = Modifier.padding(start = 4.dp).weight(5f)) {
                 Text(
                     modifier = Modifier.padding(4.dp),
                     text = "${location.name}-${location.adm2}"
@@ -108,7 +106,7 @@ fun LocationItem(location: Location) {
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(start = 4.dp)
-                    .size(36.dp)
+                    .size(36.dp).weight(1f)
                     .clickable {
                         QWeatherGeoRepo.deleteLocation(location)
                     },

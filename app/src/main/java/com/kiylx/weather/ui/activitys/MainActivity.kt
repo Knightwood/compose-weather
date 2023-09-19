@@ -33,7 +33,7 @@ import com.kiylx.libx.tools.sonser.gps.GpsHolder
 import com.kiylx.libx.tools.sonser.gps.MyLocationListener
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
-import com.kiylx.weather.common.animatedComposable
+import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.ui.page.LocationManagerPage
 import com.kiylx.weather.ui.page.SettingPage

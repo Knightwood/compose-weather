@@ -87,7 +87,7 @@ fun AddLocationPage(
                     .fillMaxWidth()
                     .padding(top = 32.dp),
                 text = "选择你的位置",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.End
             )
             OutlinedTextField(

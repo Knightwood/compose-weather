@@ -1,7 +1,6 @@
 package com.kiylx.weather.repo.local_file
 
 import com.kiylx.weather.AppCtx
-import com.kiylx.weather.repo.WeatherSub
 import com.kiylx.weather.repo.bean.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -111,69 +110,6 @@ object LocalFile {
      */
     fun deleteLocation(location: Location) {
         val path = locationDir + genLocationFileName(location)
-        deleteFile(path)
-    }
-
-//</editor-fold>
-
-//<editor-fold desc="天气信息文件操作">
-    /**
-     * 默认位置的天气，返回"d"为名的文件名，即：d.weather
-     * 其他的，返回以[Location.id]为名的文件名
-     */
-    fun genWeatherFileName(location: Location): String {
-        return if (location.default) {
-            default_prefix + weatherSuffix
-        } else {
-            location.id + weatherSuffix
-        }
-    }
-
-
-    @OptIn(ExperimentalSerializationApi::class)
-    fun readWeather(func: (list: List<WeatherSub>) -> Unit) {
-        AppCtx.scope.launch {
-            withContext(Dispatchers.IO) {
-                val dir = File(weatherDir)
-                val list = mutableListOf<WeatherSub>()
-                if (dir.exists()) {
-                    dir.listFiles()?.forEach {
-                        if (it.isFile) {
-                            FileInputStream(it).use {
-                                val data = json.decodeFromStream<WeatherSub>(it)
-                                list.add(data)
-                            }
-                        }
-                    }
-                }
-                func(list)
-            }
-        }
-    }
-
-    fun writeWeather(weatherSub: WeatherSub) {
-        AppCtx.scope.launch {
-            withContext(Dispatchers.IO) {
-                val parentDir = File(weatherDir)
-                if (!parentDir.exists()) {
-                    parentDir.mkdirs()
-                }
-                val tmp = weatherDir + genWeatherFileName(weatherSub.location)
-                val tmpFile = File(tmp)
-                if (!tmpFile.exists()) {
-                    tmpFile.createNewFile()
-                }
-                FileOutputStream(tmpFile, false).use { out ->
-                    out.write(json.encodeToString(weatherSub).toByteArray())
-                    out.flush()
-                }
-            }
-        }
-
-    }
-
-    fun deleteWeather(data: Location) {
-        val path = genWeatherFileName(data);
         deleteFile(path)
     }
 

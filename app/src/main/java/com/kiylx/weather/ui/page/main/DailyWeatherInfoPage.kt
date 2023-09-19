@@ -126,10 +126,14 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                 val unit = tempUnit()
                 Row(
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp)
+                        .padding(start = 16.dp, top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(imageVector = Icons.Filled.AccessTimeFilled, contentDescription = null)
-                    Text(text = stringResource(R.string.hour_24_report))
+                    Text(
+                        text = stringResource(R.string.hour_24_report),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
                 Row(
                     modifier = Modifier
@@ -158,7 +162,12 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                                     text = "${data[it].temp}$unit",
                                 )
                                 //图标
-                                WeatherIcon(code = data[it].icon.toInt(), iconSize = 24.dp)
+                                WeatherIcon(
+                                    code = data[it].icon.toInt(),
+                                    iconSize = 24.dp,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                                )
                                 //time
                                 Text(
                                     modifier = Modifier

@@ -1,4 +1,4 @@
-package com.kiylx.weather.common
+package com.kiylx.compose_lib.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowCircleRight
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.kiylx.weather.R
+import com.kiylx.compose_lib.R
 
 @Composable
 fun FloatIconTextButton(modifier: Modifier, text:String= stringResource(R.string.next_step), onClick: () -> Unit) {
