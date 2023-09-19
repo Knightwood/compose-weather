@@ -14,6 +14,7 @@ import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.Location
 import com.kiylx.weather.repo.bean.Location.Companion.toLatLonStr
+import com.kiylx.weather.repo.bean.WarningEntity
 import com.kiylx.weather.ui.page.main.DayWeatherType
 
 /**
@@ -58,6 +59,19 @@ object QWeatherRepo {
     ): RawResponse<HourWeatherEntity> {
         val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
         val res = handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
+        return res
+    }
+    /**
+     * 获取天气预警
+     * 会查询本地副本
+     */
+    suspend fun getWarningNow(
+        location: Location,
+        lang: String = AllPrefs.lang,
+        noCache: Boolean = false
+    ): RawResponse<WarningEntity> {
+        val cacheTime = if (noCache) null else AllPrefs.earlyWarningInterval.minutesToSeconds()
+        val res=handleApi3(api.getWarningNow(location.toLatLonStr(), lang, cacheTime))
         return res
     }
 

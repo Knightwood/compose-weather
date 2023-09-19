@@ -7,6 +7,7 @@ import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
+import com.kiylx.weather.repo.bean.WarningEntity
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -31,6 +32,13 @@ interface Api {
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<DailyEntity>
+
+    @GET("v7/warning/now")
+    fun getWarningNow(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
+    ): Call<WarningEntity>
 
     @GET("v7/weather/24h")
     fun getHourWeather(

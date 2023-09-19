@@ -68,7 +68,7 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
 
     Surface(
         modifier = Modifier
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .fillMaxWidth()
     ) {
         val unit = if (AllPrefs.unit == AUnit.MetricUnits.param) {
@@ -94,7 +94,7 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(16.dp)
                             .align(Alignment.CenterVertically)
                     ) {
                         val fxDate = LocalDate.parse(oneDayWeather.fxDate)

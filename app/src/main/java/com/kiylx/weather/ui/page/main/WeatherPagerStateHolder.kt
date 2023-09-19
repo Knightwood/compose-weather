@@ -12,6 +12,7 @@ import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.WarningEntity
 
 class WeatherPagerStateHolder(location: Location) {
     //位置信息
@@ -24,7 +25,8 @@ class WeatherPagerStateHolder(location: Location) {
     //  逐小时预报
     val dailyHourUiState: DataUiState<HourWeatherEntity> = DataUiState(HourWeatherEntity())
 
-    // todo 天气预警
+    //天气预警 -当前
+    val warningNowUiState: DataUiState<WarningEntity> = DataUiState(WarningEntity())
 
     //当天的天气指数
     val todayIndicesData: DataUiState<IndicesEntity> = DataUiState(IndicesEntity())
@@ -176,6 +178,35 @@ class WeatherPagerStateHolder(location: Location) {
                     )
                 } else {
                     todayIndicesData.setUiState(
+                        UiState.OtherErr(
+                            response.responseData?.code?.toInt(),
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * get weather warning
+     */
+    suspend fun getWarningNow(){
+        warningNowUiState.setUiState(UiState.Loading)
+        when (val response = QWeatherRepo.getWarningNow(
+            location.value,
+        )) {
+            is RawResponse.Error -> {
+                warningNowUiState.setUiState(UiState.RequestErr(response))
+            }
+
+            is RawResponse.Success -> {
+                if (response.responseData?.code == "200") {
+                    warningNowUiState.setDataOrState(
+                        response.responseData,
+                        UiState.Success(response.responseData)
+                    )
+                } else {
+                    warningNowUiState.setUiState(
                         UiState.OtherErr(
                             response.responseData?.code?.toInt(),
                         )

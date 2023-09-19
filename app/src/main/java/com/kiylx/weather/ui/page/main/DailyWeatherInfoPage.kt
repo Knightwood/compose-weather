@@ -1,6 +1,7 @@
 package com.kiylx.weather.ui.page.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,9 +13,15 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTimeFilled
+import androidx.compose.material.icons.filled.ArrowCircleRight
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +37,7 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AllPrefs
@@ -52,82 +60,127 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
     val dailyState: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()
     val todayIndicesState = stateHolder.todayIndicesData.asDataFlow().collectAsState()
     val todayHourWeatherState = stateHolder.dailyHourUiState.asDataFlow().collectAsState()
+    val warningNowState = stateHolder.warningNowUiState.asDataFlow().collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         stateHolder.getTodayIndices() //天气指数
         stateHolder.getDailyHourWeatherData() //逐小时预报
+        stateHolder.getWarningNow()//天气预警
     }
 
     Surface {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // todo 实时天气预警卡片
-            // 当前的天气变化横向列表
-            val data = todayHourWeatherState.value.data
-            val unit = tempUnit()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .background(
-                        MaterialTheme.colorScheme.tertiaryContainer,
-                        RoundedCornerShape(8.dp)
-                    )
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(data.size) {
-                    //这里的surface很宽，会把上面的内容覆盖，所以上面的背景色设置会看起来像是没有生效
-                    Surface {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp, vertical = 8.dp)
-                                .heightIn(min = 120.dp)
-                                .background(
-                                    MaterialTheme.colorScheme.secondaryContainer,
-                                    RoundedCornerShape(8.dp)
-                                ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            //weather info
-                            Text(
-                                text = data[it].text,
-                                modifier = Modifier
-                                    .padding(4.dp),
-                            )
-                            //temp
-                            Text(
-                                text = "${data[it].temp}$unit",
-                            )
-                            //图标
-                            WeatherIcon(code = data[it].icon.toInt(), iconSize = 24.dp)
-                            //time
-                            Text(
-                                modifier = Modifier
-                                    .padding(4.dp),
-                                text = LocalDateTime.parse(
-                                    data[it].fxTime,
-                                    DateTimeFormatter.ISO_OFFSET_DATE_TIME
-                                ).toLocalTime()
-                                    .format(LocalDateUtil.hmFormatter)
-                            )
-                            val windText = if (AllPrefs.windUnit == WindUnit.Km) {
-                                data[it].windSpeed + windUnit(WindUnit.Km)
-                            } else {
-                                data[it].windScale + windUnit(WindUnit.BeaufortScale)
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .padding(4.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                text = data[it].windDir + "\n" + windText
-                            )
-                        }
-                    }
+            //  实时天气预警卡片
+            if (warningNowState.value.data.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.errorContainer,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .clickable { //todo 打开底部弹窗显示预警列表
 
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .weight(1f)
+                    )
+                    Text(
+                        text = warningNowState.value.data[0].title,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .weight(5f),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.ArrowCircleRight,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .weight(1f),
+                    )
                 }
             }
+            // 当前的天气变化横向列表
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .fillMaxWidth()
+            ) {
+                val data = todayHourWeatherState.value.data
+                val unit = tempUnit()
+                Row(
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 8.dp)
+                ) {
+                    Icon(imageVector = Icons.Filled.AccessTimeFilled, contentDescription = null)
+                    Text(text = stringResource(R.string.hour_24_report))
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(data.size) {
+                        //这里的surface很宽，会把上面的内容覆盖，所以上面的背景色设置会看起来像是没有生效
+                        Surface(color = Color.Transparent) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp, vertical = 8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                //weather info
+                                Text(
+                                    text = data[it].text,
+                                    modifier = Modifier
+                                        .padding(4.dp),
+                                )
+                                //temp
+                                Text(
+                                    text = "${data[it].temp}$unit",
+                                )
+                                //图标
+                                WeatherIcon(code = data[it].icon.toInt(), iconSize = 24.dp)
+                                //time
+                                Text(
+                                    modifier = Modifier
+                                        .padding(4.dp),
+                                    text = LocalDateTime.parse(
+                                        data[it].fxTime,
+                                        DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                                    ).toLocalTime()
+                                        .format(LocalDateUtil.hmFormatter)
+                                )
+                                val windText = if (AllPrefs.windUnit == WindUnit.Km) {
+                                    data[it].windSpeed + windUnit(WindUnit.Km)
+                                } else {
+                                    data[it].windScale + windUnit(WindUnit.BeaufortScale)
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .padding(4.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    text = data[it].windDir + "\n" + windText
+                                )
+                            }
+                        }
+
+                    }
+                }
+            }
+
 
             // 三天的天气状况列表
             DayWeather(stateHolder = stateHolder)
