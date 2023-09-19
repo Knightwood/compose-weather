@@ -39,13 +39,12 @@ import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.common.animatedComposable
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.ui.page.LocationPage
+import com.kiylx.weather.ui.page.LocationManagerPage
 import com.kiylx.weather.ui.page.SettingPage
 import com.kiylx.weather.ui.page.main.MainPage
 import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
@@ -86,17 +85,37 @@ class MainActivity : AppCompatActivity() {
                                 navigateToSettings = {
                                     navController.navigate(Route.THEME)
                                 },
-                                navigateToLocations = { navController.navigate(Route.LOCATION_PAGE) },
+                                navigateToLocations = { navController.navigate(Route.LOCATION) },
                                 viewModel = mainViewModel
                             )
                         }
-                        animatedComposable(route = Route.LOCATION_PAGE) {
-                            LocationPage()
-                        }
+
+                        //位置添加页面
+                        buildLocationManagerPage(navController)
                         //构建设置页面的嵌套导航
                         buildSettingsPage(navController)
                         buildSplashPage(navController)
                     }
+                }
+            }
+        }
+    }
+
+    private fun NavGraphBuilder.buildLocationManagerPage(
+        navController: NavHostController
+    ) {
+        navigation(startDestination = Route.LOCATION_PAGE, route = Route.LOCATION) {
+            animatedComposable(route = Route.LOCATION_PAGE) {
+                LocationManagerPage(navController = navController)
+            }
+            animatedComposable(Route.LOCATION_ADD_PAGE) {
+                AddLocationPage(::queryGps, ::stopGps) {
+                    //位置添加完成
+                    navController.navigate(Route.LOCATION_PAGE, navOptions {
+                        this.popUpTo(Route.LOCATION_PAGE)
+                        this.launchSingleTop = true
+                    })
+                    QWeatherGeoRepo.addLocation(it, false)
                 }
             }
         }
@@ -112,7 +131,7 @@ class MainActivity : AppCompatActivity() {
             animatedComposable(Route.KEY_PAGE) {
                 KeySplash(navController)
             }
-            animatedComposable(Route.SPLASH_LOCATION__PAGE) {
+            animatedComposable(Route.SPLASH_LOCATION_ADD_PAGE) {
                 AddLocationPage(::queryGps, ::stopGps) {
                     //完成定位设置，前往主页
                     //并设置默认位置

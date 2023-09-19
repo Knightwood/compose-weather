@@ -24,7 +24,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kiylx.weather.AppCtx
-import com.kiylx.weather.common.NextButton
+import com.kiylx.weather.common.FloatIconTextButton
 import com.kiylx.weather.common.Route
 import kotlin.system.exitProcess
 
@@ -64,7 +64,7 @@ fun MainSplashPage(navController: NavHostController) {
         LottieAnimation(
             composition = composition, progress = progress
         )
-        NextButton(
+        FloatIconTextButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(

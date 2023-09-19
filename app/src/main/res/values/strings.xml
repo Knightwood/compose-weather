@@ -26,6 +26,8 @@
     <string name="dress_index">穿衣指数</string>
     <string name="cold_index">感冒指数</string>
     <string name="hour_24_report">24小时预报</string>
+    <string name="next_step">下一步</string>
+    <string name="add">添加</string>
 
 
 </resources>

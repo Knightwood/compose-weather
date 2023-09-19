@@ -20,7 +20,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kiylx.weather.common.AllPrefs
-import com.kiylx.weather.common.NextButton
+import com.kiylx.weather.common.FloatIconTextButton
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.icon.R
 
@@ -66,7 +66,7 @@ fun KeySplash(navController: NavHostController) {
                 text = "此软件的天气服务使用和风天气驱动，请前往和风天气官网注册，并获取key值。"
             )
         }
-        NextButton(
+        FloatIconTextButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(
@@ -74,7 +74,7 @@ fun KeySplash(navController: NavHostController) {
                     end = 16.dp
                 )
         ) {
-            navController.navigate(Route.SPLASH_LOCATION__PAGE)
+            navController.navigate(Route.SPLASH_LOCATION_ADD_PAGE)
         }
     }
 }

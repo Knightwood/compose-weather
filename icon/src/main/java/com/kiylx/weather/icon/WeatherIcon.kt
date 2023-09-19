@@ -99,7 +99,7 @@ fun IconText(
     padding: PaddingValues = PaddingValues(4.dp),
     title: String,//icon side title
     text: String,//icon side text
-    tint: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    tint: Color = MaterialTheme.colorScheme.secondary,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     backgroundShape: Shape = CircleShape,
     onClick: () -> Unit = {},
@@ -185,7 +185,7 @@ fun TwoText(
 @Composable
 fun WeatherIcon(
     code: Int, modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.onPrimary,
+    tint: Color = MaterialTheme.colorScheme.secondary,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     backgroundShape: Shape = CircleShape,
     iconSize: Dp = 42.dp, onClickListener: () -> Unit = {}
@@ -194,6 +194,7 @@ fun WeatherIcon(
     Icon(
         painter = painterResource(id = resId),
         contentDescription = null,
+        tint=tint,
         modifier = modifier
             .background(
                 backgroundColor,
@@ -204,7 +205,6 @@ fun WeatherIcon(
             }
             .padding(8.dp)
             .size(iconSize),
-        tint = MaterialTheme.colorScheme.primary,
     )
 }
 

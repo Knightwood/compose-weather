@@ -121,13 +121,12 @@ fun MainPagePager(weatherPagerStateHolder:WeatherPagerStateHolder, index: Int) {
     val location=weatherPagerStateHolder.location.value
     //当天的天气状况
     val data = remember { weatherPagerStateHolder.dailyUiState }
-    LaunchedEffect(key1 = location, block = {
+    LaunchedEffect(key1 = Unit, block = {
         weatherPagerStateHolder.getDailyData()
     })
     val pageData = data.asDataFlow().collectAsState()//页面数据
 
     val uiState = data.asUiStateFlow().collectAsState()
-    UiStateToastMsg(state = uiState)//界面状态toast消息
 
     //下拉刷新
     val refreshState = rememberSmartSwipeRefreshState()

@@ -74,7 +74,7 @@ fun AddLocationPage(
     //页面
     Box(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(8.dp)
             .fillMaxSize()
     ) {
         Column(
@@ -123,7 +123,7 @@ fun AddLocationPage(
             ) {
                 val modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp)
+                    .padding(8.dp)
                     .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 locations.value?.data?.apply {
                     items(this) {

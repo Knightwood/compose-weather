@@ -9,16 +9,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.kiylx.weather.R
 
 @Composable
-fun NextButton(modifier: Modifier, onClick: () -> Unit) {
+fun FloatIconTextButton(modifier: Modifier, text:String= stringResource(R.string.next_step), onClick: () -> Unit) {
     ExtendedFloatingActionButton(
         modifier = modifier,
-        text = { Text(text = "下一步") },
+        text = { Text(text = text) },
         icon = {
             Icon(
                 imageVector = Icons.Rounded.ArrowCircleRight,
-                contentDescription = "下一步"
+                contentDescription = text
             )
         },
         onClick = onClick
