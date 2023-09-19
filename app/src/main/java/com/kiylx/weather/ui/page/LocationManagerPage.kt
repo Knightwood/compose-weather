@@ -1,5 +1,6 @@
 package com.kiylx.weather.ui.page
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +23,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,7 +41,7 @@ import com.kiylx.weather.repo.bean.Location
 
 @Composable
 fun LocationManagerPage(navController: NavController) {
-    val locationList = QWeatherGeoRepo.allLocationsFlow.collectAsState()
+    val locationList =  QWeatherGeoRepo.allLocationState
 
     Box {
         LazyColumn(
@@ -52,7 +55,7 @@ fun LocationManagerPage(navController: NavController) {
                     style = MaterialTheme.typography.displayMedium
                 )
             }
-            items(locationList.value) {
+            items(locationList) {
                 LocationItem(location = it)
             }
         }

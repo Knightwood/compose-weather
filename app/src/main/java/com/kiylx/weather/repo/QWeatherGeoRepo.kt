@@ -1,5 +1,9 @@
 package com.kiylx.weather.repo
 
+import android.provider.CallLog.Locations
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import com.kiylx.libx.http.kotlin.basic2.Resources2
 import com.kiylx.libx.http.kotlin.basic2.handleApi2
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
@@ -29,8 +33,7 @@ object QWeatherGeoRepo {
      */
     val allLocations: MutableList<Location> = mutableListOf()
 
-    val allLocationsFlow: MutableStateFlow<MutableList<Location>> =
-        MutableStateFlow(allLocations)
+    val allLocationState = mutableStateListOf<Location>()
 
 //<editor-fold desc="网络接口">
     /**
@@ -43,7 +46,7 @@ object QWeatherGeoRepo {
         number: String? = null,
         lang: String? = null,
     ): Resources2<LocationListEntity> {
-        return handleApi2(api.getCity(location, adm, range, number, lang))
+        return handleApi2(api.getCity(location, adm, range, number, lang,AllPrefs.hourWeatherInterval))
     }
 //</editor-fold>
 
@@ -84,10 +87,12 @@ object QWeatherGeoRepo {
         } ?: list[0]
         default.default = true//如果找不到默认值，设置一个默认值
         list.remove(default)
+
         allLocations.clear()
         allLocations.add(default)
         allLocations.addAll(list)
-        allLocationsFlow.tryEmit(allLocations)
+        allLocationState.clear()
+        allLocationState.addAll(allLocations)
     }
 
     /**
@@ -98,7 +103,7 @@ object QWeatherGeoRepo {
             return
         } else {
             allLocations.remove(location)
-            allLocationsFlow.tryEmit(allLocations)
+            allLocationState.remove(location)
             val path = LocalFile.locationDir + LocalFile.genLocationFileName(location)
             LocalFile.deleteFile(path)
         }
@@ -130,12 +135,12 @@ object QWeatherGeoRepo {
                 LocalFile.writeLocation(data)
             }
         }
-        allLocationsFlow.tryEmit(allLocations)
+        allLocationState.add(data)
     }
 
     fun deleteLocation(data: Location) {
         allLocations.remove(data)
-        allLocationsFlow.tryEmit(allLocations)
+        allLocationState.remove(data)
         LocalFile.deleteLocation(data)
     }
 
@@ -145,7 +150,7 @@ object QWeatherGeoRepo {
     fun deleteLocation(pos: Int) {
         if (pos > 0) {
             val data= allLocations.removeAt(pos)
-            allLocationsFlow.tryEmit(allLocations)
+            allLocationState.removeAt(pos)
             LocalFile.deleteLocation(data)
         }
     }

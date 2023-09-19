@@ -50,13 +50,13 @@ object AllPrefs {
      */
     var gpsAuto by mk.boolM("gpsAuto", false)
 
-    /**
-     * 是否使用天气信息缓存
-     */
-    var useWeatherCache by mk.boolM("useWeatherCache", true)
-
 //</editor-fold>
 //<editor-fold desc="天气数据更新缓存时间周期">
+    /**
+     *位置查找缓存时长，单位：分钟
+     */
+    var locationInterval by mk.longM("locationInterval", 600)
+
     /**
      *实时天气缓存时长，单位：分钟
      */

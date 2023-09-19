@@ -92,17 +92,16 @@ fun MainPage(
             }
         }
         //根据地点数量显示pager页面
-        val allLocations = QWeatherGeoRepo.allLocationsFlow.collectAsState()
+        val locationData = remember {
+            QWeatherGeoRepo.allLocationState
+        }
         val pagerState = rememberPagerState() {
-            allLocations.value.size
+            locationData.size
         }
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
             Surface(modifier = Modifier.fillMaxSize()) {
-                val locationData by remember {
-                    mutableStateOf(allLocations.value[it])
-                }
                 val weatherPagerStateHolder = remember {
-                    mutableStateOf(viewModel.getWeatherStateHolder(locationData))
+                    mutableStateOf(viewModel.getWeatherStateHolder(locationData[it]))
                 }
                 MainPagePager(weatherPagerStateHolder.value, it)
             }
