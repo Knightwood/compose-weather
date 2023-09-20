@@ -43,8 +43,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
+import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
+import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.ui.activitys.MainViewModel
 import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
@@ -122,7 +124,11 @@ fun MainPage(
 @Composable
 fun LocationText(location: LocationEntity) {
     //location text
-    val locationText = "${location.adm2},${location.name}"
+    val locationText = if (location.default && AllPrefs.gpsAuto) {
+        location.toLatLonStr()
+    } else {
+        "${location.adm2},${location.name}"
+    }
     Text(
         text = locationText,
         style = MaterialTheme.typography.titleMedium,
@@ -154,13 +160,17 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
     SmartSwipeRefresh(
         modifier = Modifier.fillMaxSize(),
         onRefresh = {
-            weatherPagerStateHolder.getDailyData(true)
+            weatherPagerStateHolder.run{
+                getDailyData(noCache = true)
+                getDailyHourWeatherData(noCache = true)
+            }
+
         },
         state = refreshState,
         isNeedRefresh = true,
         isNeedLoadMore = false,
         headerIndicator = {
-            MyRefreshHeader(refreshState.refreshFlag, true)
+            MyRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
         },
     ) {
         //观察界面状态，修改下拉刷新状态

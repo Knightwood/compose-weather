@@ -102,17 +102,19 @@ fun LocationItem(location: LocationEntity) {
                     ), text = "${location.adm1}-${location.country}"
                 )
             }
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(start = 4.dp)
-                    .size(36.dp).weight(1f)
-                    .clickable {
-                        QWeatherGeoRepo.deleteLocation(location)
-                    },
-                imageVector = Icons.Filled.DeleteForever,
-                contentDescription = null,
-            )
+            if (!location.default) {
+                Icon(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(start = 4.dp)
+                        .size(36.dp).weight(1f)
+                        .clickable {
+                            QWeatherGeoRepo.deleteLocation(location)
+                        },
+                    imageVector = Icons.Filled.DeleteForever,
+                    contentDescription = null,
+                )
+            }
         }
     }
 }

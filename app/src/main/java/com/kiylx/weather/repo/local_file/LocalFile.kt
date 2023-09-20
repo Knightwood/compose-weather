@@ -47,28 +47,16 @@ object LocalFile {
 //<editor-fold desc="位置信息文件操作">
 
     /**
-     * 如果是默认位置，返回"d"为名的文件名，即：d.location
-     * 其他的，返回以[LocationEntity.id]为名的文件名
-     */
-    fun genLocationFileName(location: LocationEntity): String {
-        return if (location.default) {
-            default_prefix + locationSuffix
-        } else {
-            location.id + locationSuffix
-        }
-    }
-
-    /**
      * 将位置信息写入文件
      */
-    fun writeLocation(location: LocationEntity) {
+    fun writeLocation(location: LocationEntity,index:Int) {
         AppCtx.scope.launch {
             withContext(Dispatchers.IO) {
                 val parentDir = File(locationDir)
                 if (!parentDir.exists()) {
                     parentDir.mkdirs()
                 }
-                val tmp = locationDir + genLocationFileName(location)
+                val tmp = "$locationDir$index$locationSuffix"
                 val tmpFile = File(tmp)
                 if (!tmpFile.exists()) {
                     tmpFile.createNewFile()
@@ -108,8 +96,8 @@ object LocalFile {
     /**
      * 将此位置信息的文件删除
      */
-    fun deleteLocation(location: LocationEntity) {
-        val path = locationDir + genLocationFileName(location)
+    fun deleteLocation(index: Int) {
+        val path = "$locationDir$index$locationSuffix"
         deleteFile(path)
     }
 

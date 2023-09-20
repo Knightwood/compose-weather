@@ -23,7 +23,7 @@ object QWeatherGeoRepo {
      * MainActivity查询gps位置信息后，将数据送到这里，使得全局共享
      */
     val gpsStrFlow: MutableStateFlow<String> = MutableStateFlow("")
-    var gpsDataState:MutableState<LocationEntity> = mutableStateOf(LocationEntity())
+    var gpsDataState: MutableState<LocationEntity> = mutableStateOf(LocationEntity())
 
     /**
      * 0下标是默认位置信息
@@ -43,7 +43,16 @@ object QWeatherGeoRepo {
         number: String? = null,
         lang: String? = null,
     ): Resources2<LocationListEntity> {
-        return handleApi2(api.getCity(location, adm, range, number, lang,AllPrefs.hourWeatherInterval))
+        return handleApi2(
+            api.getCity(
+                location,
+                adm,
+                range,
+                number,
+                lang,
+                AllPrefs.hourWeatherInterval
+            )
+        )
     }
 //</editor-fold>
 
@@ -53,16 +62,9 @@ object QWeatherGeoRepo {
      * 将位置信息保存到磁盘
      */
     fun saveAll() {
-        allLocationState.forEach {
-            LocalFile.writeLocation(it)
+        allLocationState.forEachIndexed { index, locationEntity ->
+            LocalFile.writeLocation(locationEntity, index)
         }
-    }
-
-    /**
-     * 将位置信息保存到磁盘
-     */
-    fun save(data: LocationEntity){
-        LocalFile.writeLocation(data)
     }
 
     //将位置信息从磁盘读取出来
@@ -79,29 +81,17 @@ object QWeatherGeoRepo {
         if (list.isEmpty()) {
             return
         }
-        val default = list.find {
-            it.default
-        } ?: list[0]
-        default.default = true//如果找不到默认值，设置一个默认值
-        list.remove(default)
-
         allLocationState.clear()
-        allLocationState.add(default)
         allLocationState.addAll(list)
-    }
-
-    /**
-     * 文件删除
-     */
-    fun delete(location: LocationEntity) {
-        if (location.default) {
-            return
-        } else {
-            allLocationState.remove(location)
-            val path = LocalFile.locationDir + LocalFile.genLocationFileName(location)
-            LocalFile.deleteFile(path)
+        allLocationState.find {
+            it.default
+        } ?: let {
+            //如果找不到默认值，设置一个默认值
+            allLocationState[0] = allLocationState[0].copy(default = true)
+            LocalFile.writeLocation(allLocationState[0],0)
         }
     }
+
 //</editor-fold>
 
 //<editor-fold desc="存储库位置信息添加/删除，以及同步本地文件的中间方法">
@@ -110,30 +100,36 @@ object QWeatherGeoRepo {
      * @param data 位置信息
      * @param default 是否添加为默认位置
      */
-    fun addLocation(data: LocationEntity, default: Boolean = false) {
-        data.default = default
+    fun addLocation(locationEntity: LocationEntity, default: Boolean = false) {
+        var data: LocationEntity = locationEntity
+        if (default) {
+            data = data.copy(default = true)
+        }
         if (default) {
             if (allLocationState.isEmpty()) {
                 allLocationState.add(data)
-                LocalFile.writeLocation(data)
+                LocalFile.writeLocation(data, 0)
             } else {
                 if (allLocationState[0] != data) {
                     allLocationState[0] = data
-                    LocalFile.writeLocation(data)
+                    LocalFile.writeLocation(data, 0)
                 }
             }
         } else {
-            val b: Boolean = data in allLocationState
-            if (!b) {
+            val index: Int = allLocationState.indexOf(data)
+            if (index == -1) {
                 allLocationState.add(data)
-                LocalFile.writeLocation(data)
+                LocalFile.writeLocation(data, allLocationState.lastIndex)
             }
         }
     }
 
     fun deleteLocation(data: LocationEntity) {
-        allLocationState.remove(data)
-        LocalFile.deleteLocation(data)
+        val index = allLocationState.indexOf(data)
+        if (index != -1) {
+            allLocationState.remove(data)
+            LocalFile.deleteLocation(index)
+        }
     }
 
     /**
@@ -141,8 +137,8 @@ object QWeatherGeoRepo {
      */
     fun deleteLocation(pos: Int) {
         if (pos > 0) {
-            val data= allLocationState.removeAt(pos)
-            LocalFile.deleteLocation(data)
+            val data = allLocationState.removeAt(pos)
+            LocalFile.deleteLocation(pos)
         }
     }
 //</editor-fold>

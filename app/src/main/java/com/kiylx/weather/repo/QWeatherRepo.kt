@@ -39,7 +39,7 @@ object QWeatherRepo {
     ): RawResponse<DailyEntity> {
         val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
         val res = if (location.default && AllPrefs.gpsAuto) {
-            //默认位置，需要使用经纬度获取数据
+            //默认位置且开启gps更新，需要使用经纬度获取格点数据
             handleApi3(api.getGridDaily(location.toLatLonStr(), lang, unit, cacheTime))
         } else {
             handleApi3(api.getDaily(location.id, lang, unit, cacheTime))
@@ -59,10 +59,10 @@ object QWeatherRepo {
     ): RawResponse<HourWeatherEntity> {
         val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
         val res = if (location.default && AllPrefs.gpsAuto) {
-            //默认位置，需要使用经纬度获取数据
+            //默认位置且开启gps更新，需要使用经纬度获取格点数据
             handleApi3(api.getGridHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
         } else {
-            handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
+            handleApi3(api.getHourWeather(location.id, lang, unit, cacheTime))
         }
         return res
     }

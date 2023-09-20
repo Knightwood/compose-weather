@@ -42,7 +42,7 @@ data class LocationEntity(
     val utcOffset: String = "",
 
     //是否是默认位置
-    var default: Boolean = false
+    val default: Boolean = false
 ) {
 
     override fun equals(other: Any?): Boolean {
