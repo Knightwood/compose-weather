@@ -81,7 +81,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
                         .background(
                             MaterialTheme.colorScheme.errorContainer,
                             RoundedCornerShape(8.dp)
@@ -119,7 +119,7 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
             // 当前的天气变化横向列表
             Card(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth()
             ) {
                 val data = todayHourWeatherState.value.data

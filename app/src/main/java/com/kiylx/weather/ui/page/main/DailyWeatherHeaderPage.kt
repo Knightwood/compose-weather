@@ -32,12 +32,6 @@ class DailyWeatherHeaderPage {
 @Composable
 fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
     state.value.let { data ->
-        //location text
-        val locationText = if (location.default && AllPrefs.gpsAuto) {
-            "${location.lat},${location.lon}"
-        } else {
-            "${location.adm1},${location.adm2}"
-        }
         val unit = tempUnit()
         Surface(
             modifier = Modifier
@@ -46,12 +40,6 @@ fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
         ) {
             //顶部信息
             Column(verticalArrangement = Arrangement.Center) {
-                Text(
-                    text = locationText,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .padding(16.dp, 4.dp)
-                )
                 //icon and weather info
                 Row(
                     horizontalArrangement = Arrangement.Center,

@@ -4,17 +4,24 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.view.Window
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
+import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.material.color.MaterialColors
 
@@ -38,19 +45,16 @@ private tailrec fun Context.findWindow(): Window? =
         else -> null
     }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun Activity.DynamicTheme(
-    content: @Composable () -> Unit
-) {
-    val windowSizeClass = calculateWindowSizeClass(this)
+fun DynamicTheme(windowSizeClass: WindowSizeClass, content: @Composable () -> Unit) {
     ThemeSettingsProvider(windowWidthSizeClass = windowSizeClass.widthSizeClass) {
-        val colorScheme = LocalColorScheme.current
-
         val window = LocalView.current.context.findWindow()
-        val view = LocalView.current
-        val isDark = LocalDarkThemePrefs.current.isDarkTheme()
-        rememberSystemUiController(window).setSystemBarsColor(Color.Transparent,!isDark)
+        window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+            val isDark = LocalDarkThemePrefs.current.isDarkTheme()
+            rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
+        }
+        val colorScheme = LocalColorScheme.current
         ProvideTextStyle(
             value = LocalTextStyle.current.copy(
                 lineBreak = LineBreak.Paragraph,
@@ -60,8 +64,52 @@ fun Activity.DynamicTheme(
             MaterialTheme(
                 colorScheme = colorScheme,
                 typography = Typography,
-                content = content
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                ) {
+                    content()
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+fun Activity.DynamicTheme(
+    content: @Composable () -> Unit
+) {
+    val windowSizeClass = calculateWindowSizeClass(this)
+    ThemeSettingsProvider(windowWidthSizeClass = windowSizeClass.widthSizeClass) {
+//        val window = LocalView.current.context.findWindow()
+        WindowCompat.setDecorFitsSystemWindows(this.window, false)
+        val isDark = LocalDarkThemePrefs.current.isDarkTheme()
+        rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)
+        val colorScheme = LocalColorScheme.current
+        ProvideTextStyle(
+            value = LocalTextStyle.current.copy(
+                lineBreak = LineBreak.Paragraph,
+                textDirection = TextDirection.Content
             )
+        ) {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = Typography,
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                ) {
+                    content()
+                }
+            }
         }
     }
 
@@ -69,10 +117,10 @@ fun Activity.DynamicTheme(
 
 @Composable
 fun PreviewThemeLight(
-    color: Color=Color(ThemeHelper.DEFAULT_COLOR_SEED),
+    color: Color = Color(ThemeHelper.DEFAULT_COLOR_SEED),
     content: @Composable () -> Unit
 ) {
-   val colorsScheme= mDynamicColorScheme(color, false, PaletteStyle.values()[0], 0.0)
+    val colorsScheme = mDynamicColorScheme(color, false, PaletteStyle.values()[0], 0.0)
     MaterialTheme(
         colorScheme = colorsScheme,
         typography = Typography,

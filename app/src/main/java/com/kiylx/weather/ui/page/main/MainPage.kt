@@ -1,10 +1,13 @@
 package com.kiylx.weather.ui.page.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,10 +41,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.*
 import com.kiylx.libx.http.kotlin.basic3.UiState
+import com.kiylx.weather.R
+import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.QWeatherGeoRepo
+import com.kiylx.weather.repo.bean.Location
 import com.kiylx.weather.ui.activitys.MainViewModel
 import com.kiylx.weather.ui.page.UiStateToastMsg
 import com.loren.component.view.composesmartrefresh.MyRefreshHeader
@@ -66,38 +72,46 @@ fun MainPage(
     navigateToSettings: () -> Unit,
     navigateToLocations: () -> Unit,
 ) {
+    //根据地点数量显示pager页面
+    val locationData = remember {
+        QWeatherGeoRepo.allLocationState
+    }
+    val pagerState = rememberPagerState() {
+        locationData.size
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-        ) {
-            IconButton(
+        Surface {
+            Row(
                 modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.TopStart),
-                onClick = {
-                    navigateToLocations()
-                }) {
-                Icon(Icons.Rounded.AddLocation, contentDescription = "定位")
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .size(48.dp),
+                    onClick = {
+                        navigateToLocations()
+                    }) {
+                    Icon(Icons.Rounded.AddLocation, contentDescription = "定位")
+                }
+                if (locationData.size > 0) {
+                    LocationText(location = locationData[pagerState.currentPage])
+                }
+                IconButton(
+                    modifier = Modifier
+                        .size(48.dp),
+                    onClick = {
+                        navigateToSettings()
+                    }) {
+                    Icon(Icons.Rounded.Settings, contentDescription = "设置")
+                }
             }
-            IconButton(
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.TopEnd),
-                onClick = {
-                    navigateToSettings()
-                }) {
-                Icon(Icons.Rounded.Settings, contentDescription = "设置")
-            }
+
         }
-        //根据地点数量显示pager页面
-        val locationData = remember {
-            QWeatherGeoRepo.allLocationState
-        }
-        val pagerState = rememberPagerState() {
-            locationData.size
-        }
+        //下面的不同位置的天气页面pager
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
             Surface(modifier = Modifier.fillMaxSize()) {
                 val weatherPagerStateHolder = remember {
@@ -109,15 +123,27 @@ fun MainPage(
     }
 }
 
+@Composable
+fun LocationText(location: Location) {
+    //location text
+    val locationText = "${location.adm2},${location.name}"
+    Text(
+        text = locationText,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier
+            .padding(16.dp, 8.dp)
+    )
+}
+
 /**
  * 集成下拉刷新，获取天气状况的方法，也就是单个的pager，内部持有真的显示天气状况的页面
  * @param index 0即默认位置，如果开启了gps更新，就得定位刷新
  *
  */
 @Composable
-fun MainPagePager(weatherPagerStateHolder:WeatherPagerStateHolder, index: Int) {
+fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) {
     //位置信息
-    val location=weatherPagerStateHolder.location.value
+    val location = weatherPagerStateHolder.location.value
     //当天的天气状况
     val data = remember { weatherPagerStateHolder.dailyUiState }
     LaunchedEffect(key1 = Unit, block = {
@@ -163,60 +189,70 @@ fun MainPagePager(weatherPagerStateHolder:WeatherPagerStateHolder, index: Int) {
             }
         }
 
-            //只有可滑动的时候，下载刷新才能生效，所以，这里配置了垂直滑动
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+        //只有可滑动的时候，下载刷新才能生效，所以，这里配置了垂直滑动
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            DailyWeatherHeaderPage(location = location, state = pageData)
+            //上面是大概的信息
+            //下面是其他数据,每行都是双列
+            //tab切换页
+            var tabIndex by remember {
+                mutableIntStateOf(0)
+            }
+            val tabs = listOf(
+                stringResource(id = R.string.today),
+                stringResource(R.string.seven_days_in_the_future)
+            )
+            TabRow(
+                selectedTabIndex = tabIndex,
+                modifier = Modifier.padding(8.dp),
+                indicator = { tabPositions ->
+                    TabRowDefaults.PrimaryIndicator(
+                        Modifier
+                            .tabIndicatorOffset(tabPositions[tabIndex])
+                            .height(4.dp),
+                    )
+                }
             ) {
-                DailyWeatherHeaderPage(location = location, state = pageData)
-                //上面是大概的信息
-                //下面是其他数据,每行都是双列
-                //tab切换页
-                var tabIndex by remember {
-                    mutableIntStateOf(0)
-                }
-                val tabs = listOf("今天", "未来七天")
-                TabRow(
-                    selectedTabIndex = tabIndex,
-                    modifier = Modifier.padding(8.dp),
-                    indicator = { tabPositions ->
-                        TabRowDefaults.PrimaryIndicator(
-                            Modifier
-                                .tabIndicatorOffset(tabPositions[tabIndex])
-                                .height(4.dp),
-                        )
-                    }
-                ) {
-                    tabs.forEachIndexed { index, name ->
-                        Tab(
-                            selected = tabIndex == index,
-                            onClick = { tabIndex = index },
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp, vertical = 8.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.background,
-                                    RoundedCornerShape(8.dp)
-                                ).heightIn(min=36.dp),
-                        ) {
-                            Text(name)
-                        }
-                    }
-                }
-                when (tabIndex) {
-                    0 -> {
-                        DailyWeatherInfo(weatherPagerStateHolder)
-                    }
-
-                    1 -> {
-                        DayWeather(weatherPagerStateHolder, DayWeatherType.sevenDayWeather)
-                    }
-
-                    2 -> {
-                        DayWeather(weatherPagerStateHolder, DayWeatherType.fifteenDayWeather)
+                tabs.forEachIndexed { index, name ->
+                    Tab(
+                        selected = tabIndex == index,
+                        onClick = { tabIndex = index },
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp, vertical = 8.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.background,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .heightIn(min = 36.dp),
+                    ) {
+                        Text(name)
                     }
                 }
             }
+            when (tabIndex) {
+                0 -> {
+                    DailyWeatherInfo(stateHolder = weatherPagerStateHolder)
+                }
+
+                1 -> {
+                    DayWeather(
+                        stateHolder = weatherPagerStateHolder,
+                        type = DayWeatherType.sevenDayWeather
+                    )
+                }
+
+                2 -> {
+                    DayWeather(
+                        stateHolder = weatherPagerStateHolder,
+                        type = DayWeatherType.fifteenDayWeather
+                    )
+                }
+            }
+        }
 
     }
 }

@@ -45,45 +45,37 @@ import com.kiylx.weather.ui.page.splash.MainSplashPage
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             DynamicTheme {
                 val navController = rememberNavController()
-                Surface(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize()
-                        .systemBarsPadding()
-                ) {
-                    //构建导航
-                    NavHost(navController = navController, startDestination = Route.HOME) {
-                        animatedComposable(route = Route.HOME) {
-                            val first = remember {
-                                AllPrefs.firstEnter
-                            }
-                            if (first) {
-                                navController.navigate(Route.SPLASH)
-                            }
-                            MainPage(
-                                navigateToSettings = {
-                                    navController.navigate(Route.THEME)
-                                },
-                                navigateToLocations = { navController.navigate(Route.LOCATION) },
-                                viewModel = mainViewModel
-                            )
+                //构建导航
+                NavHost(navController = navController, startDestination = Route.HOME) {
+                    animatedComposable(route = Route.HOME) {
+                        val first = remember {
+                            AllPrefs.firstEnter
                         }
-
-                        //位置添加页面
-                        buildLocationManagerPage(navController)
-                        //构建设置页面的嵌套导航
-                        buildSettingsPage(navController)
-                        buildSplashPage(navController)
+                        if (first) {
+                            navController.navigate(Route.SPLASH)
+                        }
+                        MainPage(
+                            navigateToSettings = {
+                                navController.navigate(Route.THEME)
+                            },
+                            navigateToLocations = { navController.navigate(Route.LOCATION) },
+                            viewModel = mainViewModel
+                        )
                     }
+
+                    //位置添加页面
+                    buildLocationManagerPage(navController)
+                    //构建设置页面的嵌套导航
+                    buildSettingsPage(navController)
+                    buildSplashPage(navController)
                 }
+
             }
         }
     }

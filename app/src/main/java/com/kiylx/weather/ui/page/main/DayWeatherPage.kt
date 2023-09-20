@@ -3,6 +3,7 @@ package com.kiylx.weather.ui.page.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,7 +35,12 @@ import java.util.stream.Collectors
  * get multi day weather and show info
  */
 @Composable
-fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.threeDayWeather) {
+fun DayWeather(
+    stateHolder: WeatherPagerStateHolder,
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues= PaddingValues(8.dp),
+    type: Int = DayWeatherType.threeDayWeather
+) {
     val dayUiData = when (type) {
         DayWeatherType.threeDayWeather -> {
             stateHolder.threeDayWeatherData
@@ -67,8 +73,8 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
     )
 
     Surface(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+        modifier = modifier
+            .padding(paddingValues)
             .fillMaxWidth()
     ) {
         val unit = if (AllPrefs.unit == AUnit.MetricUnits.param) {
@@ -111,9 +117,9 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                             dateStr + " - " + it.category
                         } ?: dateStr
                         Text(dateAndAir)
-                        if (oneDayWeather.textDay==oneDayWeather.textNight){
+                        if (oneDayWeather.textDay == oneDayWeather.textNight) {
                             Text(oneDayWeather.textDay)
-                        } else{
+                        } else {
                             Text(oneDayWeather.textDay + "转" + oneDayWeather.textNight)
                         }
                     }
@@ -123,7 +129,11 @@ fun DayWeather(stateHolder: WeatherPagerStateHolder, type: Int = DayWeatherType.
                             .align(Alignment.CenterVertically)
                     ) {
                         //早晚温度
-                        Column(modifier = Modifier.align(Alignment.CenterVertically).padding(end=8.dp)) {
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end = 8.dp)
+                        ) {
                             Text(text = "${oneDayWeather.tempMax} $unit")
                             Text(text = "${oneDayWeather.tempMin} $unit")
                         }
