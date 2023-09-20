@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity() {
                         val first = remember {
                             AllPrefs.firstEnter
                         }
+                        //如果开启gps实时定位获取网格天气
+                        if (AllPrefs.gpsAuto){
+                            queryGps()
+                        }
                         if (first) {
                             navController.navigate(Route.SPLASH)
                         } else {
@@ -143,8 +147,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //todo 使用gps去获取天气，还缺少 1: 定时更新gps或手动获取gps机制，
-    // 2:在repo里需要获取QWeatherGeoRepo里的gpsDataState去请求网格天气api
+    override fun onStop() {
+        super.onStop()
+        stopGps(true)
+    }
 
     //==========================gps=========================
     private var gpsHolder: GpsHolder? = null
