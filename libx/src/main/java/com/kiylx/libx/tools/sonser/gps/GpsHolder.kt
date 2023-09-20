@@ -232,12 +232,12 @@ class GpsHolder private constructor(){
                 Log.d(tag, "START")
                 //第一次获得定位会很慢，所以先使用上一次的定位信息
                 //但如果跟上次地点距离很远，会显得非常不准确
-                /* getLastLocation()?.let {
+                 getLastLocation()?.let {
                      myLocationListener?.locationChanged(
                          dataHolder,
                          it
                      )
-                 }*/
+                 }
                 Toast.makeText(ctx,"正在搜索卫星",Toast.LENGTH_LONG).show()
             }
 
@@ -268,7 +268,7 @@ class GpsHolder private constructor(){
             // 设置是否需要海拔信息
             isAltitudeRequired = true
             // 设置对电源的需求
-            powerRequirement = Criteria.POWER_LOW
+            powerRequirement = Criteria.POWER_MEDIUM
         }
 
         fun default(): Config {

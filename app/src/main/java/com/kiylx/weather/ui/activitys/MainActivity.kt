@@ -5,16 +5,7 @@ import android.location.Location
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -35,6 +26,7 @@ import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
 import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.weather.repo.QWeatherGeoRepo
+import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.ui.page.LocationManagerPage
 import com.kiylx.weather.ui.page.SettingPage
 import com.kiylx.weather.ui.page.main.MainPage
@@ -161,17 +153,20 @@ class MainActivity : AppCompatActivity() {
         this requestThese perms explainReason null goToSetting null finally { allGranted, grantedList, deniedList ->
             if (gpsHolder == null) {
                 gpsHolder = GpsHolder.Instance.configGps(application) {
+                    this.requestUpdateDistanceInterval=0F
                     myLocationListener = object : MyLocationListener {
                         override fun locationChanged(
                             holder: GpsHolder.DataHolder,
                             location: Location
                         ) {
-                            val str =
-                                String.format("%.2f", location.longitude) + "," + String.format(
-                                    "%.2f",
-                                    location.latitude
-                                )
-                            QWeatherGeoRepo.gpsDataFlow.tryEmit(str)
+                            val lon =String.format("%.2f", location.longitude)
+                            val lat=String.format("%.2f", location.latitude)
+                            val str = "${lon},${lat}"
+                            //经纬度字符串
+                            QWeatherGeoRepo.gpsStrFlow.tryEmit(str)
+                            //经纬度实体
+                            val locationEntity = LocationEntity(lat= location.latitude.toString(),lon= location.longitude.toString())
+                            QWeatherGeoRepo.gpsDataState.value =locationEntity
                         }
                     }
                 }

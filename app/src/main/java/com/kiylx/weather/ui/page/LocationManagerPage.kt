@@ -28,7 +28,7 @@ import com.kiylx.compose_lib.component.FloatIconTextButton
 import com.kiylx.weather.R
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 
 @Composable
 fun LocationManagerPage(navController: NavController) {
@@ -65,7 +65,7 @@ fun LocationManagerPage(navController: NavController) {
 }
 
 @Composable
-fun LocationItem(location: Location) {
+fun LocationItem(location: LocationEntity) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()

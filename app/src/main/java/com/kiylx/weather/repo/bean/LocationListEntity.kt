@@ -9,11 +9,11 @@ data class LocationListEntity(
     override val code: String,
     override val refer: Refer = Refer(),
     @SerialName("location")
-    override val data: List<Location> = listOf(),
+    override val data: List<LocationEntity> = listOf(),
 ) : BaseResponse()
 
 @Serializable
-data class Location(
+data class LocationEntity(
     @SerialName("adm1")
     val adm1: String = "山东省",
     @SerialName("adm2")
@@ -31,7 +31,7 @@ data class Location(
     @SerialName("lon")
     val lon: String = "117.12998",
     @SerialName("name")
-    val name: String = "",
+    val name: String = "泰山",
     @SerialName("rank")
     val rank: String = "",
     @SerialName("type")
@@ -47,7 +47,7 @@ data class Location(
 
     override fun equals(other: Any?): Boolean {
         if (other === this) return true
-        return if (other !is Location) {
+        return if (other !is LocationEntity) {
             false
         } else {
             //如果这两个默认位置，只比较位置
@@ -79,7 +79,7 @@ data class Location(
     }
 
     companion object {
-        fun Location.toLatLonStr(): String {
+        fun LocationEntity.toLatLonStr(): String {
            return String.format("%.2f", lon.toDouble()) + "," + String.format("%.2f", lat.toDouble())
         }
 

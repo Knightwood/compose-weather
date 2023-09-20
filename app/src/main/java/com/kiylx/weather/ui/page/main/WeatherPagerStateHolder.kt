@@ -11,12 +11,12 @@ import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.WarningEntity
 
-class WeatherPagerStateHolder(location: Location) {
+class WeatherPagerStateHolder(location: LocationEntity) {
     //位置信息
-    val location: MutableState<Location> = mutableStateOf(location)
+    val location: MutableState<LocationEntity> = mutableStateOf(location)
 
     //================================当天的===============================
     //实时天气

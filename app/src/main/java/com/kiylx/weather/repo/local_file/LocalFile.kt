@@ -1,7 +1,7 @@
 package com.kiylx.weather.repo.local_file
 
 import com.kiylx.weather.AppCtx
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,9 +48,9 @@ object LocalFile {
 
     /**
      * 如果是默认位置，返回"d"为名的文件名，即：d.location
-     * 其他的，返回以[Location.id]为名的文件名
+     * 其他的，返回以[LocationEntity.id]为名的文件名
      */
-    fun genLocationFileName(location: Location): String {
+    fun genLocationFileName(location: LocationEntity): String {
         return if (location.default) {
             default_prefix + locationSuffix
         } else {
@@ -61,7 +61,7 @@ object LocalFile {
     /**
      * 将位置信息写入文件
      */
-    fun writeLocation(location: Location) {
+    fun writeLocation(location: LocationEntity) {
         AppCtx.scope.launch {
             withContext(Dispatchers.IO) {
                 val parentDir = File(locationDir)
@@ -85,16 +85,16 @@ object LocalFile {
      * 将本地文件读取并反序列化
      */
     @OptIn(ExperimentalSerializationApi::class)
-    fun readLocations(func: (list: List<Location>) -> Unit) {
+    fun readLocations(func: (list: List<LocationEntity>) -> Unit) {
         AppCtx.scope.launch {
             withContext(Dispatchers.IO) {
                 val dir = File(locationDir)
-                val list = mutableListOf<Location>()
+                val list = mutableListOf<LocationEntity>()
                 if (dir.exists()) {
                     dir.listFiles()?.forEach {
                         if (it.isFile) {
                             FileInputStream(it).use {
-                                val data = json.decodeFromStream<Location>(it)
+                                val data = json.decodeFromStream<LocationEntity>(it)
                                 list.add(data)
                             }
                         }
@@ -108,7 +108,7 @@ object LocalFile {
     /**
      * 将此位置信息的文件删除
      */
-    fun deleteLocation(location: Location) {
+    fun deleteLocation(location: LocationEntity) {
         val path = locationDir + genLocationFileName(location)
         deleteFile(path)
     }

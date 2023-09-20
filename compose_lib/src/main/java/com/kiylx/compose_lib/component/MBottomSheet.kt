@@ -1,5 +1,6 @@
 package com.kiylx.compose_lib.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -92,6 +94,11 @@ fun MBottomSheet(
             windowInsets = windowInsets
         ) {
             content()
+            NavigationBarSpacer(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
+                    .fillMaxWidth()
+            )
         }
     }
 }

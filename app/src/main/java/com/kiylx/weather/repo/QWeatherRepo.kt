@@ -12,8 +12,8 @@ import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
-import com.kiylx.weather.repo.bean.Location
-import com.kiylx.weather.repo.bean.Location.Companion.toLatLonStr
+import com.kiylx.weather.repo.bean.LocationEntity
+import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.repo.bean.WarningEntity
 import com.kiylx.weather.ui.page.main.DayWeatherType
 
@@ -32,7 +32,7 @@ object QWeatherRepo {
      * 会查询本地副本
      */
     suspend fun getDailyReport(
-        location: Location,
+        location: LocationEntity,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
@@ -48,30 +48,36 @@ object QWeatherRepo {
     }
 
     /**
-     * 获取小时天气
+     * 获取24小时天气
      * 会查询本地副本
      */
     suspend fun getDailyHourReport(
-        location: Location,
+        location: LocationEntity,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<HourWeatherEntity> {
         val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
-        val res = handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
+        val res = if (location.default && AllPrefs.gpsAuto) {
+            //默认位置，需要使用经纬度获取数据
+            handleApi3(api.getGridHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
+        } else {
+            handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
+        }
         return res
     }
+
     /**
      * 获取天气预警
      * 会查询本地副本
      */
     suspend fun getWarningNow(
-        location: Location,
+        location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<WarningEntity> {
         val cacheTime = if (noCache) null else AllPrefs.earlyWarningInterval.minutesToSeconds()
-        val res=handleApi3(api.getWarningNow(location.toLatLonStr(), lang, cacheTime))
+        val res = handleApi3(api.getWarningNow(location.toLatLonStr(), lang, cacheTime))
         return res
     }
 
@@ -80,37 +86,56 @@ object QWeatherRepo {
      * 会查询本地副本
      */
     suspend fun getDayReport(
-        location: Location,
+        location: LocationEntity,
         type: Int = DayWeatherType.threeDayWeather,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<DayWeather> {
         val cacheTime = if (noCache) null else AllPrefs.dayWeatherInterval.minutesToSeconds()
+        val useGrid = location.default && AllPrefs.gpsAuto//是否使用格点天气查询
         val res = handleApi3(
             when (type) {
-                DayWeatherType.threeDayWeather -> api.getDayWeather3d(
-                    location.toLatLonStr(),
-                    lang,
-                    unit,
-                    cacheTime
-                )
+                DayWeatherType.threeDayWeather -> {
+                    if (useGrid) {
+                        api.getGridDayWeather3d(
+                            location.toLatLonStr(),
+                            lang, unit, cacheTime
+                        )
+                    } else {
+                        api.getDayWeather3d(
+                            location.toLatLonStr(),
+                            lang, unit, cacheTime
+                        )
+                    }
+                }
 
-                DayWeatherType.sevenDayWeather -> api.getDayWeather7d(
-                    location.toLatLonStr(),
-                    lang,
-                    unit,
-                    cacheTime
-                )
+                DayWeatherType.sevenDayWeather -> {
+                    if (useGrid) {
+                        api.getGridDayWeather7d(
+                            location.toLatLonStr(),
+                            lang, unit, cacheTime
+                        )
+                    } else {
+                        api.getDayWeather7d(
+                            location.toLatLonStr(),
+                            lang, unit, cacheTime
+                        )
+                    }
+                }
 
-                DayWeatherType.fifteenDayWeather -> api.getDayWeather15d(
-                    location.toLatLonStr(),
-                    lang,
-                    unit,
-                    cacheTime
-                )
+                DayWeatherType.fifteenDayWeather -> {
+                    api.getDayWeather15d(
+                        location.toLatLonStr(),
+                        lang,
+                        unit,
+                        cacheTime
+                    )
+                }
 
-                else -> throw IllegalArgumentException("illegal type")
+                else -> {
+                    throw IllegalArgumentException("illegal type")
+                }
             }
         )
         return res
@@ -122,7 +147,7 @@ object QWeatherRepo {
      * 会查询本地副本
      */
     suspend fun getDailyAir(
-        location: Location,
+        location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<DailyAirEntity> {
@@ -136,7 +161,7 @@ object QWeatherRepo {
      * 会查询本地副本
      */
     suspend fun getDayAir(
-        location: Location,
+        location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<DayAirEntity> {
@@ -151,7 +176,7 @@ object QWeatherRepo {
      * 会查询本地副本
      */
     suspend fun getIndices1d(
-        location: Location,
+        location: LocationEntity,
         type: String,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false

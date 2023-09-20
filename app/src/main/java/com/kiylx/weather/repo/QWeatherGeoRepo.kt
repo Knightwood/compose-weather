@@ -1,6 +1,5 @@
 package com.kiylx.weather.repo
 
-import android.provider.CallLog.Locations
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -9,31 +8,29 @@ import com.kiylx.libx.http.kotlin.basic2.handleApi2
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.api.GeoApi
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationListEntity
 import com.kiylx.weather.repo.local_file.LocalFile
 import kotlinx.coroutines.flow.MutableStateFlow
 
 object QWeatherGeoRepo {
     const val TAG = "QWeatherGeoRepo"
-
-    /**
-     * MainActivity查询gps位置信息后，将数据送到这里，使得全局共享
-     */
-    val gpsDataFlow: MutableStateFlow<String> = MutableStateFlow("")
-
     private val api by lazy {
         Retrofit2Holder(AllPrefs.geoBaseUrl).create(GeoApi::class.java)
     }
 
     /**
-     * 0下标是默认位置信息，即当前位置
+     * MainActivity查询gps位置信息后，将数据送到这里，使得全局共享
+     */
+    val gpsStrFlow: MutableStateFlow<String> = MutableStateFlow("")
+    var gpsDataState:MutableState<LocationEntity> = mutableStateOf(LocationEntity())
+
+    /**
+     * 0下标是默认位置信息
      * 若没有开启gps自动定位更新，则永远保持不变
      * 位置信息的总和
      */
-    val allLocations: MutableList<Location> = mutableListOf()
-
-    val allLocationState = mutableStateListOf<Location>()
+    val allLocationState = mutableStateListOf<LocationEntity>()
 
 //<editor-fold desc="网络接口">
     /**
@@ -56,7 +53,7 @@ object QWeatherGeoRepo {
      * 将位置信息保存到磁盘
      */
     fun saveAll() {
-        allLocations.forEach {
+        allLocationState.forEach {
             LocalFile.writeLocation(it)
         }
     }
@@ -64,7 +61,7 @@ object QWeatherGeoRepo {
     /**
      * 将位置信息保存到磁盘
      */
-    fun save(data: Location){
+    fun save(data: LocationEntity){
         LocalFile.writeLocation(data)
     }
 
@@ -78,7 +75,7 @@ object QWeatherGeoRepo {
     /**
      * 将传入的位置信息替换原有的位置信息
      */
-    fun replaceAll(list: MutableList<Location>) {
+    fun replaceAll(list: MutableList<LocationEntity>) {
         if (list.isEmpty()) {
             return
         }
@@ -88,21 +85,18 @@ object QWeatherGeoRepo {
         default.default = true//如果找不到默认值，设置一个默认值
         list.remove(default)
 
-        allLocations.clear()
-        allLocations.add(default)
-        allLocations.addAll(list)
         allLocationState.clear()
-        allLocationState.addAll(allLocations)
+        allLocationState.add(default)
+        allLocationState.addAll(list)
     }
 
     /**
      * 文件删除
      */
-    fun delete(location: Location) {
+    fun delete(location: LocationEntity) {
         if (location.default) {
             return
         } else {
-            allLocations.remove(location)
             allLocationState.remove(location)
             val path = LocalFile.locationDir + LocalFile.genLocationFileName(location)
             LocalFile.deleteFile(path)
@@ -116,30 +110,28 @@ object QWeatherGeoRepo {
      * @param data 位置信息
      * @param default 是否添加为默认位置
      */
-    fun addLocation(data: Location, default: Boolean = false) {
+    fun addLocation(data: LocationEntity, default: Boolean = false) {
         data.default = default
         if (default) {
-            if (allLocations.isEmpty()) {
-                allLocations.add(data)
+            if (allLocationState.isEmpty()) {
+                allLocationState.add(data)
                 LocalFile.writeLocation(data)
             } else {
-                if (allLocations[0] != data) {
-                    allLocations[0] = data
+                if (allLocationState[0] != data) {
+                    allLocationState[0] = data
                     LocalFile.writeLocation(data)
                 }
             }
         } else {
-            val b: Boolean = data in allLocations
+            val b: Boolean = data in allLocationState
             if (!b) {
-                allLocations.add(data)
+                allLocationState.add(data)
                 LocalFile.writeLocation(data)
             }
         }
-        allLocationState.add(data)
     }
 
-    fun deleteLocation(data: Location) {
-        allLocations.remove(data)
+    fun deleteLocation(data: LocationEntity) {
         allLocationState.remove(data)
         LocalFile.deleteLocation(data)
     }
@@ -149,8 +141,7 @@ object QWeatherGeoRepo {
      */
     fun deleteLocation(pos: Int) {
         if (pos > 0) {
-            val data= allLocations.removeAt(pos)
-            allLocationState.removeAt(pos)
+            val data= allLocationState.removeAt(pos)
             LocalFile.deleteLocation(data)
         }
     }

@@ -48,6 +48,14 @@ interface Api {
         @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<HourWeatherEntity>
 
+    @GET("v7/grid-weather/24h")
+    fun getGridHourWeather(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Query("unit") unit: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
+    ): Call<HourWeatherEntity>
+
     @GET("v7/weather/3d")
     fun getDayWeather3d(
         @Query("location") location: String,
@@ -56,8 +64,24 @@ interface Api {
         @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<DayWeather>
 
+    @GET("v7/grid-weather/3d")
+    fun getGridDayWeather3d(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Query("unit") unit: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
+    ): Call<DayWeather>
+
     @GET("v7/weather/7d")
     fun getDayWeather7d(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Query("unit") unit: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
+    ): Call<DayWeather>
+
+    @GET("v7/grid-weather/7d")
+    fun getGridDayWeather7d(
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,

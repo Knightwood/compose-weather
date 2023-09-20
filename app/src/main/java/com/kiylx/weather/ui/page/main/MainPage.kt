@@ -1,11 +1,9 @@
 package com.kiylx.weather.ui.page.main
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,11 +43,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
-import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.ui.activitys.MainViewModel
-import com.kiylx.weather.ui.page.UiStateToastMsg
 import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
@@ -124,7 +120,7 @@ fun MainPage(
 }
 
 @Composable
-fun LocationText(location: Location) {
+fun LocationText(location: LocationEntity) {
     //location text
     val locationText = "${location.adm2},${location.name}"
     Text(

@@ -34,7 +34,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kiylx.libx.http.kotlin.basic2.Resources2
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationListEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 fun AddLocationPage(
     queryGps: () -> Unit,
     stopGps: () -> Unit,
-    complete: (location: Location) -> Unit,
+    complete: (location: LocationEntity) -> Unit,
 ) {
     val vm: AddLocationViewModel = viewModel()
     //api得到的位置信息数据
@@ -61,7 +61,7 @@ fun AddLocationPage(
 
     //监听gps定位数据
     LaunchedEffect(Unit, block = {
-        QWeatherGeoRepo.gpsDataFlow.collect {
+        QWeatherGeoRepo.gpsStrFlow.collect {
             if (it.isNotEmpty()) {
                 stopGps()
                 input.value = it

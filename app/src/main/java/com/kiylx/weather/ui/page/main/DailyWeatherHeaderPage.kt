@@ -21,7 +21,7 @@ import com.kiylx.weather.common.WindUnit
 import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
-import com.kiylx.weather.repo.bean.Location
+import com.kiylx.weather.repo.bean.LocationEntity
 
 class DailyWeatherHeaderPage {
 }
@@ -30,7 +30,7 @@ class DailyWeatherHeaderPage {
  * weather daily page header info
  */
 @Composable
-fun DailyWeatherHeaderPage(location: Location, state: State<DailyEntity>) {
+fun DailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntity>) {
     state.value.let { data ->
         val unit = tempUnit()
         Surface(
