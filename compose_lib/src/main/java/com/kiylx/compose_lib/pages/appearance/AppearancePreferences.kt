@@ -81,7 +81,7 @@ import kotlinx.coroutines.launch
 
 // 外观页面，动态主题使用的https://github.com/Kyant0/m3color
 
-val colorList = (1..10).map { it * 35.0 }.map { Color(Hct.from(it, 40.0, 40.0).toInt()) }
+val colorList = ((0..11).map { it*30.0 }) .map { Color(Hct.from(it, 35.0, 40.0).toInt()) }
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
@@ -216,9 +216,9 @@ fun AppearancePreferences(
 fun RowScope.ColorButtons(color: Color, scope: CoroutineScope) {
     listOf<PaletteStyle>(
         PaletteStyle.TonalSpot,
-        PaletteStyle.Monochrome,
-        PaletteStyle.Neutral,
-        PaletteStyle.Vibrant
+        PaletteStyle.Expressive,
+        PaletteStyle.FruitSalad,
+        PaletteStyle.Rainbow
     ).forEachIndexed { index, style: PaletteStyle ->
         ColorButton(color = color, index = index, tonalStyle = style, scope = scope)
     }
