@@ -2,7 +2,7 @@ package com.kiylx.weather.ui.page.main
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.kiylx.libx.http.kotlin.basic3.DataUiState
+import com.kiylx.libx.http.kotlin.basic3.flow.DataUiState
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.weather.repo.QWeatherRepo
