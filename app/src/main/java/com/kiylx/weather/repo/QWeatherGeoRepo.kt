@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.kiylx.libx.http.kotlin.basic2.Resources2
 import com.kiylx.libx.http.kotlin.basic2.handleApi2
+import com.kiylx.libx.http.kotlin.basic3.handleApi3
+import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.api.GeoApi
@@ -20,9 +22,8 @@ object QWeatherGeoRepo {
     }
 
     /**
-     * MainActivity查询gps位置信息后，将数据送到这里，使得全局共享
+     * gps得到的最新位置信息，全局共享
      */
-    val gpsStrFlow: MutableStateFlow<String> = MutableStateFlow("")
     var gpsDataState: MutableState<LocationEntity> = mutableStateOf(LocationEntity())
 
     /**
@@ -42,8 +43,8 @@ object QWeatherGeoRepo {
         range: String? = null,
         number: String? = null,
         lang: String? = null,
-    ): Resources2<LocationListEntity> {
-        return handleApi2(
+    ): RawResponse<LocationListEntity> {
+        return handleApi3(
             api.getCity(
                 location,
                 adm,

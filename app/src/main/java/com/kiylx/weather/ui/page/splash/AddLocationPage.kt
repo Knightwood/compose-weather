@@ -25,19 +25,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kiylx.libx.http.kotlin.basic2.Resources2
-import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
-import com.kiylx.weather.repo.bean.LocationListEntity
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.kiylx.weather.ui.activitys.MainViewModel
 import kotlinx.coroutines.launch
 
 
@@ -49,11 +43,16 @@ import kotlinx.coroutines.launch
 fun AddLocationPage(
     queryGps: () -> Unit,
     stopGps: () -> Unit,
+    mainViewModel: MainViewModel,
     complete: (location: LocationEntity) -> Unit,
 ) {
-    val vm: AddLocationViewModel = viewModel()
+    val scope = rememberCoroutineScope()
+    val locationStateHolder = remember {
+        AddLocationStateHolder()
+    }
+
     //api得到的位置信息数据
-    val locations = vm.location.collectAsState()
+    val locations = locationStateHolder.location.collectAsState()
     //输入框内容
     val input = remember {
         mutableStateOf("")
@@ -61,11 +60,12 @@ fun AddLocationPage(
 
     //监听gps定位数据
     LaunchedEffect(Unit, block = {
-        QWeatherGeoRepo.gpsStrFlow.collect {
+        mainViewModel.addLocationStateHolder.gpsStr.collect {
             if (it.isNotEmpty()) {
+                mainViewModel.addLocationActionState.value = false//标记当前不需要获取gps信息
                 stopGps()
                 input.value = it
-                vm.getLocation(it)
+                locationStateHolder.getLocation(it)
             }
         }
     })
@@ -95,18 +95,20 @@ fun AddLocationPage(
                 value = input.value, onValueChange = {
                     input.value = it
                     //查询地址
-                    if (it.isNotEmpty() && it.isNotBlank()) {
-                        vm.getLocation(it)
-                    } else {
-                        vm.clearLocations()
+                    scope.launch {
+                        if (it.isNotEmpty() && it.isNotBlank()) {
+                            locationStateHolder.getLocation(it)
+                        } else {
+                            locationStateHolder.clearLocations()
+                        }
                     }
                 }, label = { Text("位置查询或定位") })
             ElevatedButton(
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .align(Alignment.End), onClick = {
-                    //自动定位查询
-                    queryGps()
+                    mainViewModel.addLocationActionState.value = true//标记当前需要获取gps信息
+                    queryGps()//自动定位查询
                 }) {
                 Icon(
                     imageVector = Icons.Rounded.LocationOn,
@@ -167,31 +169,3 @@ fun AddLocationPage(
     }
 }
 
-class AddLocationViewModel : ViewModel() {
-    /**
-     * api查询得到的位置信息
-     */
-    private val _location: MutableStateFlow<LocationListEntity?> =
-        MutableStateFlow(null)
-    val location: StateFlow<LocationListEntity?>
-        get() = _location
-
-    /**
-     * @param location 以","分割的经纬度字符串或是地名
-     * 查询位置信息
-     */
-    fun getLocation(
-        location: String,
-    ) {
-        viewModelScope.launch {
-            val response = QWeatherGeoRepo.queryCityList(location)
-            if (response is Resources2.Success) {
-                _location.emit(response.responseData)
-            }
-        }
-    }
-
-    fun clearLocations() {
-        _location.tryEmit(null)
-    }
-}

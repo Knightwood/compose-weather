@@ -51,14 +51,15 @@ class MainActivity : AppCompatActivity() {
                         }
                         if (first) {
                             navController.navigate(Route.SPLASH)
+                        } else {
+                            MainPage(
+                                navigateToSettings = {
+                                    navController.navigate(Route.THEME)
+                                },
+                                navigateToLocations = { navController.navigate(Route.LOCATION) },
+                                viewModel = mainViewModel
+                            )
                         }
-                        MainPage(
-                            navigateToSettings = {
-                                navController.navigate(Route.THEME)
-                            },
-                            navigateToLocations = { navController.navigate(Route.LOCATION) },
-                            viewModel = mainViewModel
-                        )
                     }
 
                     //位置添加页面
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 LocationManagerPage(navController = navController)
             }
             animatedComposable(Route.LOCATION_ADD_PAGE) {
-                AddLocationPage(::queryGps, ::stopGps) {
+                AddLocationPage(::queryGps, ::stopGps, mainViewModel) {
                     //位置添加完成
                     navController.navigate(Route.LOCATION_PAGE, navOptions {
                         this.popUpTo(Route.LOCATION_PAGE)
@@ -103,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                 KeySplash(navController)
             }
             animatedComposable(Route.SPLASH_LOCATION_ADD_PAGE) {
-                AddLocationPage(::queryGps, ::stopGps) {
+                AddLocationPage(::queryGps, ::stopGps, mainViewModel) {
                     //完成定位设置，前往主页
                     //并设置默认位置
                     AllPrefs.firstEnter = false
@@ -142,31 +143,49 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //todo 使用gps去获取天气，还缺少 1: 定时更新gps或手动获取gps机制，
+    // 2:在repo里需要获取QWeatherGeoRepo里的gpsDataState去请求网格天气api
+
     //==========================gps=========================
     private var gpsHolder: GpsHolder? = null
 
-    private fun stopGps() {
-        gpsHolder?.unRegisterListener()
+    /**
+     * 如果传true，则不论有无开启gps获取天气，都会关闭gps
+     */
+    private fun stopGps(realStop: Boolean = false) {
+        if (!AllPrefs.gpsAuto || realStop) {
+            gpsHolder?.unRegisterListener()
+        }
     }
 
     private fun queryGps() {
-        this requestThese perms explainReason null goToSetting null finally { allGranted, grantedList, deniedList ->
+        this requestThese gpsPerms explainReason null goToSetting null finally { allGranted, grantedList, deniedList ->
             if (gpsHolder == null) {
                 gpsHolder = GpsHolder.Instance.configGps(application) {
-                    this.requestUpdateDistanceInterval=0F
+                    this.requestUpdateDistanceInterval = 0F
                     myLocationListener = object : MyLocationListener {
                         override fun locationChanged(
                             holder: GpsHolder.DataHolder,
                             location: Location
                         ) {
-                            val lon =String.format("%.2f", location.longitude)
-                            val lat=String.format("%.2f", location.latitude)
-                            val str = "${lon},${lat}"
-                            //经纬度字符串
-                            QWeatherGeoRepo.gpsStrFlow.tryEmit(str)
-                            //经纬度实体
-                            val locationEntity = LocationEntity(lat= location.latitude.toString(),lon= location.longitude.toString())
-                            QWeatherGeoRepo.gpsDataState.value =locationEntity
+                            //通过gps添加位置信息或获取网格天气都是用的同一个方法，
+                            //因此，通过判断mainViewModel.addLocationActionState 判断，做到添加位置信息时不会错误填写
+                            if (mainViewModel.addLocationActionState.value) {
+                                val lon = String.format("%.2f", location.longitude)
+                                val lat = String.format("%.2f", location.latitude)
+                                val str = "${lon},${lat}"
+                                //经纬度字符串
+                                mainViewModel.addLocationStateHolder.gpsStr.tryEmit(str)
+                            }
+                            if (AllPrefs.gpsAuto) {
+                                //经纬度实体
+                                val locationEntity = LocationEntity(
+                                    lat = location.latitude.toString(),
+                                    lon = location.longitude.toString()
+                                )
+                                QWeatherGeoRepo.gpsDataState.value = locationEntity
+                            }
+
                         }
                     }
                 }
@@ -177,7 +196,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    val perms = listOf(
+    val gpsPerms = listOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
     )
