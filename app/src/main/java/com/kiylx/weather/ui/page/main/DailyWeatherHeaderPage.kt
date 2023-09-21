@@ -49,7 +49,7 @@ fun DailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntity>) 
         ) {
             //顶部信息
             Column(verticalArrangement = Arrangement.Center) {
-                if (AllPrefs.gridWeather) {
+                if (AllPrefs.gridWeather && AllPrefs.gpsAuto) {
                     //点击前往格点天气
                     Row(
                         horizontalArrangement = Arrangement.End,

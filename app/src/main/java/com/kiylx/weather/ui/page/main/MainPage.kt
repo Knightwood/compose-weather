@@ -135,14 +135,14 @@ fun LocationText(location: LocationEntity) {
 }
 
 @Composable
-fun LatLonText(location: LocationEntity) {
+fun LatLonText(location: LocationEntity,modifier:Modifier=Modifier) {
     //location text
     val locationText =
         location.toLatLonStr()
     Text(
         text = locationText,
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier
+        modifier = modifier
             .padding(16.dp, 8.dp)
     )
 }

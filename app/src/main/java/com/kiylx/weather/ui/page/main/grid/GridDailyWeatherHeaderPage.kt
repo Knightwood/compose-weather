@@ -29,6 +29,7 @@ import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.LocationEntity
+import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.ui.activitys.LocalNavController
 import com.kiylx.weather.ui.page.main.LatLonText
 
@@ -49,7 +50,16 @@ fun GridDailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntit
         ) {
             //顶部信息
             Column(verticalArrangement = Arrangement.Center) {
-                LatLonText(location)
+                //location text
+                val locationText =
+                    location.toLatLonStr()
+                Text(
+                    text = locationText,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(16.dp, 8.dp)
+                )
                 //icon and weather info
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -72,8 +82,7 @@ fun GridDailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntit
                     )
                 }
                 Text(
-                    text = "${data.data.text} " +
-                            "${stringResource(id = R.string.feels_like_str)}: ${data.data.feelsLike} $unit",
+                    text = "${data.data.text} ",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
