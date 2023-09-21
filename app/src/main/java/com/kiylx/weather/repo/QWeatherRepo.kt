@@ -26,7 +26,101 @@ object QWeatherRepo {
         Retrofit2Holder(AllPrefs.baseUrl).create(Api::class.java)
     }
 
-//<editor-fold desc="网络接口">
+    //<editor-fold desc="格点天气">
+    /**
+     * 获取实时天气
+     * 会查询本地副本
+     */
+    suspend fun getDailyReport_Grid(
+        location: LocationEntity,
+        unit: String = AllPrefs.unit,
+        lang: String = AllPrefs.lang,
+        noCache: Boolean = false
+    ): RawResponse<DailyEntity> {
+        val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
+        val res = handleApi3(
+            api.getGridDaily(
+                location.toLatLonStr(),
+                lang,
+                unit,
+                cacheTime
+            )
+        )
+        return res
+    }
+
+    /**
+     * 获取24小时天气
+     * 会查询本地副本
+     */
+    suspend fun getDailyHourReport_Grid(
+        location: LocationEntity,
+        unit: String = AllPrefs.unit,
+        lang: String = AllPrefs.lang,
+        noCache: Boolean = false
+    ): RawResponse<HourWeatherEntity> {
+        val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
+        val res =
+            //默认位置且开启gps更新，需要使用经纬度获取格点数据
+            handleApi3(
+                api.getGridHourWeather(
+                    location.toLatLonStr(),
+                    lang,
+                    unit,
+                    cacheTime
+                )
+            )
+
+        return res
+    }
+
+    /**
+     * 获取未来天气状况
+     * 会查询本地副本
+     */
+    suspend fun getDayReport_Grid(
+        location: LocationEntity,
+        type: Int = DayWeatherType.threeDayWeather,
+        unit: String = AllPrefs.unit,
+        lang: String = AllPrefs.lang,
+        noCache: Boolean = false
+    ): RawResponse<DayWeather> {
+        val cacheTime = if (noCache) null else AllPrefs.dayWeatherInterval.minutesToSeconds()
+        val res = handleApi3(
+            when (type) {
+                DayWeatherType.threeDayWeather -> {
+                    api.getGridDayWeather3d(
+                        location.toLatLonStr(),
+                        lang, unit, cacheTime
+                    )
+                }
+
+                DayWeatherType.sevenDayWeather -> {
+                    api.getGridDayWeather7d(
+                        location.toLatLonStr(),
+                        lang, unit, cacheTime
+                    )
+                }
+
+                DayWeatherType.fifteenDayWeather -> {
+                    api.getDayWeather15d(
+                        location.toLatLonStr(),
+                        lang,
+                        unit,
+                        cacheTime
+                    )
+                }
+
+                else -> {
+                    throw IllegalArgumentException("illegal type")
+                }
+            }
+        )
+        return res
+    }
+    //</editor-fold>
+
+//<editor-fold desc="网络接口-非格点天气">
     /**
      * 获取实时天气
      * 会查询本地副本
@@ -38,12 +132,7 @@ object QWeatherRepo {
         noCache: Boolean = false
     ): RawResponse<DailyEntity> {
         val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
-        val res = if (location.default && AllPrefs.gpsAuto) {
-            //默认位置且开启gps更新，需要使用经纬度获取格点数据
-            handleApi3(api.getGridDaily(QWeatherGeoRepo.gpsDataState.value.toLatLonStr(), lang, unit, cacheTime))
-        } else {
-            handleApi3(api.getDaily(location.id, lang, unit, cacheTime))
-        }
+        val res = handleApi3(api.getDaily(location.id, lang, unit, cacheTime))
         return res
     }
 
@@ -58,12 +147,7 @@ object QWeatherRepo {
         noCache: Boolean = false
     ): RawResponse<HourWeatherEntity> {
         val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
-        val res = if (location.default && AllPrefs.gpsAuto) {
-            //默认位置且开启gps更新，需要使用经纬度获取格点数据
-            handleApi3(api.getGridHourWeather(QWeatherGeoRepo.gpsDataState.value.toLatLonStr(), lang, unit, cacheTime))
-        } else {
-            handleApi3(api.getHourWeather(location.id, lang, unit, cacheTime))
-        }
+        val res = handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
         return res
     }
 
@@ -93,35 +177,20 @@ object QWeatherRepo {
         noCache: Boolean = false
     ): RawResponse<DayWeather> {
         val cacheTime = if (noCache) null else AllPrefs.dayWeatherInterval.minutesToSeconds()
-        val useGrid = location.default && AllPrefs.gpsAuto//是否使用格点天气查询
         val res = handleApi3(
             when (type) {
                 DayWeatherType.threeDayWeather -> {
-                    if (useGrid) {
-                        api.getGridDayWeather3d(
-                            QWeatherGeoRepo.gpsDataState.value.toLatLonStr(),
-                            lang, unit, cacheTime
-                        )
-                    } else {
-                        api.getDayWeather3d(
-                            location.toLatLonStr(),
-                            lang, unit, cacheTime
-                        )
-                    }
+                    api.getDayWeather3d(
+                        location.toLatLonStr(),
+                        lang, unit, cacheTime
+                    )
                 }
 
                 DayWeatherType.sevenDayWeather -> {
-                    if (useGrid) {
-                        api.getGridDayWeather7d(
-                            QWeatherGeoRepo.gpsDataState.value.toLatLonStr(),
-                            lang, unit, cacheTime
-                        )
-                    } else {
-                        api.getDayWeather7d(
-                            location.toLatLonStr(),
-                            lang, unit, cacheTime
-                        )
-                    }
+                    api.getDayWeather7d(
+                        location.toLatLonStr(),
+                        lang, unit, cacheTime
+                    )
                 }
 
                 DayWeatherType.fifteenDayWeather -> {

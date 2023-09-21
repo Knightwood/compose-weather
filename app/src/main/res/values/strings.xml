@@ -29,6 +29,12 @@
     <string name="next_step">下一步</string>
     <string name="add">添加</string>
     <string name="seven_days_in_the_future">未来七天</string>
+    <string name="settings">设置</string>
+    <string name="display_settings">深色主题、动态色彩</string>
+    <string name="cache_settings">调整网络请求缓存时间</string>
+    <string name="gps_auto_get_weather">获取当前位置格点天气</string>
+    <string name="gps_auto">始终更新默认位置</string>
+    <string name="dew">露点温度</string>
 
 
 </resources>

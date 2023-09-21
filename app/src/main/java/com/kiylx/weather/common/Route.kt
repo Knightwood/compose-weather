@@ -2,6 +2,7 @@ package com.kiylx.weather.common
 
 object Route {
     const val HOME = "home"
+    const val GRID_WEATHER="GRID_WEATHER"
 
     //位置管理
     const val LOCATION="LOCATION"
@@ -16,6 +17,8 @@ object Route {
     const val SPLASH_LOCATION_ADD_PAGE = "SPLASH_LOCATION_ADD_PAGE"
     const val LOCATION_ADD_PAGE = "LOCATION_ADD_PAGE"
 
+    //缓存设置
+    const val CACHE_PAGE="CACHE_PAGE"
     //设置页面集合（嵌套导航）
     const val SETTINGS = "settings"
 

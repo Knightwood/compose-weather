@@ -1,4 +1,4 @@
-package com.kiylx.weather.ui.page.main
+package com.kiylx.weather.ui.page.main.grid
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -15,8 +15,12 @@ import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.WarningEntity
+import com.kiylx.weather.ui.page.main.DayWeatherType
 
-class WeatherPagerStateHolder(location: LocationEntity) {
+/**
+ * 格点天气
+ */
+class GridWeatherPagerStateHolder(location: LocationEntity) {
     //位置信息
     val location: MutableState<LocationEntity> = mutableStateOf(location)
 
@@ -27,15 +31,6 @@ class WeatherPagerStateHolder(location: LocationEntity) {
     //  逐小时预报
     val dailyHourUiState: DataUiState<HourWeatherEntity> = DataUiState(HourWeatherEntity())
 
-    //天气预警 -当前
-    val warningNowUiState: DataUiState<WarningEntity> = DataUiState(WarningEntity())
-
-    //当天的天气指数
-    val todayIndicesData: DataUiState<IndicesEntity> = DataUiState(IndicesEntity())
-
-    // 5天的空气质量
-    val fiveDayAirData: DataUiState<DayAirEntity> = DataUiState(DayAirEntity())
-
     //三天的天气
     val threeDayWeatherData: DataUiState<DayWeather> = DataUiState(DayWeather())
 
@@ -43,15 +38,13 @@ class WeatherPagerStateHolder(location: LocationEntity) {
     //七天的天气
     val sevenDayWeatherData: DataUiState<DayWeather> = DataUiState(DayWeather())
 
-    //十五天的天气
-    val fifteenDayWeatherData: DataUiState<DayWeather> = DataUiState(DayWeather())
 
     /**
      * get weather info and update UiState
      */
     suspend fun getDailyData(noCache: Boolean = false) {
         dailyUiState.sendRequest {
-            QWeatherRepo.getDailyReport(location = location.value, noCache = noCache)
+            QWeatherRepo.getDailyReport_Grid(location = location.value, noCache = noCache)
         }
     }
 
@@ -60,7 +53,7 @@ class WeatherPagerStateHolder(location: LocationEntity) {
      */
     suspend fun getDailyHourWeatherData(noCache: Boolean = false) {
         dailyHourUiState.sendRequest {
-            QWeatherRepo.getDailyHourReport(location.value, noCache = noCache)
+            QWeatherRepo.getDailyHourReport_Grid(location.value, noCache = noCache)
         }
     }
 
@@ -68,55 +61,12 @@ class WeatherPagerStateHolder(location: LocationEntity) {
         val dayUiData = when (type) {
             DayWeatherType.threeDayWeather -> threeDayWeatherData
             DayWeatherType.sevenDayWeather -> sevenDayWeatherData
-            DayWeatherType.fifteenDayWeather -> fifteenDayWeatherData
             else -> throw IllegalArgumentException("illegal type")
         }
 
         dayUiData.sendRequest {
-            QWeatherRepo.getDayReport(location.value, type)
+            QWeatherRepo.getDayReport_Grid(location.value, type)
         }
-    }
-
-    /**
-     * 获取5天的空气质量
-     */
-    suspend fun get5DAir() {
-        fiveDayAirData.sendRequest {
-            QWeatherRepo.getDayAir(location.value)
-        }
-    }
-
-    /**
-     * 获取当天的天气指数
-     */
-    suspend fun getTodayIndices() {
-        todayIndicesData.sendRequest {
-            QWeatherRepo.getIndices1d(
-                location.value,
-                "1,2,3,9"
-            )
-        }
-    }
-
-    /**
-     * get weather warning
-     */
-    suspend fun getWarningNow() {
-        warningNowUiState.sendRequest {
-            QWeatherRepo.getWarningNow(
-                location.value,
-            )
-        }
-    }
-
-    suspend fun refresh() {
-        getDailyData()
-        getDailyHourWeatherData()
-        getDayWeatherData(DayWeatherType.threeDayWeather)
-        getDayWeatherData(DayWeatherType.sevenDayWeather)
-        get5DAir()
-        getTodayIndices()
-        getWarningNow()
     }
 
 }

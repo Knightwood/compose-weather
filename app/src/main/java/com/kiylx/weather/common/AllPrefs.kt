@@ -50,6 +50,12 @@ object AllPrefs {
      */
     var gpsAuto by mk.boolM("gpsAuto", false)
 
+    /**
+     * 是否查询格点天气
+     * 前提是gpsAuto需要为true
+     */
+    var gridWeather by mk.boolM("gridWeather",false)
+
 //</editor-fold>
 //<editor-fold desc="天气数据更新缓存时间周期">
     /**

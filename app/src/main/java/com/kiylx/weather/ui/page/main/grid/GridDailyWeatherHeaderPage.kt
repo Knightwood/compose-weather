@@ -1,4 +1,4 @@
-package com.kiylx.weather.ui.page.main
+package com.kiylx.weather.ui.page.main.grid
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,6 +30,7 @@ import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.ui.activitys.LocalNavController
+import com.kiylx.weather.ui.page.main.LatLonText
 
 class DailyWeatherHeaderPage {
 }
@@ -38,9 +39,8 @@ class DailyWeatherHeaderPage {
  * weather daily page header info
  */
 @Composable
-fun DailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntity>) {
+fun GridDailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntity>) {
     state.value.let { data ->
-        val navController = LocalNavController.current
         val unit = tempUnit()
         Surface(
             modifier = Modifier
@@ -49,32 +49,7 @@ fun DailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntity>) 
         ) {
             //顶部信息
             Column(verticalArrangement = Arrangement.Center) {
-                if (AllPrefs.gridWeather) {
-                    //点击前往格点天气
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.primaryContainer,
-                                    RoundedCornerShape(28.dp)
-                                )
-                                .clickable {
-                                    navController.navigate(Route.GRID_WEATHER)
-                                }
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-
-                        ) {
-                            Icon(imageVector = Icons.Filled.Info, contentDescription = null)
-                            Text(text = "格点天气")
-                        }
-                    }
-                }
-
+                LatLonText(location)
                 //icon and weather info
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -116,10 +91,6 @@ fun DailyWeatherHeaderPage(location: LocationEntity, state: State<DailyEntity>) 
                         Text(
                             text = "${stringResource(id = R.string.relative_humidity)}: ${data.data.humidity} %",
                             modifier = Modifier.padding(vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium,
-                        )
-                        Text(
-                            text = "${stringResource(id = R.string.vis)}: ${data.data.vis} 公里",
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }

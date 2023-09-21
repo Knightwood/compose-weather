@@ -3,8 +3,6 @@ package com.kiylx.weather.repo
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import com.kiylx.libx.http.kotlin.basic2.Resources2
-import com.kiylx.libx.http.kotlin.basic2.handleApi2
 import com.kiylx.libx.http.kotlin.basic3.handleApi3
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
@@ -13,7 +11,6 @@ import com.kiylx.weather.repo.api.GeoApi
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationListEntity
 import com.kiylx.weather.repo.local_file.LocalFile
-import kotlinx.coroutines.flow.MutableStateFlow
 
 object QWeatherGeoRepo {
     const val TAG = "QWeatherGeoRepo"
@@ -141,6 +138,16 @@ object QWeatherGeoRepo {
             val data = allLocationState.removeAt(pos)
             LocalFile.deleteLocation(pos)
         }
+    }
+
+    /**
+     * 更新某个坐标
+     * @param i allLocationState中的index
+     */
+    fun update(data: LocationEntity, i: Int) {
+        allLocationState[i] =data
+        deleteLocation(i)
+        LocalFile.writeLocation(data, i)
     }
 //</editor-fold>
 

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.location.*
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
@@ -89,6 +90,7 @@ class GpsHolder private constructor(){
     private fun openGPS2() {
         Toast.makeText(ctx,"需要打开gps的高精度选项",Toast.LENGTH_LONG).show()
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ctx.startActivity(intent)
     }
 
@@ -128,7 +130,15 @@ class GpsHolder private constructor(){
             if (b) {
                 Log.d(tag, "初始化")
                 // 为获取地理位置信息时设置查询条件
-                bestProvider = lm!!.getBestProvider(config.criteria, true)
+                bestProvider = if (config.usefused){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        LocationManager.FUSED_PROVIDER
+                    }else{
+                        lm!!.getBestProvider(config.criteria, true)
+                    }
+                }else{
+                    lm!!.getBestProvider(config.criteria, true)
+                }
                 //初始化高程转换文件
                 if (config.convertAltitude)
                     initGeoid(ctx)
@@ -255,6 +265,13 @@ class GpsHolder private constructor(){
                 super.onSatelliteStatusChanged(status)
             }
         }
+
+        /**
+         * 是否使用融合定位，如果为true，则获取定位时融合定位将取代criteria
+         * false时使用criteria而不是用融合定位
+         * 要求api在31以上才会有用
+         */
+        var usefused :Boolean =false
 
         var criteria: Criteria = Criteria().apply {
             // 设置定位精确度 Criteria.ACCURACY_COARSE比较粗略，Criteria.ACCURACY_FINE则比较精细

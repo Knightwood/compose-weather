@@ -5,8 +5,13 @@ import android.location.Location
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,14 +30,21 @@ import com.kiylx.libx.tools.sonser.gps.MyLocationListener
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
 import com.kiylx.compose_lib.common.animatedComposable
+import com.kiylx.compose_lib.theme3.ThemeHelper
+import com.kiylx.libx.http.kotlin.common.RawResponse
+import com.kiylx.weather.AppCtx
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.bean.LocationEntity
+import com.kiylx.weather.ui.page.GridWeatherPage
 import com.kiylx.weather.ui.page.LocationManagerPage
-import com.kiylx.weather.ui.page.SettingPage
+import com.kiylx.weather.ui.page.settings.SettingPage
 import com.kiylx.weather.ui.page.main.MainPage
+import com.kiylx.weather.ui.page.settings.CachePage
 import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
+import kotlinx.coroutines.launch
+
+val LocalNavController = staticCompositionLocalOf {NavController(AppCtx.instance) }
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
@@ -43,36 +55,51 @@ class MainActivity : AppCompatActivity() {
         setContent {
             DynamicTheme {
                 val navController = rememberNavController()
-                //构建导航
-                NavHost(navController = navController, startDestination = Route.HOME) {
-                    animatedComposable(route = Route.HOME) {
-                        val first = remember {
-                            AllPrefs.firstEnter
+                CompositionLocalProvider(LocalNavController provides navController) {
+                    //构建导航
+                    NavHost(navController = navController, startDestination = Route.HOME) {
+                        animatedComposable(route = Route.HOME) {
+                            val first = remember {
+                                AllPrefs.firstEnter
+                            }
+                            //打开应用的时候，把显示的第一个位置信息放上去
+                            //默认的state变量是直接生成的位置信息，default一定是false
+                            //所以可以通过这个来判断是否需要将真正的默认位置信息替换
+                            if (!QWeatherGeoRepo.gpsDataState.value.default) {
+                                QWeatherGeoRepo.gpsDataState.value =
+                                    QWeatherGeoRepo.allLocationState.find {
+                                        it.default
+                                    }!!
+                            }
+                            //如果开启gps实时定位获取网格天气
+                            if (AllPrefs.gpsAuto) {
+                                queryGps()
+                            } else {
+                                stopGps()
+                            }
+                            if (first) {
+                                navController.navigate(Route.SPLASH)
+                            } else {
+                                MainPage(
+                                    navigateToSettings = {
+                                        navController.navigate(Route.SETTINGS)
+                                    },
+                                    navigateToLocations = { navController.navigate(Route.LOCATION) },
+                                    viewModel = mainViewModel
+                                )
+                            }
                         }
-                        //如果开启gps实时定位获取网格天气
-                        if (AllPrefs.gpsAuto){
-                            queryGps()
+                        animatedComposable(Route.GRID_WEATHER) {
+                            GridWeatherPage(mainViewModel.gridWeatherStateHolder)
                         }
-                        if (first) {
-                            navController.navigate(Route.SPLASH)
-                        } else {
-                            MainPage(
-                                navigateToSettings = {
-                                    navController.navigate(Route.THEME)
-                                },
-                                navigateToLocations = { navController.navigate(Route.LOCATION) },
-                                viewModel = mainViewModel
-                            )
-                        }
+
+                        //位置添加页面
+                        buildLocationManagerPage(navController)
+                        //构建设置页面的嵌套导航
+                        buildSettingsPage(navController)
+                        buildSplashPage(navController)
                     }
-
-                    //位置添加页面
-                    buildLocationManagerPage(navController)
-                    //构建设置页面的嵌套导航
-                    buildSettingsPage(navController)
-                    buildSplashPage(navController)
                 }
-
             }
         }
     }
@@ -134,10 +161,13 @@ class MainActivity : AppCompatActivity() {
             animatedComposable(Route.SETTINGS_PAGE) {
                 SettingPage(navController)
             }
+            animatedComposable(Route.CACHE_PAGE) {
+                CachePage(navController)
+            }
             animatedComposable(Route.THEME) {
-                AppearancePreferences(navController = navController) {
+                AppearancePreferences(navController = navController, navToDarkMode = { ->
                     navController.navigate(Route.DARK_THEME)
-                }
+                })
             }
             animatedComposable(Route.DARK_THEME) {
                 DarkThemePreferences {
@@ -159,7 +189,11 @@ class MainActivity : AppCompatActivity() {
      * 如果传true，则不论有无开启gps获取天气，都会关闭gps
      */
     private fun stopGps(realStop: Boolean = false) {
-        if (!AllPrefs.gpsAuto || realStop) {
+        if (realStop) {
+            gpsHolder?.unRegisterListener()
+            return
+        }
+        if (!AllPrefs.gpsAuto && !mainViewModel.addLocationActionState.value) {
             gpsHolder?.unRegisterListener()
         }
     }
@@ -169,6 +203,7 @@ class MainActivity : AppCompatActivity() {
             if (gpsHolder == null) {
                 gpsHolder = GpsHolder.Instance.configGps(application) {
                     this.requestUpdateDistanceInterval = 0F
+                    this.requestUpdateInterval = 5 * 60 * 1000L
                     myLocationListener = object : MyLocationListener {
                         override fun locationChanged(
                             holder: GpsHolder.DataHolder,
@@ -185,11 +220,31 @@ class MainActivity : AppCompatActivity() {
                             }
                             if (AllPrefs.gpsAuto) {
                                 //经纬度实体
-                                val locationEntity = LocationEntity(
-                                    lat = location.latitude.toString(),
-                                    lon = location.longitude.toString()
-                                )
-                                QWeatherGeoRepo.gpsDataState.value = locationEntity
+                                QWeatherGeoRepo.gpsDataState.value =
+                                    QWeatherGeoRepo.gpsDataState.value.copy(
+                                        lat = location.latitude.toString(),
+                                        lon = location.longitude.toString(),
+                                        default = true,
+                                        gpsData = true,
+                                    )
+                                lifecycleScope.launch {
+                                    val lon = String.format("%.2f", location.longitude)
+                                    val lat = String.format("%.2f", location.latitude)
+                                    val str = "${lon},${lat}"
+                                    val rawResponse = QWeatherGeoRepo.queryCityList(location = str)
+                                    if (rawResponse is RawResponse.Success && rawResponse.responseData != null) {
+                                        rawResponse.responseData?.let {
+                                            //经纬度坐标查询不太可能会有两个地点，因此取了第一个去更新默认位置的信息
+                                            val locationData = it.data[0].copy(default = true)
+                                            QWeatherGeoRepo.update(locationData, 0)
+                                        }
+                                    }
+                                }
+                                //如果开启了格点天气，更新一下坐标
+                                if (AllPrefs.gridWeather) {
+                                    mainViewModel.gridWeatherStateHolder.location.value =
+                                        QWeatherGeoRepo.gpsDataState.value
+                                }
                             }
 
                         }
