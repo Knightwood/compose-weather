@@ -14,6 +14,7 @@ import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.LocationEntity
+import com.kiylx.weather.repo.bean.MinutelyPrecipitationEntity
 import com.kiylx.weather.repo.bean.WarningEntity
 
 class WeatherPagerStateHolder(location: LocationEntity) {
@@ -26,6 +27,9 @@ class WeatherPagerStateHolder(location: LocationEntity) {
 
     //  逐小时预报
     val dailyHourUiState: DataUiState<HourWeatherEntity> = DataUiState(HourWeatherEntity())
+
+    //  分钟级降水
+    val minutelyPrecipitationState: DataUiState<MinutelyPrecipitationEntity> = DataUiState(MinutelyPrecipitationEntity())
 
     //天气预警 -当前
     val warningNowUiState: DataUiState<WarningEntity> = DataUiState(WarningEntity())
@@ -61,6 +65,15 @@ class WeatherPagerStateHolder(location: LocationEntity) {
     suspend fun getDailyHourWeatherData(noCache: Boolean = false) {
         dailyHourUiState.sendRequest {
             QWeatherRepo.getDailyHourReport(location.value, noCache = noCache)
+        }
+    }
+
+    /**
+     * 获取分钟级降水
+     */
+    suspend fun getMinutelyPrecipitation(noCache: Boolean = false) {
+        minutelyPrecipitationState.sendRequest {
+            QWeatherRepo.getMinutelyPrecipitation(location.value, noCache = noCache)
         }
     }
 

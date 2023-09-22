@@ -7,6 +7,7 @@ import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
+import com.kiylx.weather.repo.bean.MinutelyPrecipitationEntity
 import com.kiylx.weather.repo.bean.WarningEntity
 import retrofit2.Call
 import retrofit2.http.GET
@@ -39,6 +40,16 @@ interface Api {
         @Query("lang") lang: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<WarningEntity>
+
+    /**
+     * 分钟级降水
+     */
+    @GET("v7/minutely/5m")
+    fun getMinutelyPrecipitation(
+        @Query("location") location: String,
+        @Query("lang") lang: String?,
+        @Header(CustomHeader.cacheTime) cacheTime: Long?
+    ): Call<MinutelyPrecipitationEntity>
 
     @GET("v7/weather/24h")
     fun getHourWeather(
@@ -117,7 +128,7 @@ interface Api {
         @Header(CustomHeader.cacheTime) cacheTime: Long?
     ): Call<DailyAirEntity>
     /**
-     * 每日空气质量
+     * 5天空气质量
      */
     @GET("v7/air/5d")
     fun getDayAir(
