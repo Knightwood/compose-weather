@@ -104,7 +104,7 @@ object ThemeHelper {
             isDynamicColorEnabled = isUseDynamicColor,
             themeColorSeed = seedColorInt,
             paletteStyleIndex = paletteStyleInt,
-            useDefaultTheme = true,
+            useDefaultTheme = useDefaultTheme,
         )
     )
     val AppSettingsStateFlow = themeSettingsFlow.asStateFlow()

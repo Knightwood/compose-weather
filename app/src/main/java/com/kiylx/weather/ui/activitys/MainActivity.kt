@@ -44,7 +44,7 @@ import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
 import kotlinx.coroutines.launch
 
-val LocalNavController = staticCompositionLocalOf {NavController(AppCtx.instance) }
+val LocalNavController = staticCompositionLocalOf<NavHostController> { error("没有提供值！") }
 
 class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
-            DynamicTheme {
-                val navController = rememberNavController()
-                CompositionLocalProvider(LocalNavController provides navController) {
+            val navController = rememberNavController()
+            CompositionLocalProvider(LocalNavController provides navController) {
+                DynamicTheme {
                     //构建导航
                     NavHost(navController = navController, startDestination = Route.HOME) {
                         animatedComposable(route = Route.HOME) {

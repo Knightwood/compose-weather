@@ -4,10 +4,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.DisplaySettings
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.GpsNotFixed
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -32,8 +35,10 @@ import com.kiylx.compose_lib.component.SettingItem
 import com.kiylx.compose_lib.component.SettingTitle
 import com.kiylx.compose_lib.component.SmallTopAppBar
 import com.kiylx.weather.R
+import com.kiylx.weather.common.AUnit
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
+import com.kiylx.weather.common.WindUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +48,15 @@ fun SettingPage(navController: NavHostController) {
     }
     var gridWeatherState by remember {
         mutableStateOf(AllPrefs.gridWeather)
+    }
+    var unitState by remember {
+        mutableStateOf(AllPrefs.unit == AUnit.MetricUnits.param)
+    }
+    var speedUnitState by remember {
+        mutableStateOf(AllPrefs.windUnit == WindUnit.Km)
+    }
+    var langState by remember {
+        mutableStateOf(AllPrefs.lang)
     }
     // 滑动的行为
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -84,22 +98,46 @@ fun SettingPage(navController: NavHostController) {
                         icon = if (gridWeatherState) Icons.Filled.GpsFixed else Icons.Filled.GpsNotFixed,
                         isChecked = gridWeatherState
                     ) {
-                        gridWeatherState=it
+                        gridWeatherState = it
                         AllPrefs.gridWeather = it
                     }
                 }
             }
             item {
-                PreferenceItem(
-                    title = "缓存设置", description = stringResource(
-                        id = R.string.cache_settings
-                    ), icon = Icons.Filled.Cached
+                PreferenceSwitch(
+                    title = "温度单位",
+                    description = stringResource(R.string.use_metric_unit),
+                    icon = Icons.Filled.Public,
+                    isChecked = unitState
                 ) {
-                    navController.navigate(Route.CACHE_PAGE) {
-                        launchSingleTop = true
-                    }
+                    unitState = it
+                    AllPrefs.unit = if (it) AUnit.MetricUnits.param else
+                        AUnit.ImperialUnits.param
                 }
             }
+            item {
+                PreferenceSwitch(
+                    title = "风速单位",
+                    description = stringResource(R.string.wind_speed_use_km_unit),
+                    icon = Icons.Filled.AcUnit,
+                    isChecked = speedUnitState
+                ) {
+                    speedUnitState = it
+                    AllPrefs.windUnit = if (it) WindUnit.Km else
+                        WindUnit.BeaufortScale
+                }
+            }
+//            item {
+//                PreferenceItem(
+//                    title = "缓存设置", description = stringResource(
+//                        id = R.string.cache_settings
+//                    ), icon = Icons.Filled.Cached
+//                ) {
+//                    navController.navigate(Route.CACHE_PAGE) {
+//                        launchSingleTop = true
+//                    }
+//                }
+//            }
             item {
                 SettingItem(
                     title = "显示", description = stringResource(

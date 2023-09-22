@@ -35,6 +35,9 @@
     <string name="gps_auto_get_weather">获取当前位置格点天气</string>
     <string name="gps_auto">始终更新默认位置</string>
     <string name="dew">露点温度</string>
+    <string name="use_metric_unit">使用公制单位</string>
+    <string name="three_day_report">三天预报</string>
+    <string name="wind_speed_use_km_unit">风速单位使用km/h</string>
 
 
 </resources>
