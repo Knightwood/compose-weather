@@ -43,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
-import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
@@ -65,7 +64,7 @@ class MainPage {
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun MainPage(
+fun DailyWeatherMainPage(
     viewModel: MainViewModel,
     navigateToSettings: () -> Unit,
     navigateToLocations: () -> Unit,
@@ -154,8 +153,6 @@ fun LatLonText(location: LocationEntity,modifier:Modifier=Modifier) {
  */
 @Composable
 fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) {
-    //位置信息
-    val location = weatherPagerStateHolder.location.value
     //当天的天气状况
     val data = weatherPagerStateHolder.dailyUiState
 
@@ -211,7 +208,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            DailyWeatherHeaderPage(location = location, state = pageData)
+            DailyWeatherHeaderPage(state = pageData)
             //上面是大概的信息
             //下面是其他数据,每行都是双列
             //tab切换页
@@ -251,18 +248,18 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             }
             when (tabIndex) {
                 0 -> {
-                    DailyWeatherInfo(stateHolder = weatherPagerStateHolder)
+                    DailyWeatherBodyPage(stateHolder = weatherPagerStateHolder)
                 }
 
                 1 -> {
-                    DayWeather(
+                    MutliDayWeatherPage(
                         stateHolder = weatherPagerStateHolder,
                         type = DayWeatherType.sevenDayWeather
                     )
                 }
 
                 2 -> {
-                    DayWeather(
+                    MutliDayWeatherPage(
                         stateHolder = weatherPagerStateHolder,
                         type = DayWeatherType.fifteenDayWeather
                     )

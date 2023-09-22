@@ -25,14 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
-import com.kiylx.weather.ui.page.main.DailyWeatherHeaderPage
-import com.kiylx.weather.ui.page.main.DailyWeatherInfo
-import com.kiylx.weather.ui.page.main.DayWeather
 import com.kiylx.weather.ui.page.main.DayWeatherType
-import com.kiylx.weather.ui.page.main.WeatherPagerStateHolder
 import com.kiylx.weather.ui.page.main.grid.GridDailyWeatherHeaderPage
 import com.kiylx.weather.ui.page.main.grid.GridDailyWeatherInfo
 import com.kiylx.weather.ui.page.main.grid.GridDayWeather

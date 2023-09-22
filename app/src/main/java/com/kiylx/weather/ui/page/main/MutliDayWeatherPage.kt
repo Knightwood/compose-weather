@@ -1,7 +1,6 @@
 package com.kiylx.weather.ui.page.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,13 +8,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,24 +20,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AUnit
 import com.kiylx.weather.common.AllPrefs
-import com.kiylx.weather.common.WindUnit
-import com.kiylx.weather.common.tempUnit
-import com.kiylx.weather.common.windUnit
 import com.kiylx.weather.icon.WeatherIcon
 import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.ui.page.component.TitleCard
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.function.Function
 import java.util.stream.Collectors
 
@@ -50,7 +39,7 @@ import java.util.stream.Collectors
  * get multi day weather and show info
  */
 @Composable
-fun DayWeather(
+fun MutliDayWeatherPage(
     stateHolder: WeatherPagerStateHolder,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(8.dp),
@@ -129,7 +118,7 @@ fun DayWeather(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " - " + it.category
+                            dateStr + " - " + it.category+" ${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {
@@ -232,7 +221,7 @@ fun ThreeDayWeather(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " - " + it.category
+                            dateStr + " - " + it.category+" ${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {

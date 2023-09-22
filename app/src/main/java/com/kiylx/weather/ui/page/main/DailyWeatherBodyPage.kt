@@ -52,7 +52,9 @@ import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.OneDayWeather
+import com.kiylx.weather.repo.bean.WarningEntity
 import com.kiylx.weather.ui.page.component.TitleCard
+import kotlinx.coroutines.CoroutineScope
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.function.Function
@@ -61,7 +63,7 @@ import java.util.stream.Collectors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
+fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
     val dailyState: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()
     val todayIndicesState = stateHolder.todayIndicesData.asDataFlow().collectAsState()
     val todayHourWeatherState = stateHolder.dailyHourUiState.asDataFlow().collectAsState()
@@ -79,48 +81,11 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
     val warnBottomSheetHolder by remember {
         mutableStateOf(MBottomSheetHolder())
     }
-
     Surface {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            //warning card
+            //天气预警
             if (warningNowState.value.data.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
-                        .background(
-                            MaterialTheme.colorScheme.errorContainer,
-                            RoundedCornerShape(8.dp)
-                        )
-                        .clickable {
-                            warnBottomSheetHolder.show()
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Warning,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .weight(1f)
-                    )
-                    Text(
-                        text = warningNowState.value.data[0].title,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .weight(5f),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.ArrowCircleRight,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .weight(1f),
-                    )
-                }
+                WarningBar(warnBottomSheetHolder, warningNowState)
             }
             // 当前的天气变化横向列表
             Today24HourWeather(todayHourWeatherState)
@@ -133,61 +98,51 @@ fun DailyWeatherInfo(stateHolder: WeatherPagerStateHolder) {
 
         }
     }
+    //天气预警BottomSheet
+    WarningBottomSheet(warnBottomSheetHolder, scope, warningNowState)
+}
 
-    //天气预警
-    MBottomSheet(
-        sheetHolder = warnBottomSheetHolder,
-        scope = scope
+@Composable
+private fun WarningBar(
+    warnBottomSheetHolder: MBottomSheetHolder,
+    warningNowState: State<WarningEntity>
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+            .background(
+                MaterialTheme.colorScheme.errorContainer,
+                RoundedCornerShape(8.dp)
+            )
+            .clickable {
+                warnBottomSheetHolder.show()
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        LazyColumn(
+        Icon(
+            imageVector = Icons.Filled.Warning,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            items(warningNowState.value.data.size) {
-                val warningNote = warningNowState.value.data[it]
-                Surface {
-                    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
-                        Row {
-                            WeatherIcon(code = warningNote.type.toInt())
-                            Text(
-                                text = warningNote.title,
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                        Text(
-                            text = warningNote.text,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
-                        )
-                        val pubTime = LocalDateTime.parse(
-                            warningNote.pubTime,
-                            DateTimeFormatter.ISO_OFFSET_DATE_TIME
-                        ).format(LocalDateUtil.ymdhmsFormatter)
-                        Text(
-                            text = pubTime, modifier = Modifier
-                                .align(Alignment.End)
-                                .padding(4.dp)
-                        )
-                    }
-                }
-            }
-            item {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp), horizontalArrangement = Arrangement.End
-                ) {
-                    Button(
-                        onClick = {
-                            warnBottomSheetHolder.hide(scope)
-                        }
-                    ) {
-                        Text(stringResource(id = com.kiylx.compose_lib.R.string.confirm))
-                    }
-                }
-            }
-        }
+                .padding(8.dp)
+                .weight(1f)
+        )
+        Text(
+            text = warningNowState.value.data[0].title,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(5f),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Icon(
+            imageVector = Icons.Filled.ArrowCircleRight,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(8.dp)
+                .weight(1f),
+        )
     }
 }
 
@@ -398,6 +353,68 @@ private fun DayIndices(todayIndicesState: State<IndicesEntity>) {
                         iconSize = 38.dp,
                         text = indiectMap["9"]?.category ?: "",
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WarningBottomSheet(
+    warnBottomSheetHolder: MBottomSheetHolder,
+    scope: CoroutineScope,
+    warningNowState: State<WarningEntity>
+) {
+    MBottomSheet(
+        sheetHolder = warnBottomSheetHolder,
+        scope = scope
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            items(warningNowState.value.data.size) {
+                val warningNote = warningNowState.value.data[it]
+                Surface {
+                    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)) {
+                        Row {
+                            WeatherIcon(code = warningNote.type.toInt())
+                            Text(
+                                text = warningNote.title,
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                        Text(
+                            text = warningNote.text,
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)
+                        )
+                        val pubTime = LocalDateTime.parse(
+                            warningNote.pubTime,
+                            DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                        ).format(LocalDateUtil.ymdhmsFormatter)
+                        Text(
+                            text = pubTime, modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(4.dp)
+                        )
+                    }
+                }
+            }
+            item {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp), horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = {
+                            warnBottomSheetHolder.hide(scope)
+                        }
+                    ) {
+                        Text(stringResource(id = com.kiylx.compose_lib.R.string.confirm))
+                    }
                 }
             }
         }

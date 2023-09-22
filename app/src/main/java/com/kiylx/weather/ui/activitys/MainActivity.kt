@@ -6,12 +6,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,14 +28,12 @@ import com.kiylx.libx.tools.sonser.gps.MyLocationListener
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
 import com.kiylx.compose_lib.common.animatedComposable
-import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.libx.http.kotlin.common.RawResponse
-import com.kiylx.weather.AppCtx
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.ui.page.GridWeatherPage
 import com.kiylx.weather.ui.page.LocationManagerPage
 import com.kiylx.weather.ui.page.settings.SettingPage
-import com.kiylx.weather.ui.page.main.MainPage
+import com.kiylx.weather.ui.page.main.DailyWeatherMainPage
 import com.kiylx.weather.ui.page.settings.CachePage
 import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
@@ -80,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                             if (first) {
                                 navController.navigate(Route.SPLASH)
                             } else {
-                                MainPage(
+                                DailyWeatherMainPage(
                                     navigateToSettings = {
                                         navController.navigate(Route.SETTINGS)
                                     },
