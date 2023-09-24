@@ -81,6 +81,9 @@ dependencies {
     //下拉刷新，上拉加载
     implementation("io.github.loren-moon:composesmartrefresh:1.2.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    //图表
+    // https://mvnrepository.com/artifact/com.himanshoe/charty
+//    implementation("com.himanshoe:charty:2.0.0-alpha01")
 
     //test
     testImplementation("junit:junit:4.13.2")

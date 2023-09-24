@@ -69,7 +69,8 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
     val todayIndicesState = stateHolder.todayIndicesData.asDataFlow().collectAsState()
     val todayHourWeatherState = stateHolder.dailyHourUiState.asDataFlow().collectAsState()
     val warningNowState = stateHolder.warningNowUiState.asDataFlow().collectAsState()
-    val minutelyPrecipitationState = stateHolder.minutelyPrecipitationState.asDataFlow().collectAsState()
+    val minutelyPrecipitationState =
+        stateHolder.minutelyPrecipitationState.asDataFlow().collectAsState()
     // 空气质量信息和杂项
     val toDayWeatherState = stateHolder.threeDayWeatherData.asDataFlow().collectAsState()
     val toDayWeather = toDayWeatherState.value.data[0]
@@ -78,7 +79,7 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
         stateHolder.getTodayIndices() //天气指数
         stateHolder.getDailyHourWeatherData() //逐小时预报
         stateHolder.getWarningNow()//天气预警
-        stateHolder.getMinutelyPrecipitation()//降水预报
+//        stateHolder.getMinutelyPrecipitation()//降水预报
     }
     val scope = rememberCoroutineScope()
     val warnBottomSheetHolder by remember {
@@ -90,9 +91,22 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
             if (warningNowState.value.data.isNotEmpty()) {
                 WarningBar(warnBottomSheetHolder, warningNowState)
             }
-            if (minutelyPrecipitationState.value.data.isNotEmpty()){
-                TitleCard(icon=Icons.Filled.Info, title = minutelyPrecipitationState.value.summary){
+            if (minutelyPrecipitationState.value.data.isNotEmpty()) {
+                TitleCard(
+                    icon = Icons.Filled.Info,
+                    title = minutelyPrecipitationState.value.summary
+                ) {
                     //柱状图
+//                    val data = minutelyPrecipitationState.value.data.mapIndexed {index,it->
+//                       val str= if (index==0){
+//                            "当前"
+//                        }else if (index ==minutelyPrecipitationState.value.data.size/2){
+//                            "一小时后"
+//                       }else{
+//                           "两小时后"
+//                       }
+//
+//                    }
 
                 }
             }

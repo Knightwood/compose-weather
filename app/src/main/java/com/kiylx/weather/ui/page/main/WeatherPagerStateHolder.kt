@@ -2,10 +2,7 @@ package com.kiylx.weather.ui.page.main
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.libx.http.kotlin.basic3.flow.DataUiState
-import com.kiylx.libx.http.kotlin.common.RawResponse
-import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.http.sendRequest
 import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
@@ -73,7 +70,7 @@ class WeatherPagerStateHolder(location: LocationEntity) {
      */
     suspend fun getMinutelyPrecipitation(noCache: Boolean = false) {
         minutelyPrecipitationState.sendRequest {
-            QWeatherRepo.getMinutelyPrecipitation(location.value, noCache = noCache)
+            QWeatherRepo.getMinutelyPrecipitation(location.value, noCache = noCache, lang = "zh")
         }
     }
 

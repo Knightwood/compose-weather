@@ -16,9 +16,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
+import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
 import com.kiylx.libx.tools.goToSetting
@@ -27,14 +29,13 @@ import com.kiylx.libx.tools.sonser.gps.GpsHolder
 import com.kiylx.libx.tools.sonser.gps.MyLocationListener
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
-import com.kiylx.compose_lib.common.animatedComposable
-import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.weather.repo.QWeatherGeoRepo
+import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.ui.page.GridWeatherPage
 import com.kiylx.weather.ui.page.LocationManagerPage
-import com.kiylx.weather.ui.page.settings.SettingPage
 import com.kiylx.weather.ui.page.main.DailyWeatherMainPage
 import com.kiylx.weather.ui.page.settings.CachePage
+import com.kiylx.weather.ui.page.settings.SettingPage
 import com.kiylx.weather.ui.page.splash.AddLocationPage
 import com.kiylx.weather.ui.page.splash.KeySplash
 import com.kiylx.weather.ui.page.splash.MainSplashPage
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                                 QWeatherGeoRepo.gpsDataState.value =
                                     QWeatherGeoRepo.allLocationState.find {
                                         it.default
-                                    }!!
+                                    }?: LocationEntity()
                             }
                             //如果开启gps实时定位获取网格天气
                             if (AllPrefs.gpsAuto) {

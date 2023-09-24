@@ -24,7 +24,7 @@ data class MinutelyPrecipitationEntity(
         @SerialName("fxTime")
         val fxTime: String = "",
         @SerialName("precip")
-        val precip: String = "",
+        val precip: String = "0",
         @SerialName("type")
         val type: String = ""
     )
