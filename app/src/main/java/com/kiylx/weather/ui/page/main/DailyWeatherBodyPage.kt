@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -54,10 +55,13 @@ import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.OneDayWeather
 import com.kiylx.weather.repo.bean.WarningEntity
+import com.kiylx.weather.ui.page.component.RainLineChart
+import com.kiylx.weather.ui.page.component.RainLineChartData
 import com.kiylx.weather.ui.page.component.TitleCard
 import kotlinx.coroutines.CoroutineScope
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Collections
 import java.util.function.Function
 import java.util.stream.Collectors
 
@@ -79,7 +83,7 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
         stateHolder.getTodayIndices() //天气指数
         stateHolder.getDailyHourWeatherData() //逐小时预报
         stateHolder.getWarningNow()//天气预警
-//        stateHolder.getMinutelyPrecipitation()//降水预报
+        stateHolder.getMinutelyPrecipitation()//降水预报
     }
     val scope = rememberCoroutineScope()
     val warnBottomSheetHolder by remember {
@@ -91,23 +95,30 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
             if (warningNowState.value.data.isNotEmpty()) {
                 WarningBar(warnBottomSheetHolder, warningNowState)
             }
-            if (minutelyPrecipitationState.value.data.isNotEmpty()) {
+            val rainData = minutelyPrecipitationState.value
+            if (rainData.data.isNotEmpty()) {
+                val list = rainData.data.map {
+                    it.precip.toDouble()
+                }
+                val min = Collections.min(list)
+                val max = Collections.max(list)
+                val average = (max - min) / 2
                 TitleCard(
                     icon = Icons.Filled.Info,
-                    title = minutelyPrecipitationState.value.summary
+                    title = rainData.summary
                 ) {
                     //柱状图
-//                    val data = minutelyPrecipitationState.value.data.mapIndexed {index,it->
-//                       val str= if (index==0){
-//                            "当前"
-//                        }else if (index ==minutelyPrecipitationState.value.data.size/2){
-//                            "一小时后"
-//                       }else{
-//                           "两小时后"
-//                       }
-//
-//                    }
-
+                    RainLineChart(
+                        data = RainLineChartData(
+                            data = rainData.data,
+                            xAxisData = listOf("当前", "一小时后", "两小时后"),
+                            yAxisData = listOf(min.toString(), average.toString(), max.toString())
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .padding(16.dp),
+                    )
                 }
             }
             // 当前的天气变化横向列表
