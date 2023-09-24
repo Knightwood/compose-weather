@@ -1,20 +1,13 @@
 package com.kiylx.weather.ui.page.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,8 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +27,7 @@ import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.ui.activitys.LocalNavController
+import com.kiylx.weather.ui.page.component.InfoBar
 
 
 /**
@@ -77,7 +69,7 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
                             )
                         }
 
-                        VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 2.dp)
+                        VerticalDivider(thickness = 2.dp)
                         Column {
 
                             Text(
@@ -153,32 +145,3 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
 
 }
 
-@Composable
-fun InfoBar(
-    modifier: Modifier, painter: Painter,
-    contentDescription: String?,
-    text: String,
-    tint: Color = LocalContentColor.current,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .background(
-                MaterialTheme.colorScheme.primaryContainer,
-                RoundedCornerShape(28.dp)
-            )
-            .clickable {
-                onClick()
-            },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painter = painter,
-            modifier = Modifier.padding(start=8.dp,top=8.dp,bottom=8.dp,end=4.dp),
-            contentDescription = contentDescription,
-            tint = tint
-        )
-        Text(text = text, modifier = Modifier.padding(end = 16.dp))
-    }
-}

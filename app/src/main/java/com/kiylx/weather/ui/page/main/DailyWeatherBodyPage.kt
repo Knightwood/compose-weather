@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTimeFilled
 import androidx.compose.material.icons.filled.ArrowCircleRight
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -68,6 +69,7 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
     val todayIndicesState = stateHolder.todayIndicesData.asDataFlow().collectAsState()
     val todayHourWeatherState = stateHolder.dailyHourUiState.asDataFlow().collectAsState()
     val warningNowState = stateHolder.warningNowUiState.asDataFlow().collectAsState()
+    val minutelyPrecipitationState = stateHolder.minutelyPrecipitationState.asDataFlow().collectAsState()
     // 空气质量信息和杂项
     val toDayWeatherState = stateHolder.threeDayWeatherData.asDataFlow().collectAsState()
     val toDayWeather = toDayWeatherState.value.data[0]
@@ -76,6 +78,7 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
         stateHolder.getTodayIndices() //天气指数
         stateHolder.getDailyHourWeatherData() //逐小时预报
         stateHolder.getWarningNow()//天气预警
+        stateHolder.getMinutelyPrecipitation()//降水预报
     }
     val scope = rememberCoroutineScope()
     val warnBottomSheetHolder by remember {
@@ -86,6 +89,12 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
             //天气预警
             if (warningNowState.value.data.isNotEmpty()) {
                 WarningBar(warnBottomSheetHolder, warningNowState)
+            }
+            if (minutelyPrecipitationState.value.data.isNotEmpty()){
+                TitleCard(icon=Icons.Filled.Info, title = minutelyPrecipitationState.value.summary){
+                    //柱状图
+
+                }
             }
             // 当前的天气变化横向列表
             Today24HourWeather(todayHourWeatherState)
