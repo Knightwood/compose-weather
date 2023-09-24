@@ -100,6 +100,7 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
                 val list = rainData.data.map {
                     it.precip.toDouble()
                 }
+                val formatStr ="%.2f"
                 val min = Collections.min(list)
                 val max = Collections.max(list)
                 val average = (max - min) / 2
@@ -112,7 +113,7 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
                         data = RainLineChartData(
                             data = rainData.data,
                             xAxisData = listOf("当前", "一小时后", "两小时后"),
-                            yAxisData = listOf(min.toString(), average.toString(), max.toString())
+                            yAxisData = listOf(formatStr.format(min), formatStr.format(average), formatStr.format(max))
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
