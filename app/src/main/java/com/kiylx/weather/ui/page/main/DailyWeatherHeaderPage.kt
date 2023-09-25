@@ -41,7 +41,7 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 16.dp, top = 18.dp)
+                .padding(bottom = 8.dp, top = 8.dp)
         ) {
             //顶部信息
             Column(modifier = Modifier.fillMaxWidth()) {

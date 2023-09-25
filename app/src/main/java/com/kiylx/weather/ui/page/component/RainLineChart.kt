@@ -62,6 +62,7 @@ fun RainLineChart(
             color = textColor
         })
     }
+    val cornerPathEffect = CornerPathEffect(16f)
     val linePaint: Paint_N by remember {
         mutableStateOf(Paint_N().apply {
             isAntiAlias = true
@@ -69,7 +70,6 @@ fun RainLineChart(
             style = Paint_N.Style.STROKE
             color = axisLineColor
             strokeJoin = Paint.Join.ROUND
-            val cornerPathEffect = CornerPathEffect(200f)
             pathEffect = cornerPathEffect
         })
     }
@@ -80,7 +80,6 @@ fun RainLineChart(
             isAntiAlias = true
             color = dataLineColor
             strokeJoin = Paint.Join.ROUND
-            val cornerPathEffect = CornerPathEffect(200f)
             pathEffect = cornerPathEffect
         })
 
@@ -90,6 +89,8 @@ fun RainLineChart(
         mutableStateOf(Paint_N().apply {
             style = Paint_N.Style.FILL
             color = gradientLineColor
+            strokeJoin = Paint.Join.ROUND
+            pathEffect = cornerPathEffect
         })
 
     }
@@ -338,15 +339,15 @@ private fun DrawScope.drawCubtoCircle(
     translate_x: Int,
     strokeWidth: Dp
 ) {
-    val realWidth: Float = size.width - translate_x
+    val realWidth: Float = size.width - translate_x-15
     val canvasPath = Path_N()
-    val danweiX = realWidth / dataList.size
+    val danweiX = realWidth / (dataList.size - 1)
 
     dataGradientPaint.strokeWidth = 2f
     val maxValue = Collections.max(dataList)
     val minValue = Collections.min(dataList)
 
-    for (index in 0 until dataList.size - 1) {
+    for (index in dataList.indices) {
         //从原点开始不停的把点连起来
         canvasPath.lineTo(
             index * danweiX,//x的坐标就是把index均匀放在x轴上
