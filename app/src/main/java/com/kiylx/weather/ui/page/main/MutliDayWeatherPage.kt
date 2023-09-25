@@ -196,18 +196,17 @@ fun ThreeDayWeather(
         //内容
         Column(
             modifier = Modifier
-                .fillMaxWidth().padding(vertical = 8.dp),
+                .fillMaxWidth().padding(horizontal = 16.dp),
         ) {
             repeat(data.value.data.size) {
                 val oneDayWeather = data.value.data[it]
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                            .padding(bottom = 8.dp, start=8.dp,end=8.dp)
                             .align(Alignment.CenterStart)
                     ) {
                         val fxDate = LocalDate.parse(oneDayWeather.fxDate)
@@ -244,16 +243,16 @@ fun ThreeDayWeather(
                             Text(text = "${oneDayWeather.tempMax} $unit")
                             Text(text = "${oneDayWeather.tempMin} $unit")
                         }
-                        //显示白天还是晚上的天气图标
+                        //display night or day icon
                         if (nowTime.hour in 6..18) {
                             WeatherIcon(
                                 code = oneDayWeather.iconDay.toInt(),
-                                modifier = Modifier.align(Alignment.CenterVertically),
+                                modifier = Modifier.align(Alignment.CenterVertically).padding(4.dp),
                             )
                         } else {
                             WeatherIcon(
                                 code = oneDayWeather.iconNight.toInt(),
-                                modifier = Modifier.align(Alignment.CenterVertically),
+                                modifier = Modifier.align(Alignment.CenterVertically).padding(4.dp),
                             )
                         }
                         // todo 未来还可以添加按钮跳转详情页

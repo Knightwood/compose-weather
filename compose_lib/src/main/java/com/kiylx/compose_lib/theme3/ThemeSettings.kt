@@ -46,7 +46,7 @@ object ThemeHelper {
     const val DEFAULT_COLOR_SEED: Int = 0xFF6750A4.toInt()
     const val DEFAULT_HIGH_CONTRAST_VALUE_0 = 0.0
     const val DEFAULT_HIGH_CONTRAST_VALUE_1 = 0.0
-    const val DEFAULT_DARK_MODE = DarkThemePrefs.OFF
+    const val DEFAULT_DARK_MODE = DarkThemePrefs.FOLLOW_SYSTEM
 
     //<editor-fold desc="偏好值">
     val kv = MMKV.defaultMMKV()

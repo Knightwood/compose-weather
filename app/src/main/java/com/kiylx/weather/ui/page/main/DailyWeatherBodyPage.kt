@@ -36,6 +36,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -58,6 +60,7 @@ import com.kiylx.weather.repo.bean.WarningEntity
 import com.kiylx.weather.ui.page.component.RainLineChart
 import com.kiylx.weather.ui.page.component.RainLineChartData
 import com.kiylx.weather.ui.page.component.TitleCard
+import com.kiylx.weather.ui.page.component.TwoIconTitleBar
 import kotlinx.coroutines.CoroutineScope
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -96,29 +99,38 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
                 WarningBar(warnBottomSheetHolder, warningNowState)
             }
             val rainData = minutelyPrecipitationState.value
-            if (rainData.data.isNotEmpty()) {
-                val list = rainData.data.map {
-                    it.precip.toDouble()
-                }
-                val formatStr ="%.2f"
-                val min = Collections.min(list)
-                val max = Collections.max(list)
-                val average = (max - min) / 2
-                TitleCard(
-                    icon = Icons.Filled.Info,
-                    title = rainData.summary
-                ) {
+            val list = rainData.data.map {
+                it.precip.toDouble()
+            }
+            val showLineChart = list.find {
+                it != 0.0
+            }
+            TitleCard(
+                icon = Icons.Filled.Info,
+                title = rainData.summary
+            ) {
+                if (showLineChart != null) {
+                    val formatStr = "%.2f"
+                    val min = Collections.min(list)
+                    val max = Collections.max(list)
+                    val average = (max - min) / 2
                     //柱状图
                     RainLineChart(
                         data = RainLineChartData(
                             data = rainData.data,
-                            xAxisData = listOf("当前", "一小时后", "两小时后"),
-                            yAxisData = listOf(formatStr.format(min), formatStr.format(average), formatStr.format(max))
+                            xAxisLabels = listOf("当前", "一小时后", "两小时后"),
+                            yAxisLabels = listOf(
+                                formatStr.format(min),
+                                formatStr.format(average),
+                                formatStr.format(max)
+                            )
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
                             .padding(16.dp),
+                        textColor = MaterialTheme.colorScheme.onSecondaryContainer.toArgb(),
+                        dataLineColor = MaterialTheme.colorScheme.secondary.toArgb(),
                     )
                 }
             }
@@ -142,43 +154,20 @@ private fun WarningBar(
     warnBottomSheetHolder: MBottomSheetHolder,
     warningNowState: State<WarningEntity>
 ) {
-    Row(
+    TwoIconTitleBar(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
             .background(
                 MaterialTheme.colorScheme.errorContainer,
                 RoundedCornerShape(8.dp)
-            )
-            .clickable {
-                warnBottomSheetHolder.show()
-            },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            ),
+        startPainter = rememberVectorPainter(image = Icons.Filled.Warning),
+        startPainterTint = MaterialTheme.colorScheme.error,
+        text = warningNowState.value.data[0].title,
+        endPainter = rememberVectorPainter(image = Icons.Filled.ArrowCircleRight)
     ) {
-        Icon(
-            imageVector = Icons.Filled.Warning,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(1f)
-        )
-        Text(
-            text = warningNowState.value.data[0].title,
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(5f),
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Icon(
-            imageVector = Icons.Filled.ArrowCircleRight,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(1f),
-        )
+        warnBottomSheetHolder.show()
     }
+
 }
 
 
@@ -206,7 +195,7 @@ private fun Today24HourWeather(todayHourWeatherState: State<HourWeatherEntity>) 
                 Surface(color = Color.Transparent) {
                     Column(
                         modifier = Modifier
-                            .padding(horizontal = 4.dp, vertical = 8.dp),
+                            .padding(end = 4.dp, top = 4.dp, bottom = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -214,7 +203,7 @@ private fun Today24HourWeather(todayHourWeatherState: State<HourWeatherEntity>) 
                         Text(
                             text = data[it].text,
                             modifier = Modifier
-                                .padding(4.dp),
+                                .padding(top = 4.dp, bottom = 4.dp, end = 4.dp),
                         )
                         //temp
                         Text(

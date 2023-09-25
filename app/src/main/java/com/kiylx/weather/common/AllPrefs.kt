@@ -81,7 +81,7 @@ object AllPrefs {
     /**
      * 天气预警 单位：分钟
      */
-    var earlyWarningInterval by mk.longM("earlyWarningInterval", 10)
+    var earlyWarningInterval by mk.longM("earlyWarningInterval", 60)
 
     /**
      * 天气指数 单位：分钟
@@ -91,7 +91,7 @@ object AllPrefs {
     /**
      * 分钟降水 单位：分钟
      */
-    var weatherMinutelyInterval by mk.longM("weatherMinutelyInterval", 5)
+    var weatherMinutelyInterval by mk.longM("weatherMinutelyInterval", 15)
 
     /**
      * 实时空气质量 单位：分钟

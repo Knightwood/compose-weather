@@ -3,6 +3,8 @@ package com.kiylx.weather.ui.page.main
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.kiylx.libx.http.kotlin.basic3.flow.DataUiState
+import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.common.Lang
 import com.kiylx.weather.http.sendRequest
 import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
@@ -26,7 +28,8 @@ class WeatherPagerStateHolder(location: LocationEntity) {
     val dailyHourUiState: DataUiState<HourWeatherEntity> = DataUiState(HourWeatherEntity())
 
     //  分钟级降水
-    val minutelyPrecipitationState: DataUiState<MinutelyPrecipitationEntity> = DataUiState(MinutelyPrecipitationEntity())
+    val minutelyPrecipitationState: DataUiState<MinutelyPrecipitationEntity> =
+        DataUiState(MinutelyPrecipitationEntity())
 
     //天气预警 -当前
     val warningNowUiState: DataUiState<WarningEntity> = DataUiState(WarningEntity())
@@ -69,8 +72,14 @@ class WeatherPagerStateHolder(location: LocationEntity) {
      * 获取分钟级降水
      */
     suspend fun getMinutelyPrecipitation(noCache: Boolean = false) {
+        //todo 如果无雨雪，就不查询
+//        if (dailyUiState.getData().data.text)
         minutelyPrecipitationState.sendRequest {
-            QWeatherRepo.getMinutelyPrecipitation(location.value, noCache = noCache, lang = "zh")
+            QWeatherRepo.getMinutelyPrecipitation(
+                location.value,
+                noCache = noCache,
+                lang = if (AllPrefs.lang == Lang.Chinese.param) "zh" else "en"
+            )
         }
     }
 

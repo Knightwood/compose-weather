@@ -27,7 +27,7 @@ import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.icon.WeatherIconNoRound
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.ui.activitys.LocalNavController
-import com.kiylx.weather.ui.page.component.InfoBar
+import com.kiylx.weather.ui.page.component.IconLabel
 
 
 /**
@@ -65,16 +65,16 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
                             //温度
                             Text(
                                 text = data.data.temp + unit,
-                                style = MaterialTheme.typography.displayMedium
+                                style = MaterialTheme.typography.displayLarge
                             )
                         }
 
                         VerticalDivider(thickness = 2.dp)
-                        Column {
+                        Column(modifier =Modifier.padding(start=16.dp,top=16.dp)) {
 
                             Text(
                                 text = data.data.text,
-                                style = MaterialTheme.typography.displayLarge
+                                style = MaterialTheme.typography.displayMedium
                             )
 
                             //体感温度
@@ -127,7 +127,7 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (AllPrefs.gridWeather && AllPrefs.gpsAuto) {
                             //点击前往格点天气
-                            InfoBar(
+                            IconLabel(
                                 modifier = Modifier
                                     .align(Alignment.End),
                                 painter = rememberVectorPainter(Icons.Filled.Info),

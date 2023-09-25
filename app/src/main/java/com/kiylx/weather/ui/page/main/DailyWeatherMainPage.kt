@@ -170,6 +170,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             weatherPagerStateHolder.run {
                 getDailyData(noCache = true)
                 getDailyHourWeatherData(noCache = true)
+                getMinutelyPrecipitation(noCache = true)
             }
 
         },

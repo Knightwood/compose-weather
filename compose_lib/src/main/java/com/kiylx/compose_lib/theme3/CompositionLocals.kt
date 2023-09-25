@@ -14,7 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 import com.kiylx.compose_lib.theme3.default_theme.DefaultColorScheme
 
 //<editor-fold desc="提供的compose函数中全局可用的主题配置">
-val LocalDarkThemePrefs = compositionLocalOf { DarkThemePrefs() }
+val LocalDarkThemePrefs = compositionLocalOf { DarkThemePrefs(
+    darkThemeMode=ThemeHelper.darkThemeMode,
+    isHighContrastModeEnabled = ThemeHelper.isDarkUseContrastMode,
+    contrastValue = ThemeHelper.darkThemeHighContrastValue
+) }
 val LocalSeedColor = compositionLocalOf { ThemeHelper.seedColorInt }
 val LocalWindowWidthState = staticCompositionLocalOf { WindowWidthSizeClass.Compact }
 val LocalDynamicColorSwitch = compositionLocalOf { ThemeHelper.isUseDynamicColor }

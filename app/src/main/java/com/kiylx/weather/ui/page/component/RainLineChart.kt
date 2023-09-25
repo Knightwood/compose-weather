@@ -1,6 +1,7 @@
 package com.kiylx.weather.ui.page.component
 
 import android.annotation.SuppressLint
+import android.graphics.CornerPathEffect
 import android.graphics.Paint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,11 +30,12 @@ import android.graphics.Typeface as Typeface_N
 import androidx.compose.foundation.Canvas as CanvasUi
 import androidx.compose.ui.graphics.Canvas as Canvas_C
 
+
 data class RainLineChartData(
     val title: String? = null,
     val data: List<MinutelyPrecipitationEntity.Minutely>,//柱状图数据
-    val xAxisData: List<String>,
-    val yAxisData: List<String>,
+    val xAxisLabels: List<String>,
+    val yAxisLabels: List<String>,
 ) {
 }
 
@@ -44,8 +46,12 @@ fun RainLineChart(
     modifier: Modifier = Modifier,
     labelTextSize: TextUnit = 12.sp, //sp
     strokeWidth: Dp = 1.dp, //dp
-    lineColor: Int = 0xCCD5D5D5.toInt(),
-    textColor: Int = 0xFF6750A4.toInt()
+    axisLineColor: Int = 0xCCD5D5D5.toInt(),
+    textColor: Int = 0xFF6750A4.toInt(),
+    dataLineColor: Int = Color_N.argb(255, 212, 100, 77),
+    gradientLineColor: Int = Color_N.argb(100, 111, 111, 111),
+    gradientColor1: Int = Color_N.argb(255, 229, 160, 144),
+    gradientColor2: Int = Color_N.argb(255, 251, 244, 240),
 ) {
     //text paint
     val textPaint: Paint_N by remember {
@@ -61,8 +67,31 @@ fun RainLineChart(
             isAntiAlias = true
             isDither = true
             style = Paint_N.Style.STROKE
-            color = lineColor
+            color = axisLineColor
+            strokeJoin = Paint.Join.ROUND
+            val cornerPathEffect = CornerPathEffect(200f)
+            pathEffect = cornerPathEffect
         })
+    }
+    val dataLinePaint: Paint_N by remember {
+        mutableStateOf(Paint_N().apply {
+            style = Paint_N.Style.STROKE
+            isDither = true
+            isAntiAlias = true
+            color = dataLineColor
+            strokeJoin = Paint.Join.ROUND
+            val cornerPathEffect = CornerPathEffect(200f)
+            pathEffect = cornerPathEffect
+        })
+
+    }
+
+    val dataGradientPaint: Paint_N by remember {
+        mutableStateOf(Paint_N().apply {
+            style = Paint_N.Style.FILL
+            color = gradientLineColor
+        })
+
     }
 
     var chartWidth by remember { mutableStateOf(0F) }
@@ -90,6 +119,16 @@ fun RainLineChart(
 
             //先向上偏移一个文字的高度，腾出给X轴的空间
             canvas.translate(0f, bottomInterval)
+            //设置后面渐变色的着色器
+            val linearGradient = LinearGradient_N(
+                0f, size.height,
+                0f,
+                0f,
+                gradientColor1,
+                gradientColor2,
+                Shader_N.TileMode.CLAMP
+            )
+            dataGradientPaint.shader = linearGradient
 
             //绘制y轴及文字
             val translate_x =
@@ -119,13 +158,15 @@ fun RainLineChart(
             canvas.translate(0f, strokeWidth.toPx() / 2)//因为画x轴时向上抬升了一半的线宽度，所以，内容也要抬升同样的高度
             //绘制数据曲线
             drawCubtoCircle(
+                dataLinePaint,
+                dataGradientPaint,
                 dataList = data.data.map {
                     it.precip.toDouble()
                 },
                 canvas = canvas,
                 bottomInterval = bottomInterval,
                 translate_x = translate_x,
-                strokeWidth = strokeWidth,
+                strokeWidth = strokeWidth
             )
             //还原画布
             canvas.restore()
@@ -144,15 +185,15 @@ fun DrawScope.drawTextDownX(
     bottomInterval: Float,
     strokeWidth: Float,
 ): Int {
-    val xAxisData: List<String> = data.xAxisData
-    val yAxisData: List<String> = data.yAxisData
+    val xAxisData: List<String> = data.xAxisLabels
+    val yAxisData: List<String> = data.yAxisLabels
     if (xAxisData.isEmpty()) {
         return 0;
     }
     val realHeight = size.height - bottomInterval
+    val realWidth = size.width - (1.2 * leftInterval).toFloat()
     var maxYInterval = 0;
-    val x_interval =
-        (size.width - leftInterval - strokeWidth - 10) / (xAxisData.size - 1);//标签数量将长度平分
+    val x_interval = realWidth / (xAxisData.size - 1);//标签数量将长度平分
 
     val rectText = Rect_N()
     canvas.save()
@@ -171,9 +212,9 @@ fun DrawScope.drawTextDownX(
         val text_x_pos = if (index == 0) {
             0f
         } else if (index == xAxisData.size - 1) {
-            -rectText.width().toFloat()
+            -rectText.width().toFloat() - 10
         } else {
-            -rectText.width().toFloat() / 2
+            -rectText.width().toFloat() / 2 - 10
         }
         canvas.nativeCanvas.drawText(
             strTx,
@@ -189,7 +230,7 @@ fun DrawScope.drawTextDownX(
     val onePath = Path_N()
     //使x轴与y轴严丝合缝
     onePath.moveTo(-strokeWidth, 0f)
-    onePath.lineTo(size.width, 0f) //前面以及移动过canvas，所以这里直接从原点画直线
+    onePath.lineTo(realWidth, 0f) //前面以及移动过canvas，所以这里直接从原点画直线
 
     canvas.save()
     //横线间隔是将内容高度平分，并减去横线的线宽
@@ -221,7 +262,7 @@ private fun DrawScope.drawTextOfYLeft(
     upInterval: Float, //整体向上偏移的距离
     linePaint: Paint,
 ): Int {
-    val yAxisLabels: List<String> = data.yAxisData //y轴标签
+    val yAxisLabels: List<String> = data.yAxisLabels //y轴标签
     if (yAxisLabels.isEmpty()) {
         return 0
     }
@@ -289,6 +330,8 @@ private fun DrawScope.drawTextOfYLeft(
 }
 
 private fun DrawScope.drawCubtoCircle(
+    dataLinePaint: Paint,
+    dataGradientPaint: Paint,
     dataList: List<Double>,
     canvas: Canvas,
     bottomInterval: Float,
@@ -296,24 +339,10 @@ private fun DrawScope.drawCubtoCircle(
     strokeWidth: Dp
 ) {
     val realWidth: Float = size.width - translate_x
-    val text_paint = Paint_N()
-    text_paint.strokeWidth = 2f
-    text_paint.style = Paint_N.Style.FILL
-    text_paint.color = Color_N.argb(100, 111, 111, 111)
-
     val canvasPath = Path_N()
-
-    val danweiY = (size.height - bottomInterval) / dataList.size
     val danweiX = realWidth / dataList.size
-    val linearGradient = LinearGradient_N(
-        0f, 1500 * danweiY,
-        0f,
-        0f,
-        Color_N.argb(255, 229, 160, 144),
-        Color_N.argb(255, 251, 244, 240),
-        Shader_N.TileMode.CLAMP
-    )
-    text_paint.shader = linearGradient
+
+    dataGradientPaint.strokeWidth = 2f
     val maxValue = Collections.max(dataList)
     val minValue = Collections.min(dataList)
 
@@ -322,67 +351,59 @@ private fun DrawScope.drawCubtoCircle(
         canvasPath.lineTo(
             index * danweiX,//x的坐标就是把index均匀放在x轴上
             ((size.height - bottomInterval - strokeWidth.toPx()) * (dataList[index] - minValue) / (maxValue - minValue)).toFloat()
-        //这里的求y的坐标算法就是，算出（当前的值减去最小值）占（最大值减去最小值）的比例，用这个比例乘以总的高度
+            //这里的求y的坐标算法就是，算出（当前的值减去最小值）占（最大值减去最小值）的比例，用这个比例乘以总的高度
         )
-//        val xMoveDistance = 20
-//        val yMoveDistance = 40
-//
-//        if (dataList[index] == dataList[index + 1]) {
-//            caves_path.lineTo(danweiX * (index + 1), 0f)
-//        } else if (dataList[index] < dataList[index + 1]) {//y1<y2情况
-//            val centerX = (realWidth * index + realWidth * (1 + index)) / 2
-//            val centerY =
-//                (dataList[index].toFloat() * danweiY + dataList[index + 1].toFloat() * danweiY) / 2
-//            val controX0 = (realWidth * index + centerX) / 2
-//            val controY0 = (dataList[index].toFloat() * danweiY + centerY) / 2
-//            val controX1 = (centerX + realWidth * (1 + index)) / 2
-//            val controY1 = (centerY + dataList[index + 1].toFloat() * danweiY) / 2
-//            caves_path.cubicTo(
-//                controX0 + xMoveDistance,
-//                controY0 - yMoveDistance,
-//                controX1 - xMoveDistance,
-//                controY1 + yMoveDistance,
-//                realWidth * (1 + index),
-//                dataList[index + 1].toFloat() * danweiY
-//            )
-//        } else {
-//            val centerX = (realWidth * index + realWidth * (1 + index)) / 2
-//            val centerY =
-//                (dataList[index].toFloat() * danweiY + dataList[index + 1].toFloat() * danweiY) / 2
-//            val controX0 = (realWidth * index + centerX) / 2
-//            val controY0 = (dataList[index].toFloat() * danweiY + centerY) / 2
-//            val controX1 = (centerX + realWidth * (1 + index)) / 2
-//            val controY1 = (centerY + dataList[index + 1].toFloat() * danweiY) / 2
-//            caves_path.cubicTo(
-//                controX0 + xMoveDistance,
-//                controY0 + yMoveDistance,
-//                controX1 - xMoveDistance,
-//                controY1 - yMoveDistance,
-//                realWidth * (1 + index),
-//                dataList[index + 1].toFloat() * danweiY
-//            )
-//
-//        }
+        /*
+                val xMoveDistance = 20
+                val yMoveDistance = 40
+
+                if (dataList[index] == dataList[index + 1]) {
+                    caves_path.lineTo(danweiX * (index + 1), 0f)
+                } else if (dataList[index] < dataList[index + 1]) {//y1<y2情况
+                    val centerX = (realWidth * index + realWidth * (1 + index)) / 2
+                    val centerY =
+                        (dataList[index].toFloat() * danweiY + dataList[index + 1].toFloat() * danweiY) / 2
+                    val controX0 = (realWidth * index + centerX) / 2
+                    val controY0 = (dataList[index].toFloat() * danweiY + centerY) / 2
+                    val controX1 = (centerX + realWidth * (1 + index)) / 2
+                    val controY1 = (centerY + dataList[index + 1].toFloat() * danweiY) / 2
+                    caves_path.cubicTo(
+                        controX0 + xMoveDistance,
+                        controY0 - yMoveDistance,
+                        controX1 - xMoveDistance,
+                        controY1 + yMoveDistance,
+                        realWidth * (1 + index),
+                        dataList[index + 1].toFloat() * danweiY
+                    )
+                } else {
+                    val centerX = (realWidth * index + realWidth * (1 + index)) / 2
+                    val centerY =
+                        (dataList[index].toFloat() * danweiY + dataList[index + 1].toFloat() * danweiY) / 2
+                    val controX0 = (realWidth * index + centerX) / 2
+                    val controY0 = (dataList[index].toFloat() * danweiY + centerY) / 2
+                    val controX1 = (centerX + realWidth * (1 + index)) / 2
+                    val controY1 = (centerY + dataList[index + 1].toFloat() * danweiY) / 2
+                    caves_path.cubicTo(
+                        controX0 + xMoveDistance,
+                        controY0 + yMoveDistance,
+                        controX1 - xMoveDistance,
+                        controY1 - yMoveDistance,
+                        realWidth * (1 + index),
+                        dataList[index + 1].toFloat() * danweiY
+                    )
+
+                }
+        */
     }
-    canvas.nativeCanvas.drawCircle(0f, 0f, 10f, text_paint)
+
+    dataLinePaint.strokeWidth = 4f
+    //绘制外环红色线
+    canvas.nativeCanvas.drawPath(canvasPath, dataLinePaint)
+
     //绘制闭合渐变曲线
     canvasPath.lineTo(realWidth, 0f)
     canvasPath.lineTo(0f, 0f)
-    canvas.nativeCanvas.drawPath(canvasPath, text_paint)
-    val line_paint = Paint_N()
-    line_paint.strokeWidth = 3f
-    line_paint.style = Paint_N.Style.STROKE
-    line_paint.color = Color_N.argb(255, 212, 100, 77)
-    //绘制外环红色线
-    canvas.nativeCanvas.drawPath(canvasPath, line_paint)
-    line_paint.style = Paint_N.Style.FILL
-    //画圈。
-//    for (index in 0 until dataList.size) {
-//        canvas.nativeCanvas.drawCircle(
-//            realWidth * index,
-//            danweiY * dataList[index],
-//            8f,
-//            line_paint
-//        )
-//    }
+    canvas.nativeCanvas.drawPath(canvasPath, dataGradientPaint)
+
+
 }

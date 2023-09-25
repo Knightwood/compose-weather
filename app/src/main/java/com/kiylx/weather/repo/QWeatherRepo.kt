@@ -175,7 +175,7 @@ object QWeatherRepo {
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
     ): RawResponse<MinutelyPrecipitationEntity> {
-        val cacheTime = if (noCache) null else AllPrefs.earlyWarningInterval.minutesToSeconds()
+        val cacheTime = if (noCache) null else AllPrefs.weatherMinutelyInterval.minutesToSeconds()
         val res = handleApi3(api.getMinutelyPrecipitation(location.toLatLonStr(), lang, cacheTime))
         return res
     }
