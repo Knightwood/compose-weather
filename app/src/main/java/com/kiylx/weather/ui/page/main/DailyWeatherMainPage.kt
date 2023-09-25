@@ -47,6 +47,7 @@ import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.ui.activitys.MainViewModel
+import com.kiylx.weather.ui.page.component.CustomRefreshHeader
 import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
@@ -178,7 +179,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
         isNeedRefresh = true,
         isNeedLoadMore = false,
         headerIndicator = {
-            MyRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
+            CustomRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
         },
     ) {
         //观察界面状态，修改下拉刷新状态

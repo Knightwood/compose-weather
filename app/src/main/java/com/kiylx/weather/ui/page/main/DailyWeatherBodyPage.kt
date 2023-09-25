@@ -69,7 +69,6 @@ import java.util.function.Function
 import java.util.stream.Collectors
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
     val dailyState: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()
@@ -118,7 +117,10 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
                     RainLineChart(
                         data = RainLineChartData(
                             data = rainData.data,
-                            xAxisLabels = listOf("当前", "一小时后", "两小时后"),
+                            xAxisLabels = listOf(stringResource(R.string.current),
+                                stringResource(R.string.one_hour_later),
+                                stringResource(R.string.two_hour_later)
+                            ),
                             yAxisLabels = listOf(
                                 formatStr.format(min),
                                 formatStr.format(average),

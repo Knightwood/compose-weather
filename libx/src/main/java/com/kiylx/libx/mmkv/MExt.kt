@@ -73,6 +73,13 @@ fun MMKV.floatM(
     return delegate(key, defValue, MMKV::decodeFloat, MMKV::encode)
 }
 
+fun MMKV.doubleM(
+    key: String,
+    defValue: Double = 0.0,
+): ReadWriteProperty<Any, Double> {
+    return delegate(key, defValue, MMKV::decodeDouble, MMKV::encode)
+}
+
 fun MMKV.bytesM(
     key: String,
     defValue: ByteArray = byteArrayOf(),

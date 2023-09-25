@@ -82,7 +82,7 @@ import kotlinx.coroutines.launch
 
 // 外观页面，动态主题使用的https://github.com/Kyant0/m3color
 
-val colorList = ((0..11).map { it*30.0 }) .map { Color(Hct.from(it, 35.0, 40.0).toInt()) }
+val colorList = ((0..11).map { it * 30.0 }).map { Color(Hct.from(it, 35.0, 40.0).toInt()) }
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
@@ -198,13 +198,13 @@ fun AppearancePreferences(
                     onClick = { navToDarkMode() })
 
                 var useDefaultThemeChecked by remember {
-                  mutableStateOf(ThemeHelper.useDefaultTheme)
+                    mutableStateOf(ThemeHelper.useDefaultTheme)
                 }
                 PreferenceSwitch(
                     title = stringResource(R.string.use_default_theme),
                     icon = Icons.Outlined.Contrast,
                     isChecked = useDefaultThemeChecked, onClick = {
-                        useDefaultThemeChecked=it
+                        useDefaultThemeChecked = it
                         scope.recoveryDefaultTheme(useDefaultTheme = it)
                     }
                 )
@@ -218,13 +218,28 @@ fun AppearancePreferences(
  */
 @Composable
 fun RowScope.ColorButtons(color: Color, scope: CoroutineScope) {
+    val darkPref = LocalDarkThemePrefs.current
+    val isDark = darkPref.isDarkTheme()
+    val contrastValue = if (isDark && darkPref.isHighContrastModeEnabled) {
+        darkPref.contrastValue
+    } else {
+        ThemeHelper.lightThemeHighContrastValue
+    }
+
     listOf<PaletteStyle>(
         PaletteStyle.TonalSpot,
         PaletteStyle.Expressive,
         PaletteStyle.FruitSalad,
         PaletteStyle.Rainbow
     ).forEachIndexed { index, style: PaletteStyle ->
-        ColorButton(color = color, index = index, tonalStyle = style, scope = scope)
+        ColorButton(
+            color = color,
+            index = index,
+            tonalStyle = style,
+            scope = scope,
+            isDark = isDark,
+            contrastValue = contrastValue,
+        )
     }
 }
 
@@ -235,14 +250,16 @@ fun RowScope.ColorButton(
     index: Int = 0,
     tonalStyle: PaletteStyle = PaletteStyle.TonalSpot,
     scope: CoroutineScope,
+    isDark: Boolean,
+    contrastValue: Double,
 ) {
     val tonalPalettes by remember {
         mutableStateOf(
             mDynamicColorScheme(
                 color,
-                false,
+                isDark,
                 tonalStyle,
-                ThemeHelper.lightThemeHighContrastValue
+                contrastValue
             )
         )
     }
