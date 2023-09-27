@@ -1,14 +1,11 @@
 package com.kiylx.weather.ui.page.glance
 
 import android.content.Context
-import android.util.Log
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,39 +16,30 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.LocalGlanceId
 import androidx.glance.LocalSize
 import androidx.glance.action.actionStartActivity
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
-import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
-import androidx.glance.color.ColorProviders
-import androidx.glance.extractModifier
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
-import androidx.glance.layout.WidthModifier
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
-import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
-import androidx.glance.text.TextDefaults
 import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.libx.http.kotlin.basic3.flow.DataUiState
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
-import com.kiylx.weather.common.UnitText
 import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.icon.WeatherIcon
 import com.kiylx.weather.repo.QWeatherGeoRepo
@@ -67,6 +55,9 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+object TodayGlanceRepo {
+    val weatherHolder = WeatherPagerStateHolder(QWeatherGeoRepo.allLocationState[0])
+}
 
 /**
  * Number of cells, n cells(width) * m cells(height)
@@ -75,11 +66,16 @@ import java.time.format.DateTimeFormatter
  */
 class TodayGlanceWidget : GlanceAppWidget() {
     val TAG = "TodayGlanceWidget"
-    private val weatherHolder = WeatherPagerStateHolder(QWeatherGeoRepo.allLocationState[0])
+    val weatherHolder = TodayGlanceRepo.weatherHolder
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
         setOf(SMALL_SQUARE_1, SMALL_SQUARE_2, HORIZONTAL_RECTANGLE_1, HORIZONTAL_RECTANGLE_2)
     )
+
+    override suspend fun onDelete(context: Context, glanceId: GlanceId) {
+        super.onDelete(context, glanceId)
+        TodayGlanceUpdateWorker.cancel(context, glanceId)
+    }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
@@ -90,6 +86,10 @@ class TodayGlanceWidget : GlanceAppWidget() {
                 ThemeHelper.darkThemeMode == DarkThemePrefs.ON
             }
             GlanceTheme(colors = ThemeColorProvider.getColors(isDark)) {
+                val glanceId = LocalGlanceId.current
+                SideEffect {
+                    TodayGlanceUpdateWorker.enqueue(context, glanceId)
+                }
                 when (LocalSize.current) {
                     SMALL_SQUARE_1,
                     SMALL_SQUARE_2 -> {
