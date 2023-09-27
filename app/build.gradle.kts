@@ -92,4 +92,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${Android.compose_version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${Android.compose_version}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Android.compose_version}")
+
+    // For AppWidgets support
+    implementation ("androidx.glance:glance-appwidget:1.0.0")
+    // For interop APIs with Material 3
+    implementation ("androidx.glance:glance-material3:1.0.0")
 }
