@@ -56,7 +56,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 object TodayGlanceRepo {
-    val weatherHolder = WeatherPagerStateHolder(QWeatherGeoRepo.allLocationState[0])
+    lateinit var weatherHolder: WeatherPagerStateHolder
 }
 
 /**
@@ -66,7 +66,11 @@ object TodayGlanceRepo {
  */
 class TodayGlanceWidget : GlanceAppWidget() {
     val TAG = "TodayGlanceWidget"
-    val weatherHolder = TodayGlanceRepo.weatherHolder
+    val weatherHolder = WeatherPagerStateHolder(QWeatherGeoRepo.allLocationState[0])
+
+    init {
+        TodayGlanceRepo.weatherHolder = weatherHolder
+    }
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
         setOf(SMALL_SQUARE_1, SMALL_SQUARE_2, HORIZONTAL_RECTANGLE_1, HORIZONTAL_RECTANGLE_2)
@@ -74,7 +78,7 @@ class TodayGlanceWidget : GlanceAppWidget() {
 
     override suspend fun onDelete(context: Context, glanceId: GlanceId) {
         super.onDelete(context, glanceId)
-        TodayGlanceUpdateWorker.cancel(context, glanceId)
+        //TodayGlanceUpdateWorker.cancel(context, glanceId)
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -86,10 +90,10 @@ class TodayGlanceWidget : GlanceAppWidget() {
                 ThemeHelper.darkThemeMode == DarkThemePrefs.ON
             }
             GlanceTheme(colors = ThemeColorProvider.getColors(isDark)) {
-                val glanceId = LocalGlanceId.current
-                SideEffect {
-                    TodayGlanceUpdateWorker.enqueue(context, glanceId)
-                }
+                //val glanceId = LocalGlanceId.current
+//                SideEffect {
+//                    TodayGlanceUpdateWorker.enqueue(context, glanceId)
+//                }
                 when (LocalSize.current) {
                     SMALL_SQUARE_1,
                     SMALL_SQUARE_2 -> {

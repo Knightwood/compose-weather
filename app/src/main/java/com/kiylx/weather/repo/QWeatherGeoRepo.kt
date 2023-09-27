@@ -28,7 +28,7 @@ object QWeatherGeoRepo {
      * 若没有开启gps自动定位更新，则永远保持不变
      * 位置信息的总和
      */
-    val allLocationState = mutableStateListOf<LocationEntity>()
+    val allLocationState = mutableStateListOf<LocationEntity>(LocationEntity())
 
 //<editor-fold desc="网络接口">
     /**
