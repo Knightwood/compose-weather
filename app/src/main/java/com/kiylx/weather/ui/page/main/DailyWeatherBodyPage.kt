@@ -255,11 +255,12 @@ private fun SunAndMoonAndOther(
     toDayWeather: OneDayWeather,
     dailyState: State<DailyEntity>
 ) {
+
     // 日出日落
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(start=12.dp, end=12.dp,top=8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -301,7 +302,7 @@ private fun SunAndMoonAndOther(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            .padding(start = 8.dp,end =8.dp,bottom=8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -337,7 +338,7 @@ private fun DayIndices(todayIndicesState: State<IndicesEntity>) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 16.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
     ) {//运动指数1 洗车指数2 穿衣指数3 感冒指数9
         val indiectMap = todayIndicesState.value.data.stream().collect(
             Collectors.toMap(

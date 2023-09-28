@@ -34,6 +34,7 @@
 
 
         <receiver android:name="com.kiylx.weather.ui.page.glance.TodayGlanceReceiver"
+            android:label="@string/glance_weather"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

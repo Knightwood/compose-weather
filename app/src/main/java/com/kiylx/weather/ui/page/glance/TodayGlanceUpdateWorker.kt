@@ -2,65 +2,99 @@ package com.kiylx.weather.ui.page.glance
 
 import android.content.Context
 import androidx.glance.GlanceId
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.appwidget.updateAll
 import androidx.work.CoroutineWorker
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.kiylx.weather.ui.page.main.DayWeatherType
+import java.time.Duration
 
 class TodayGlanceUpdateWorker(
-    context: Context,
+    private val context: Context,
     workerParameters: WorkerParameters
 ) : CoroutineWorker(context, workerParameters) {
 
-    override suspend fun doWork(): Result {
-        TodayGlanceRepo.run {
-            // 需要执行的操作
-            weatherHolder.getDailyData()
-            weatherHolder.getDayWeatherData(DayWeatherType.threeDayWeather)
-            weatherHolder.getDailyHourWeatherData()
-        }
-
-        return Result.success()
-    }
     companion object {
 
-        private val uniqueWorkName ="update_weather_kiylx"
+        private val uniqueWorkName = TodayGlanceUpdateWorker::class.java.simpleName
 
-        // 排队进行工作
-        fun enqueue(context: Context, glanceId: GlanceId, force: Boolean = false) {
+        /**
+         * Enqueues a new worker to refresh weather data only if not enqueued already
+         *
+         * Note: if you would like to have different workers per widget instance you could provide
+         * the unique name based on some criteria (e.g selected weather location).
+         *
+         * @param force set to true to replace any ongoing work and expedite the request
+         */
+        fun enqueue(context: Context, force: Boolean = false) {
             val manager = WorkManager.getInstance(context)
+            val requestBuilder = PeriodicWorkRequestBuilder<TodayGlanceUpdateWorker>(
+                Duration.ofMinutes(30)
+            )
+            var workPolicy = ExistingPeriodicWorkPolicy.KEEP
 
-            val requestBuilder = OneTimeWorkRequestBuilder<TodayGlanceUpdateWorker>().apply {
-                addTag(glanceId.toString())
-                setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                setInputData(
-                    Data.Builder()
-                        .putBoolean("force", force)
-                        .build()
-                )
-            }
-            val workPolicy = if (force) {
-                ExistingWorkPolicy.REPLACE
-            } else {
-                ExistingWorkPolicy.KEEP
+            // Replace any enqueued work and expedite the request
+            if (force) {
+                workPolicy = ExistingPeriodicWorkPolicy.REPLACE
             }
 
-            manager.enqueueUniqueWork(
-                uniqueWorkName +glanceId,
+            manager.enqueueUniquePeriodicWork(
+                uniqueWorkName,
                 workPolicy,
                 requestBuilder.build()
             )
         }
 
         /**
-         * 取消任何正在进行的工作
+         * Cancel any ongoing worker
          */
-        fun cancel(context: Context, glanceId: GlanceId) {
-            WorkManager.getInstance(context).cancelAllWorkByTag(glanceId.toString())
+        fun cancel(context: Context) {
+            WorkManager.getInstance(context).cancelUniqueWork(uniqueWorkName)
         }
+    }
+
+    override suspend fun doWork(): Result {
+        val manager = GlanceAppWidgetManager(context)
+        val glanceIds = manager.getGlanceIds(TodayGlanceWidget::class.java)
+        return try {
+            // Update state to indicate loading
+            setWidgetState(glanceIds, WeatherInfo.Loading)
+            // Update state with new data
+            setWidgetState(glanceIds, TodayGlanceRepo.getInfo())
+
+            Result.success()
+        } catch (e: Exception) {
+            setWidgetState(glanceIds, WeatherInfo.Unavailable(e.message.orEmpty()))
+            if (runAttemptCount < 10) {
+                // Exponential backoff strategy will avoid the request to repeat
+                // too fast in case of failures.
+                Result.retry()
+            } else {
+                Result.failure()
+            }
+        }
+    }
+
+    /**
+     * Update the state of all widgets and then force update UI
+     */
+    private suspend fun setWidgetState(glanceIds: List<GlanceId>, newState: WeatherInfo) {
+        glanceIds.forEach { glanceId ->
+            updateAppWidgetState(
+                context = context,
+                definition = TodayWeatherInfoStateDefinition,
+                glanceId = glanceId,
+                updateState = { newState }
+            )
+        }
+        TodayGlanceWidget().updateAll(context)
     }
 }
