@@ -1,6 +1,7 @@
 package com.kiylx.weather.ui.page.glance
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -119,43 +120,52 @@ class TodayGlanceWidget : GlanceAppWidget() {
         val todayData = weatherInfo.currentData
         val threeData = weatherInfo.dayForecast
         val location = weatherInfo.location
-
+        // Size will be one of the sizes defined above.
+        val size = LocalSize.current
         Column(
             modifier = GlanceModifier.fillMaxSize().padding(16.dp)
                 .background(GlanceTheme.colors.secondaryContainer)
-                .cornerRadius(28.dp),
+                .apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        this.cornerRadius(22.dp)
+                    }
+                },
             verticalAlignment = Alignment.Top,
         ) {
             Row(
-                modifier = GlanceModifier.fillMaxWidth().padding(bottom = 8.dp,start=8.dp,end=8.dp),
+                modifier = GlanceModifier.fillMaxWidth()
+                    .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    modifier = GlanceModifier.size(52.dp),
+                    modifier = GlanceModifier.size(48.dp),
                     provider = ImageProvider(WeatherIcon.getResId(todayData.data.icon.toInt())),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(GlanceTheme.colors.secondary)
                 )
-                Spacer(modifier = GlanceModifier.defaultWeight())
-                Column {
-                    Text(
-                        modifier = GlanceModifier,
-                        text = location.adm2,
-                        style = TextStyle(
-                            color = GlanceTheme.colors.tertiary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal,
+                if (size.width > SMALL_SQUARE_1.width) {
+                    Spacer(modifier = GlanceModifier.defaultWeight())
+                    Column {
+                        Text(
+                            modifier = GlanceModifier,
+                            text = location.adm2,
+                            style = TextStyle(
+                                color = GlanceTheme.colors.tertiary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                            )
                         )
-                    )
-                    Text(
-                        modifier = GlanceModifier,
-                        text = location.name,
-                        style = TextStyle(
-                            color = GlanceTheme.colors.secondary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
+                        Text(
+                            modifier = GlanceModifier,
+                            text = location.name,
+                            style = TextStyle(
+                                color = GlanceTheme.colors.secondary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
                         )
-                    )
+                    }
+
                 }
 
             }
@@ -207,13 +217,17 @@ class TodayGlanceWidget : GlanceAppWidget() {
         // Size will be one of the sizes defined above.
         val size = LocalSize.current
         Column(
-            modifier = GlanceModifier.fillMaxSize().padding(16.dp)
-                .background(GlanceTheme.colors.secondaryContainer)
-                .cornerRadius(28.dp),
+            modifier = GlanceModifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)
+                .background(GlanceTheme.colors.secondaryContainer).apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        this.cornerRadius(22.dp)
+                    }
+                },
             verticalAlignment = Alignment.Top,
         ) {
             Row(
-                modifier = GlanceModifier.fillMaxWidth().padding(bottom = 8.dp,start=8.dp,end=8.dp),
+                modifier = GlanceModifier.fillMaxWidth()
+                    .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -246,7 +260,7 @@ class TodayGlanceWidget : GlanceAppWidget() {
 
             }
             Row(
-                modifier = GlanceModifier.fillMaxWidth().padding(top = 4.dp),
+                modifier = GlanceModifier.fillMaxWidth().padding(bottom=8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(
@@ -314,20 +328,26 @@ class TodayGlanceWidget : GlanceAppWidget() {
             }
 
             //three day weather
-            if (size.height >= HORIZONTAL_RECTANGLE_2.height) {
+            if (size.height > HORIZONTAL_RECTANGLE_1.height) {
                 Column(
                     modifier = GlanceModifier
-                        .background(GlanceTheme.colors.secondaryContainer)
-                        .fillMaxWidth().padding(top = 16.dp)
-                        .cornerRadius(22.dp),
+                        .fillMaxWidth()
+                        .background(GlanceTheme.colors.tertiaryContainer)
+                        .padding(vertical = 4.dp, horizontal = 8.dp).apply {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                this.cornerRadius(22.dp)
+                            }
+                        },
                 ) {
                     val todayLocalDate = LocalDate.now()
                     val nowTime = LocalTime.now()
                     repeat(threeData.size) {
                         val oneDayWeather = threeData[it]
-                        Row(modifier = GlanceModifier.fillMaxWidth(),
+                        Row(
+                            modifier = GlanceModifier.fillMaxWidth(),
                             verticalAlignment = Alignment.Vertical.CenterVertically,
-                            horizontalAlignment = Alignment.CenterHorizontally) {
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             val fxDate = LocalDate.parse(oneDayWeather.fxDate)
                             val dateStr = if (fxDate.isEqual(todayLocalDate)) {
                                 LocalContext.current.getString(R.string.today)
@@ -357,8 +377,8 @@ class TodayGlanceWidget : GlanceAppWidget() {
                                     oneDayWeather.iconNight.toInt()
                                 }
                                 Image(
-                                    modifier = GlanceModifier.size(36.dp)
-                                        .padding(top = 4.dp, bottom = 4.dp),
+                                    modifier = GlanceModifier.size(30.dp)
+                                        .padding( bottom = 4.dp),
                                     provider = ImageProvider(WeatherIcon.getResId(iconCode)),
                                     colorFilter = ColorFilter.tint(GlanceTheme.colors.secondary),
                                     contentDescription = null
@@ -406,10 +426,10 @@ class TodayGlanceWidget : GlanceAppWidget() {
     }
 
     companion object {
-        //small to large: 2x1 2x2 4x2 4x3
-        private val SMALL_SQUARE_1 = DpSize(110.dp, 50.dp)
-        private val SMALL_SQUARE_2 = DpSize(110.dp, 110.dp)
-        private val HORIZONTAL_RECTANGLE_1 = DpSize(250.dp, 110.dp)
-        private val HORIZONTAL_RECTANGLE_2 = DpSize(250.dp, 220.dp)
+        //small to large: 2*2 不显示地点, 3*2,5*2,5*3
+        private val SMALL_SQUARE_1 = DpSize(110.dp, 110.dp)//2*2
+        private val SMALL_SQUARE_2 = DpSize(150.dp, 110.dp)//3*2
+        private val HORIZONTAL_RECTANGLE_1 = DpSize(260.dp, 140.dp)//5*2
+        private val HORIZONTAL_RECTANGLE_2 = DpSize(260.dp, 220.dp)//5*3
     }
 }
