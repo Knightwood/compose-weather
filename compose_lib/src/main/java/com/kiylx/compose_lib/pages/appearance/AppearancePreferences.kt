@@ -38,12 +38,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,6 +92,8 @@ fun AppearancePreferences(
     navController: NavHostController,
     navToDarkMode: () -> Unit
 ) {
+    val themeSetting = ThemeHelper.AppSettingsStateFlow.collectAsState().value
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState(),
             canScroll = { true })
@@ -186,7 +188,7 @@ fun AppearancePreferences(
                             }
                         })
                 }
-                val isDarkTheme = LocalDarkThemePrefs.current.isDarkTheme()
+                val isDarkTheme =themeSetting.darkTheme.isDarkTheme()
                 PreferenceSwitchWithDivider(title = stringResource(id = R.string.dark_theme),
                     icon = if (isDarkTheme) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
                     isChecked = isDarkTheme,
@@ -196,10 +198,7 @@ fun AppearancePreferences(
 
                     },
                     onClick = { navToDarkMode() })
-
-                var useDefaultThemeChecked by remember {
-                    mutableStateOf(ThemeHelper.useDefaultTheme)
-                }
+                var useDefaultThemeChecked = themeSetting.useDefaultTheme
                 PreferenceSwitch(
                     title = stringResource(R.string.use_default_theme),
                     icon = Icons.Outlined.Contrast,

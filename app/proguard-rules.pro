@@ -284,6 +284,6 @@
  -keep public class org.codehaus.* { *; }
  -keep public class java.nio.* { *; }
 
-#排除QWeather
- -dontwarn com.qweather.sdk.**
- -keep class com.qweather.sdk.** { *;}
+#排除http
+ -keep class com.kiylx.weather.http.**
+ -keep class com.kiylx.weather.repo.bean.**
