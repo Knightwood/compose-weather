@@ -48,7 +48,6 @@ import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.ui.activitys.MainViewModel
 import com.kiylx.weather.ui.page.component.CustomRefreshHeader
-import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
@@ -223,7 +222,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             )
             TabRow(
                 selectedTabIndex = tabIndex,
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(start=16.dp,end=16.dp, bottom=8.dp),
                 indicator = { tabPositions ->
                     TabRowDefaults.PrimaryIndicator(
                         Modifier
@@ -254,14 +253,14 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
                 }
 
                 1 -> {
-                    MutliDayWeatherPage(
+                    MultiDayWeatherPage(
                         stateHolder = weatherPagerStateHolder,
                         type = DayWeatherType.sevenDayWeather
                     )
                 }
 
                 2 -> {
-                    MutliDayWeatherPage(
+                    MultiDayWeatherPage(
                         stateHolder = weatherPagerStateHolder,
                         type = DayWeatherType.fifteenDayWeather
                     )

@@ -1,6 +1,7 @@
 package com.kiylx.weather.ui.page.component
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -17,10 +18,18 @@ fun TitleCard(icon: ImageVector, title: String, content: @Composable() (ColumnSc
 }
 
 @Composable
-fun TitleCard(painter: Painter, title: String, content: @Composable() (ColumnScope.() -> Unit)) {
+fun TitleCard(
+    painter: Painter,
+    title: String,
+    paddingValues: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 4.dp
+    ),
+    content: @Composable() (ColumnScope.() -> Unit)
+) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(paddingValues)
             .fillMaxWidth()
     ) {
         //标题

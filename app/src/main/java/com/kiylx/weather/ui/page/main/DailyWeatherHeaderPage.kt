@@ -56,7 +56,7 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
                             .padding(horizontal = 12.dp)
                             .fillMaxWidth()
                     ) {
-                        Column(verticalArrangement = Arrangement.Center) {
+                        Column(horizontalAlignment = Alignment.End) {
                             //天气图标
                             WeatherIconNoRound(
                                 code = data.data.icon.toInt(),

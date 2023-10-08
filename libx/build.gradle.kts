@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.Core.core)
+    implementation(AndroidX_KTX.core)
     implementation(AndroidX.appCompat)
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
@@ -51,14 +51,14 @@ dependencies {
     //Coroutines
     api(Coroutines.android)
 
-    implementation(AndroidX.Lifecycle.livedata)
-    //ktx
-    implementation(AndroidX.Lifecycle.viewmodel)
-    implementation(AndroidX.Lifecycle.fragment)
-    implementation(AndroidX.Lifecycle.activity)
+    implementation(Lifecycle_KTX.livedata)
+    implementation(Lifecycle_KTX.viewmodel)
+
+    implementation(AndroidX_KTX.fragment)
+    implementation(AndroidX_KTX.activity)
     //权限申请
-    implementation(Common.perms)
+    implementation(Tools.perms)
     //工具库
     api(Tools.utilcodex)
-    api("com.tencent:mmkv:1.3.0")
+    api(Tools.mmkv)
 }

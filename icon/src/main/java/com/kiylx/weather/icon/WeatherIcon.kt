@@ -110,9 +110,9 @@ fun IconText(
             .padding(padding)
     ) {
         Row(
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
-                .padding(8.dp),
+                .padding(start=8.dp,top=8.dp,bottom=8.dp),
         ) {
             Icon(
                 painter = icon,
@@ -123,14 +123,14 @@ fun IconText(
                         backgroundColor,
                         backgroundShape
                     )
-                    .padding(10.dp)
+                    .padding(8.dp)
                     .size(iconSize)
                     .align(Alignment.CenterVertically),
             )
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(start = 8.dp, end = 8.dp),
+                    .padding(start = 4.dp,),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
@@ -164,17 +164,18 @@ fun TwoText(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .align(Alignment.CenterHorizontally)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                modifier = Modifier.padding(bottom = 4.dp),
+                modifier = Modifier.padding(bottom = 2.dp),
                 text = title,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
+                modifier = Modifier.padding(bottom = 4.dp),
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
             )

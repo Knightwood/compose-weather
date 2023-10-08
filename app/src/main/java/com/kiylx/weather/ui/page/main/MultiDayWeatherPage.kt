@@ -39,7 +39,7 @@ import java.util.stream.Collectors
  * get multi day weather and show info
  */
 @Composable
-fun MutliDayWeatherPage(
+fun MultiDayWeatherPage(
     stateHolder: WeatherPagerStateHolder,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(8.dp),
@@ -196,7 +196,7 @@ fun ThreeDayWeather(
         //内容
         Column(
             modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 16.dp),
+                .fillMaxWidth().padding(horizontal = 8.dp),
         ) {
             repeat(data.value.data.size) {
                 val oneDayWeather = data.value.data[it]
@@ -206,7 +206,7 @@ fun ThreeDayWeather(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(bottom = 8.dp, start=8.dp,end=8.dp)
+                            .padding(bottom = 4.dp, start=8.dp)
                             .align(Alignment.CenterStart)
                     ) {
                         val fxDate = LocalDate.parse(oneDayWeather.fxDate)
@@ -220,7 +220,7 @@ fun ThreeDayWeather(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " - " + it.category+" ${it.aqi}"
+                            dateStr + " " + it.category+"/${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {
@@ -231,7 +231,7 @@ fun ThreeDayWeather(
                     }
                     Row(
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
+                            .padding(bottom=8.dp)
                             .align(Alignment.CenterEnd)
                     ) {
                         //早晚温度

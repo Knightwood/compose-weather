@@ -6,7 +6,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -56,8 +60,14 @@ class MainActivity : AppCompatActivity() {
                     //构建导航
                     NavHost(navController = navController, startDestination = Route.HOME) {
                         animatedComposable(route = Route.HOME) {
-                            val first = remember {
-                                AllPrefs.firstEnter
+                            val first by remember {
+                                mutableStateOf(AllPrefs.firstEnter)
+                            }
+                            var askPerms by remember {
+                                mutableStateOf(true)
+                            }
+                            val gpsOpen by remember {
+                                mutableStateOf(AllPrefs.gpsAuto)
                             }
                             //打开应用的时候，把显示的第一个位置信息放上去
                             //默认的state变量是直接生成的位置信息，default一定是false
@@ -66,13 +76,22 @@ class MainActivity : AppCompatActivity() {
                                 QWeatherGeoRepo.gpsDataState.value =
                                     QWeatherGeoRepo.allLocationState.find {
                                         it.default
-                                    }?: LocationEntity()
+                                    } ?: LocationEntity()
                             }
-                            //如果开启gps实时定位获取网格天气
-                            if (AllPrefs.gpsAuto) {
-                                queryGps()
+
+                            //open gps
+                            if (gpsOpen) {
+                                if (askPerms) {
+                                    SideEffect {
+                                        queryGps()
+                                        askPerms = false
+                                    }
+                                }
                             } else {
-                                stopGps()
+                                SideEffect {
+                                    askPerms=true
+                                    stopGps()
+                                }
                             }
                             if (first) {
                                 navController.navigate(Route.SPLASH)

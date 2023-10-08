@@ -42,29 +42,29 @@ android {
 
 dependencies {
 //compose
-    implementation(ComposeLibs.activityCompose)
+    implementation(Compose.activityCompose)
     implementation("androidx.compose.ui:ui:${Android.compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Android.compose_version}")
-    implementation(ComposeLibs.composeMaterial3)
-    implementation(ComposeLibs.composeFoundation)
+    implementation(Compose.composeMaterial3)
+    implementation(Compose.composeFoundation)
     implementation(Accompanist.systemuicontroller)
 //    implementation(Accompanist.flowlayout)
-    implementation(ComposeLibs.composeRuntime)
-    implementation(ComposeLibs.navigation)
-    implementation(ComposeLibs.composeMaterialIconsExtended)
+    implementation(Compose.composeRuntime)
+    implementation(Compose.navigation)
+    implementation(Compose.composeMaterialIconsExtended)
 
     implementation(AndroidX.appCompat)
-    implementation(AndroidX.Core.core)
-    api("androidx.compose.material3:material3-window-size-class:1.1.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(AndroidX_KTX.core)
+    api(Compose.composeMaterial3WindowSizeClass)
+    implementation(AndroidX.material)
 
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
-    implementation("com.tencent:mmkv:1.3.0")
-    implementation("com.caverock:androidsvg-aar:1.4")
-    api(ComposeOhterLibs.Coil.coil)
-    api("com.github.Kyant0:m3color:2023.8.1")
+    implementation(Tools.mmkv)
+    implementation(Tools.svgSupport)
+    api(ComposeTools.Coil.coil)
+    api(Tools.m3Color)
 }

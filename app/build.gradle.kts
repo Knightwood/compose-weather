@@ -49,42 +49,37 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.Core.core)
+    implementation(AndroidX_KTX.core)
     implementation(AndroidX.appCompat)
     //Coroutines
     implementation(Coroutines.android)
     //lifecycle
-    //implementation(AndroidX.Lifecycle.runtime)
-    implementation(AndroidX.Lifecycle.livedata)
+    implementation(Lifecycle_KTX.livedata)
+    implementation(Lifecycle_KTX.viewmodel)
     //ktx
-    implementation(AndroidX.Lifecycle.viewmodel)
-    implementation(AndroidX.Lifecycle.fragment)
-    implementation(AndroidX.Lifecycle.activity)
+    implementation(AndroidX_KTX.fragment)
+    implementation(AndroidX_KTX.activity)
     //权限申请
-    implementation(Common.perms)
+    implementation(Tools.perms)
     //lib
     implementation(project(":libx"))
     implementation(project(":icon"))
     implementation(project(":compose_lib"))
 
     //compose
-    implementation(ComposeLibs.activityCompose)
-    implementation(ComposeLibs.composeUi)
-    implementation(ComposeLibs.composeUiToolingPreview)
-    implementation(ComposeLibs.composeFoundation)
-    implementation(ComposeLibs.composeMaterial3)
-    implementation(ComposeLibs.composeRuntime)
-    implementation(ComposeLibs.navigation)
+    implementation(Compose.activityCompose)
+    implementation(Compose.composeUi)
+    implementation(Compose.composeUiToolingPreview)
+    implementation(Compose.composeFoundation)
+    implementation(Compose.composeMaterial3)
+    implementation(Compose.composeRuntime)
+    implementation(Compose.navigation)
     implementation(Accompanist.systemuicontroller)
-    implementation(ComposeLibs.composeConstraintLayout)
-    implementation(ComposeLibs.composeMaterialIconsExtended)
+    implementation(Compose.composeConstraintLayout)
+    implementation(Compose.composeMaterialIconsExtended)
     //下拉刷新，上拉加载
-    implementation("io.github.loren-moon:composesmartrefresh:1.2.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
-    //图表
-    // https://mvnrepository.com/artifact/com.himanshoe/charty
-//    implementation("com.himanshoe:charty:2.0.0-alpha01")
+    implementation(ComposeTools.pullRefresh)
+    implementation(Work.manager)
 
     //test
     testImplementation("junit:junit:4.13.2")
@@ -95,7 +90,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Android.compose_version}")
 
     // For AppWidgets support
-    implementation ("androidx.glance:glance-appwidget:1.0.0")
+    implementation (Compose.Glance.glance)
     // For interop APIs with Material 3
-    implementation ("androidx.glance:glance-material3:1.0.0")
+    implementation (Compose.Glance.glance_material3)
 }

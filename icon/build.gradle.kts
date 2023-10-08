@@ -40,15 +40,14 @@ android {
 
 dependencies {
     //compose
-    implementation(ComposeLibs.activityCompose)
+    implementation(Compose.activityCompose)
     implementation("androidx.compose.ui:ui:${Android.compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${Android.compose_version}")
-    implementation(ComposeLibs.composeMaterial3)
+    implementation(Compose.composeMaterial3)
     implementation(AndroidX.appCompat)
-    implementation(AndroidX.Core.core)
+    implementation(AndroidX_KTX.core)
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    val lottieVersion ="4.2.0"
-    api("com.airbnb.android:lottie-compose:$lottieVersion")
+    api(ComposeTools.lottie_compose)
 }

@@ -1,7 +1,6 @@
 package com.kiylx.weather.ui.page.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,8 +19,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -117,7 +114,8 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
                     RainLineChart(
                         data = RainLineChartData(
                             data = rainData.data,
-                            xAxisLabels = listOf(stringResource(R.string.current),
+                            xAxisLabels = listOf(
+                                stringResource(R.string.current),
                                 stringResource(R.string.one_hour_later),
                                 stringResource(R.string.two_hour_later)
                             ),
@@ -187,7 +185,7 @@ private fun Today24HourWeather(todayHourWeatherState: State<HourWeatherEntity>) 
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -197,7 +195,7 @@ private fun Today24HourWeather(todayHourWeatherState: State<HourWeatherEntity>) 
                 Surface(color = Color.Transparent) {
                     Column(
                         modifier = Modifier
-                            .padding(end = 4.dp, top = 4.dp, bottom = 4.dp),
+                            .padding(end = 4.dp, bottom = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -255,72 +253,80 @@ private fun SunAndMoonAndOther(
     toDayWeather: OneDayWeather,
     dailyState: State<DailyEntity>
 ) {
-
-    // 日出日落
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start=12.dp, end=12.dp,top=8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconText(
-            title = stringResource(id = R.string.sunrise),
-            icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_rise),
-            text = toDayWeather.sunrise,
-        )
-        IconText(
-            title = stringResource(id = R.string.sunset),
-            icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_set),
-            text = toDayWeather.sunset,
-        )
-    }
+        // 日出日落
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconText(
+                modifier = Modifier.weight(1f),
+                title = stringResource(id = R.string.sunrise),
+                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_rise),
+                text = toDayWeather.sunrise,
+            )
+            IconText(
+                modifier = Modifier.weight(1f),
+                title = stringResource(id = R.string.sunset),
+                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_set),
+                text = toDayWeather.sunset,
+            )
+        }
 
-    //月相，月初月落
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        TwoText(
-            title = stringResource(id = R.string.moonrise),
-            text = toDayWeather.moonrise,
-        )
-        IconText(
-            title = stringResource(id = R.string.moonPhase),
-            padding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-            icon = painterResource(id = WeatherIcon.getResId(toDayWeather.moonPhaseIcon.toInt())),
-            text = toDayWeather.moonPhase
-        )
-        TwoText(
-            title = stringResource(id = R.string.moonset),
-            text = toDayWeather.moonset,
-        )
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp,end =8.dp,bottom=8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconText(
-            title = stringResource(id = R.string.pressure),
-            icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
-            iconSize = 38.dp,
-            text = dailyState.value.data.pressure + " 百帕",
-        )
-        IconText(
-            modifier = Modifier.weight(1f),
-            title = stringResource(id = R.string.uvIndex),
-            icon = painterResource(id = com.kiylx.weather.icon.R.drawable.ultraviolet),
-            iconSize = 40.dp,
-            text = toDayWeather.uvIndex
-        )
+        //月相，月初月落
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TwoText(
+                modifier = Modifier.weight(1f),
+                padding = PaddingValues(4.dp),
+                title = stringResource(id = R.string.moonrise),
+                text = toDayWeather.moonrise,
+            )
+            IconText(
+                modifier = Modifier.weight(1.2f),
+                title = stringResource(id = R.string.moonPhase),
+                iconSize =38.dp,
+                padding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
+                icon = painterResource(id = WeatherIcon.getResId(toDayWeather.moonPhaseIcon.toInt())),
+                text = toDayWeather.moonPhase
+            )
+            TwoText(
+                modifier = Modifier.weight(1f),
+                padding = PaddingValues(4.dp),
+                title = stringResource(id = R.string.moonset),
+                text = toDayWeather.moonset,
+            )
+        }
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconText(
+                modifier = Modifier.weight(1f),
+                title = stringResource(id = R.string.pressure),
+                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
+                iconSize = 38.dp,
+                text = dailyState.value.data.pressure + " 百帕",
+            )
+            IconText(
+                modifier = Modifier.weight(1f),
+                title = stringResource(id = R.string.uvIndex),
+                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.ultraviolet),
+                iconSize = 40.dp,
+                text = toDayWeather.uvIndex
+            )
 
-    }
+        }
 //            Row {
 //                IconText(
 //                    title = stringResource(id = R.string.vis),
@@ -328,6 +334,9 @@ private fun SunAndMoonAndOther(
 //                    icon = painterResource(id = com.kiylx.weather.icon.R.drawable.vis),
 //                )
 //            }
+    }
+
+
 }
 
 /**
@@ -338,7 +347,7 @@ private fun DayIndices(todayIndicesState: State<IndicesEntity>) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
     ) {//运动指数1 洗车指数2 穿衣指数3 感冒指数9
         val indiectMap = todayIndicesState.value.data.stream().collect(
             Collectors.toMap(

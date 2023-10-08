@@ -3,6 +3,7 @@ package com.kiylx.weather.ui.page.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,12 +39,16 @@ fun TwoIconTitleBar(
     text: String,
     endPainter: Painter,
     endPainterTint: Color = LocalContentColor.current,
+    paddingValues: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 4.dp
+    ),
     click: () -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(paddingValues)
             .clickable {
                 click()
             }
@@ -85,11 +90,15 @@ fun IconTitleBar(
     title: String,
     modifier: Modifier = Modifier,
     painterTint: Color = LocalContentColor.current,
+    paddingValues: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 4.dp
+    ),
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(paddingValues),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
