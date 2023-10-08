@@ -30,6 +30,8 @@ class WeatherPagerStateHolder(location: LocationEntity) {
     //  分钟级降水
     val minutelyPrecipitationState: DataUiState<MinutelyPrecipitationEntity> =
         DataUiState(MinutelyPrecipitationEntity())
+    // 是否有雨
+    val showRainLineChart = mutableStateOf(false)
 
     //天气预警 -当前
     val warningNowUiState: DataUiState<WarningEntity> = DataUiState(WarningEntity())

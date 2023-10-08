@@ -155,9 +155,6 @@ fun LatLonText(location: LocationEntity,modifier:Modifier=Modifier) {
 fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) {
     //当天的天气状况
     val data = weatherPagerStateHolder.dailyUiState
-
-    val pageData = data.asDataFlow().collectAsState()//页面数据
-
     val uiState = data.asUiStateFlow().collectAsState()
     LaunchedEffect(key1 = Unit, block = {
         weatherPagerStateHolder.getDailyData()
@@ -209,7 +206,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            DailyWeatherHeaderPage(state = pageData)
+            DailyWeatherHeaderPage(weatherPagerStateHolder)
             //上面是大概的信息
             //下面是其他数据,每行都是双列
             //tab切换页

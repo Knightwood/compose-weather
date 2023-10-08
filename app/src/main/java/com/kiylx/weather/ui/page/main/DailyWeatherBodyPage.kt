@@ -98,14 +98,15 @@ fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
             val list = rainData.data.map {
                 it.precip.toDouble()
             }
-            val showLineChart = list.find {
+            val showLineChart = (list.find {
                 it != 0.0
-            }
-            TitleCard(
-                icon = Icons.Filled.Info,
-                title = rainData.summary
-            ) {
-                if (showLineChart != null) {
+            } != null)
+            stateHolder.showRainLineChart.value = showLineChart
+            if (showLineChart) {
+                TitleCard(
+                    icon = Icons.Filled.Info,
+                    title = rainData.summary
+                ) {
                     val formatStr = "%.2f"
                     val min = Collections.min(list)
                     val max = Collections.max(list)
@@ -158,7 +159,7 @@ private fun WarningBar(
         modifier = Modifier
             .background(
                 MaterialTheme.colorScheme.errorContainer,
-                RoundedCornerShape(8.dp)
+                RoundedCornerShape(12.dp)
             ),
         startPainter = rememberVectorPainter(image = Icons.Filled.Warning),
         startPainterTint = MaterialTheme.colorScheme.error,
@@ -294,7 +295,7 @@ private fun SunAndMoonAndOther(
             IconText(
                 modifier = Modifier.weight(1.2f),
                 title = stringResource(id = R.string.moonPhase),
-                iconSize =38.dp,
+                iconSize = 38.dp,
                 padding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
                 icon = painterResource(id = WeatherIcon.getResId(toDayWeather.moonPhaseIcon.toInt())),
                 text = toDayWeather.moonPhase

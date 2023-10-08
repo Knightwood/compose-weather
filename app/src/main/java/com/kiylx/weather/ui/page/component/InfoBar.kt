@@ -41,7 +41,7 @@ fun TwoIconTitleBar(
     endPainterTint: Color = LocalContentColor.current,
     paddingValues: PaddingValues = PaddingValues(
         horizontal = 16.dp,
-        vertical = 4.dp
+        vertical = 6.dp
     ),
     click: () -> Unit,
 ) {
@@ -92,7 +92,7 @@ fun IconTitleBar(
     painterTint: Color = LocalContentColor.current,
     paddingValues: PaddingValues = PaddingValues(
         horizontal = 16.dp,
-        vertical = 4.dp
+        vertical = 6.dp
     ),
 ) {
     Row(

@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -34,7 +35,11 @@ import com.kiylx.weather.ui.page.component.IconLabel
  * weather daily page header info
  */
 @Composable
-fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
+fun DailyWeatherHeaderPage(stateHolder: WeatherPagerStateHolder) {
+    val state: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()//页面数据
+    val minutelyPrecipitationState =
+        stateHolder.minutelyPrecipitationState.asDataFlow().collectAsState()
+
     state.value.let { data ->
         val navController = LocalNavController.current
         val unit = tempUnit()
@@ -70,7 +75,7 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
                         }
 
                         VerticalDivider(thickness = 2.dp)
-                        Column(modifier =Modifier.padding(start=16.dp,top=16.dp)) {
+                        Column(modifier = Modifier.padding(start = 16.dp, top = 16.dp)) {
 
                             Text(
                                 text = data.data.text,
@@ -90,10 +95,22 @@ fun DailyWeatherHeaderPage(state: State<DailyEntity>) {
                         }
 
                     }
+                    if (!stateHolder.showRainLineChart.value) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .padding(top = 8.dp, bottom = 4.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = minutelyPrecipitationState.value.summary,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
+                    }
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
                             .fillMaxWidth()
                     ) {
                         Text(

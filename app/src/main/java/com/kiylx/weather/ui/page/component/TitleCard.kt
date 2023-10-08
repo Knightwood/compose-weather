@@ -23,7 +23,7 @@ fun TitleCard(
     title: String,
     paddingValues: PaddingValues = PaddingValues(
         horizontal = 16.dp,
-        vertical = 4.dp
+        vertical = 6.dp
     ),
     content: @Composable() (ColumnScope.() -> Unit)
 ) {

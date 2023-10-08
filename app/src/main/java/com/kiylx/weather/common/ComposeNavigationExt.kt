@@ -3,12 +3,10 @@ package com.kiylx.weather.common
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
-import com.kiylx.weather.testcompose.FirstPage
 
 /**
  * 在compose中，使用bundle传参
