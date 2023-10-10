@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -20,8 +21,8 @@ val LocalDarkThemePrefs = compositionLocalOf { DarkThemePrefs(
     contrastValue = ThemeHelper.darkThemeHighContrastValue
 ) }
 val LocalSeedColor = compositionLocalOf { ThemeHelper.seedColorInt }
-val LocalWindowWidthState = staticCompositionLocalOf { WindowWidthSizeClass.Compact }
-val LocalDynamicColorSwitch = compositionLocalOf { ThemeHelper.isUseDynamicColor }
+val LocalIsUseDynamicColor = compositionLocalOf { ThemeHelper.isUseDynamicColor }
+val LocalIsUseDefaultTheme = compositionLocalOf { ThemeHelper.useDefaultTheme }
 val LocalPaletteStyleIndex = compositionLocalOf { ThemeHelper.paletteStyleInt }
 
 /**
@@ -38,7 +39,6 @@ val LocalColorScheme = staticCompositionLocalOf {
  */
 @Composable
 fun ThemeSettingsProvider(
-    windowWidthSizeClass: WindowWidthSizeClass,
     content: @Composable () -> Unit
 ) {
     ThemeHelper.AppSettingsStateFlow.collectAsState().value.run {
@@ -46,10 +46,12 @@ fun ThemeSettingsProvider(
         val isDark: Boolean = darkTheme.isDarkTheme()
 
         CompositionLocalProvider(
-            LocalDarkThemePrefs provides darkTheme,
-            LocalSeedColor provides themeColorSeed,
-            LocalPaletteStyleIndex provides paletteStyleIndex,
-            LocalColorScheme provides if (isDynamicColorEnabled && Build.VERSION.SDK_INT >= 31) {
+            LocalDarkThemePrefs provides this.darkTheme,
+            LocalSeedColor provides this.themeColorSeed,
+            LocalIsUseDynamicColor provides this.isDynamicColorEnabled,
+            LocalIsUseDefaultTheme provides this.useDefaultTheme,
+            LocalPaletteStyleIndex provides this.paletteStyleIndex,
+            LocalColorScheme provides if (this.isDynamicColorEnabled && Build.VERSION.SDK_INT >= 31) {
                 //系统的自动主题
                 if (isDark) {
                     dynamicDarkColorScheme(LocalContext.current)
@@ -78,8 +80,6 @@ fun ThemeSettingsProvider(
                     )
                 }
             },
-            LocalWindowWidthState provides windowWidthSizeClass,
-            LocalDynamicColorSwitch provides isDynamicColorEnabled,
             content = content
         )
     }

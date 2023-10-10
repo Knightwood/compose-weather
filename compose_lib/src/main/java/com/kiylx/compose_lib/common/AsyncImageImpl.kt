@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +33,6 @@ import com.kiylx.compose_lib.R
 import com.kiylx.compose_lib.component.parseDynamicColor
 import com.kiylx.compose_lib.theme3.LocalColorScheme
 import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
-import com.kiylx.compose_lib.theme3.LocalWindowWidthState
 
 
 @Composable
@@ -42,6 +40,7 @@ fun SVGImage(
     SVGString: String,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    horizontalPadding:PaddingValues= PaddingValues(16.dp),
     transform: (AsyncImagePainter.State) -> AsyncImagePainter.State = AsyncImagePainter.DefaultTransform,
     onState: ((AsyncImagePainter.State) -> Unit)? = null,
     alignment: Alignment = Alignment.Center,
@@ -52,8 +51,6 @@ fun SVGImage(
     tonalPalettes: ColorScheme = LocalColorScheme.current,
     isDarkTheme: Boolean = LocalDarkThemePrefs.current.isDarkTheme()
 ) {
-    val horizontalPadding =
-        PaddingValues(horizontal = if (LocalWindowWidthState.current != WindowWidthSizeClass.Compact) 100.dp else 0.dp)
     var size by remember { mutableStateOf(IntSize.Zero) }
 
     val pi by remember(tonalPalettes, isDarkTheme, size) {

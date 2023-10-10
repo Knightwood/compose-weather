@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -21,14 +18,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.kiylx.compose_lib.common.animatedComposable
-import com.kiylx.compose_lib.theme3.DynamicTheme
+import com.kiylx.compose_lib.theme3.DynamicTheme2
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.common.getPrevSavedState
 import com.kiylx.weather.common.navigateExt
 import com.kiylx.weather.common.observeSavedStateResult
-import com.kiylx.weather.ui.activitys.LocalNavController
 import com.kiylx.weather.ui.activitys.MainViewModel
-import com.kiylx.weather.ui.theme.WeatherTheme
 
 
 class TestNavActivity : AppCompatActivity() {
@@ -39,7 +34,7 @@ class TestNavActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             val navController = rememberNavController()
-            DynamicTheme {
+            DynamicTheme2 {
                 //构建导航
                 NavHost(navController = navController, startDestination = Route.HOME) {
                     composable(route = Route.HOME) {

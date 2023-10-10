@@ -11,9 +11,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,8 +43,11 @@ private tailrec fun Context.findWindow(): Window? =
     }
 
 @Composable
-fun DynamicTheme(windowSizeClass: WindowSizeClass, content: @Composable () -> Unit) {
-    ThemeSettingsProvider(windowWidthSizeClass = windowSizeClass.widthSizeClass) {
+fun DynamicTheme(
+    avoidSystemBar: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    ThemeSettingsProvider() {
         val window = LocalView.current.context.findWindow()
         window?.let {
             WindowCompat.setDecorFitsSystemWindows(it, false)
@@ -69,7 +69,11 @@ fun DynamicTheme(windowSizeClass: WindowSizeClass, content: @Composable () -> Un
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background)
                         .fillMaxSize()
-                        .systemBarsPadding()
+                        .apply {
+                            if (avoidSystemBar) {
+                                this.systemBarsPadding()
+                            }
+                        }
                 ) {
                     content()
                 }
@@ -78,15 +82,41 @@ fun DynamicTheme(windowSizeClass: WindowSizeClass, content: @Composable () -> Un
     }
 }
 
-
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun Activity.DynamicTheme(
+fun DynamicThemeNoContent(
     content: @Composable () -> Unit
 ) {
-    val windowSizeClass = calculateWindowSizeClass(this)
-    ThemeSettingsProvider(windowWidthSizeClass = windowSizeClass.widthSizeClass) {
-//        val window = LocalView.current.context.findWindow()
+    ThemeSettingsProvider() {
+        val window = LocalView.current.context.findWindow()
+        window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+            val isDark = LocalDarkThemePrefs.current.isDarkTheme()
+            rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
+        }
+        val colorScheme = LocalColorScheme.current
+        ProvideTextStyle(
+            value = LocalTextStyle.current.copy(
+                lineBreak = LineBreak.Paragraph,
+                textDirection = TextDirection.Content
+            )
+        ) {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = Typography,
+            ) {
+               content()
+            }
+        }
+    }
+}
+
+
+@Composable
+fun Activity.DynamicTheme2(
+    avoidSystemBar: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    ThemeSettingsProvider() {
         WindowCompat.setDecorFitsSystemWindows(this.window, false)
         val isDark = LocalDarkThemePrefs.current.isDarkTheme()
         rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)
@@ -105,10 +135,40 @@ fun Activity.DynamicTheme(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background)
                         .fillMaxSize()
-                        .systemBarsPadding()
+                        .apply {
+                            if (avoidSystemBar) {
+                                this.systemBarsPadding()
+                            }
+                        }
                 ) {
                     content()
                 }
+            }
+        }
+    }
+
+}
+
+@Composable
+fun Activity.DynamicTheme2NoContent(
+    content: @Composable () -> Unit
+) {
+    ThemeSettingsProvider() {
+        WindowCompat.setDecorFitsSystemWindows(this.window, false)
+        val isDark = LocalDarkThemePrefs.current.isDarkTheme()
+        rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)
+        val colorScheme = LocalColorScheme.current
+        ProvideTextStyle(
+            value = LocalTextStyle.current.copy(
+                lineBreak = LineBreak.Paragraph,
+                textDirection = TextDirection.Content
+            )
+        ) {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = Typography,
+            ) {
+                content()
             }
         }
     }

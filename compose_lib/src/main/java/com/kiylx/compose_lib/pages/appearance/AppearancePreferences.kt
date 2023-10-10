@@ -65,7 +65,7 @@ import com.kiylx.compose_lib.component.VideoCard
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
 import com.kiylx.compose_lib.theme3.LocalColorScheme
 import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
-import com.kiylx.compose_lib.theme3.LocalDynamicColorSwitch
+import com.kiylx.compose_lib.theme3.LocalIsUseDynamicColor
 import com.kiylx.compose_lib.theme3.LocalPaletteStyleIndex
 import com.kiylx.compose_lib.theme3.LocalSeedColor
 import com.kiylx.compose_lib.theme3.PaletteStyle
@@ -181,7 +181,7 @@ fun AppearancePreferences(
                             id = R.string.dynamic_color_desc
                         ),
                         icon = Icons.Outlined.Palette,
-                        isChecked = LocalDynamicColorSwitch.current,
+                        isChecked = LocalIsUseDynamicColor.current,
                         onClick = {
                             scope.launch {
                                 switchDynamicColor()
@@ -263,7 +263,7 @@ fun RowScope.ColorButton(
         )
     }
     val isSelect =
-        !LocalDynamicColorSwitch.current
+        !LocalIsUseDynamicColor.current
                 && LocalSeedColor.current == color.toArgb()
                 && LocalPaletteStyleIndex.current == index
     ColorButtonImpl(modifier = modifier, colorScheme = tonalPalettes, isSelected = { isSelect }) {

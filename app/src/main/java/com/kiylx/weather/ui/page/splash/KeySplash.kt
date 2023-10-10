@@ -6,12 +6,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
@@ -23,6 +28,7 @@ import com.kiylx.weather.common.AllPrefs
 import com.kiylx.compose_lib.component.FloatIconTextButton
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.icon.R
+import com.kiylx.weather.ui.page.ToastMsg
 
 /**
  * 填写QWeather私有key的页面
@@ -40,10 +46,17 @@ fun KeySplash(navController: NavHostController) {
         composition,
         iterations = LottieConstants.IterateForever,
     )
+    var error by remember {
+        mutableStateOf(false)
+    }
+    if (error){
+        ToastMsg(msg = stringResource(com.kiylx.weather.R.string.please_add_key))
+        error=false
+    }
     Box(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxSize()
+            .fillMaxSize().systemBarsPadding()
     ) {
         LottieAnimation(
             modifier = Modifier
@@ -74,7 +87,11 @@ fun KeySplash(navController: NavHostController) {
                     end = 16.dp
                 )
         ) {
-            navController.navigate(Route.SPLASH_LOCATION_ADD_PAGE)
+            if (AllPrefs.apiKey.isEmpty() || AllPrefs.apiKey.isBlank()) {
+                error=true
+            } else {
+                navController.navigate(Route.SPLASH_LOCATION_ADD_PAGE)
+            }
         }
     }
 }

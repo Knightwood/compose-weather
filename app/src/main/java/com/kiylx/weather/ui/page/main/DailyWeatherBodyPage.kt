@@ -357,7 +357,7 @@ private fun DayIndices(todayIndicesState: State<IndicesEntity>) {
             )
         )
 
-        Card() {
+        Card(modifier = Modifier.padding(bottom = 16.dp)) {
             Column {
                 Row {
                     IconText(

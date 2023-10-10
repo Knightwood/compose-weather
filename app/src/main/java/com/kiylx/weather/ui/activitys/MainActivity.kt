@@ -5,6 +5,7 @@ import android.location.Location
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
+import com.kiylx.compose_lib.theme3.DynamicTheme2
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
@@ -57,66 +59,71 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             CompositionLocalProvider(LocalNavController provides navController) {
                 DynamicTheme {
-                    //构建导航
-                    NavHost(navController = navController, startDestination = Route.HOME) {
-                        animatedComposable(route = Route.HOME) {
-                            val first by remember {
-                                mutableStateOf(AllPrefs.firstEnter)
-                            }
-                            var askPerms by remember {
-                                mutableStateOf(true)
-                            }
-                            val gpsOpen by remember {
-                                mutableStateOf(AllPrefs.gpsAuto)
-                            }
-                            //打开应用的时候，把显示的第一个位置信息放上去
-                            //默认的state变量是直接生成的位置信息，default一定是false
-                            //所以可以通过这个来判断是否需要将真正的默认位置信息替换
-                            if (!QWeatherGeoRepo.gpsDataState.value.default) {
-                                QWeatherGeoRepo.gpsDataState.value =
-                                    QWeatherGeoRepo.allLocationState.find {
-                                        it.default
-                                    } ?: LocationEntity()
-                            }
-
-                            //open gps
-                            if (gpsOpen) {
-                                if (askPerms) {
-                                    SideEffect {
-                                        queryGps()
-                                        askPerms = false
-                                    }
-                                }
-                            } else {
-                                SideEffect {
-                                    askPerms=true
-                                    stopGps()
-                                }
-                            }
-                            if (first) {
-                                navController.navigate(Route.SPLASH)
-                            } else {
-                                DailyWeatherMainPage(
-                                    navigateToSettings = {
-                                        navController.navigate(Route.SETTINGS)
-                                    },
-                                    navigateToLocations = { navController.navigate(Route.LOCATION) },
-                                    viewModel = mainViewModel
-                                )
-                            }
-                        }
-                        animatedComposable(Route.GRID_WEATHER) {
-                            GridWeatherPage(mainViewModel.gridWeatherStateHolder)
-                        }
-
-                        //位置添加页面
-                        buildLocationManagerPage(navController)
-                        //构建设置页面的嵌套导航
-                        buildSettingsPage(navController)
-                        buildSplashPage(navController)
-                    }
+                    HomeEntity(navController = navController)
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun HomeEntity(navController: NavHostController) {
+        //构建导航
+        NavHost(navController = navController, startDestination = Route.HOME) {
+            animatedComposable(route = Route.HOME) {
+                val first by remember {
+                    mutableStateOf(AllPrefs.firstEnter)
+                }
+                var askPerms by remember {
+                    mutableStateOf(true)
+                }
+                val gpsOpen by remember {
+                    mutableStateOf(AllPrefs.gpsAuto)
+                }
+                //打开应用的时候，把显示的第一个位置信息放上去
+                //默认的state变量是直接生成的位置信息，default一定是false
+                //所以可以通过这个来判断是否需要将真正的默认位置信息替换
+                if (!QWeatherGeoRepo.gpsDataState.value.default) {
+                    QWeatherGeoRepo.gpsDataState.value =
+                        QWeatherGeoRepo.allLocationState.find {
+                            it.default
+                        } ?: LocationEntity()
+                }
+
+                //open gps
+                if (gpsOpen) {
+                    if (askPerms) {
+                        SideEffect {
+                            queryGps()
+                            askPerms = false
+                        }
+                    }
+                } else {
+                    SideEffect {
+                        askPerms = true
+                        stopGps()
+                    }
+                }
+                if (first) {
+                    navController.navigate(Route.SPLASH)
+                } else {
+                    DailyWeatherMainPage(
+                        navigateToSettings = {
+                            navController.navigate(Route.SETTINGS)
+                        },
+                        navigateToLocations = { navController.navigate(Route.LOCATION) },
+                        viewModel = mainViewModel
+                    )
+                }
+            }
+            animatedComposable(Route.GRID_WEATHER) {
+                GridWeatherPage(mainViewModel.gridWeatherStateHolder)
+            }
+
+            //位置添加页面
+            buildLocationManagerPage(navController)
+            //构建设置页面的嵌套导航
+            buildSettingsPage(navController)
+            buildSplashPage(navController)
         }
     }
 

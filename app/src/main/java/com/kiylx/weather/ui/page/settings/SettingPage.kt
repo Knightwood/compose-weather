@@ -1,5 +1,6 @@
 package com.kiylx.weather.ui.page.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.GpsNotFixed
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.kiylx.compose_lib.component.BackButton
 import com.kiylx.compose_lib.component.LargeTopAppBar
@@ -58,6 +61,8 @@ fun SettingPage(navController: NavHostController) {
     var langState by remember {
         mutableStateOf(AllPrefs.lang)
     }
+    var openDialog by remember { mutableStateOf(false) }
+
     // 滑动的行为
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
@@ -76,8 +81,23 @@ fun SettingPage(navController: NavHostController) {
                 scrollBehavior = scrollBehavior
             )
         }) {
+        if (openDialog) {
+            KeyEditDialog {
+                openDialog = false
+            }
+        }
         LazyColumn(modifier = Modifier.padding(it)) {
-            item {
+            item(key = R.string.edit_key) {
+                //key
+                PreferenceItem(
+                    icon = Icons.Filled.Terminal,
+                    title = stringResource(id = R.string.edit_key),
+                    description = stringResource(R.string.update_your_api_key)
+                ) {
+                    openDialog = true
+                }
+            }
+            item(key=R.string.gps_auto) {
                 //gps
                 PreferenceSwitch(
                     title = "Gps",
@@ -89,11 +109,11 @@ fun SettingPage(navController: NavHostController) {
                     AllPrefs.gpsAuto = it
                 }
             }
-            if (gpsAutoState) {
-                item {
+            item(key=R.string.grid_weather) {
+                AnimatedVisibility(visible = gpsAutoState) {
                     //gps
                     PreferenceSwitch(
-                        title = "格点天气",
+                        title = stringResource(R.string.grid_weather),
                         description = stringResource(R.string.gps_auto_get_weather),
                         icon = if (gridWeatherState) Icons.Filled.GpsFixed else Icons.Filled.GpsNotFixed,
                         isChecked = gridWeatherState
@@ -102,10 +122,11 @@ fun SettingPage(navController: NavHostController) {
                         AllPrefs.gridWeather = it
                     }
                 }
+
             }
-            item {
+            item(key=R.string.temp_unit) {
                 PreferenceSwitch(
-                    title = "温度单位",
+                    title = stringResource(R.string.temp_unit),
                     description = stringResource(R.string.use_metric_unit),
                     icon = Icons.Filled.Public,
                     isChecked = unitState
@@ -115,9 +136,9 @@ fun SettingPage(navController: NavHostController) {
                         AUnit.ImperialUnits.param
                 }
             }
-            item {
+            item(key=R.string.wind_speed_unit) {
                 PreferenceSwitch(
-                    title = "风速单位",
+                    title = stringResource(id = R.string.wind_speed_unit),
                     description = stringResource(R.string.wind_speed_use_km_unit),
                     icon = Icons.Filled.AcUnit,
                     isChecked = speedUnitState
@@ -138,9 +159,9 @@ fun SettingPage(navController: NavHostController) {
 //                    }
 //                }
 //            }
-            item {
+            item(key=R.string.display) {
                 SettingItem(
-                    title = "显示", description = stringResource(
+                    title = stringResource(R.string.display), description = stringResource(
                         id = R.string.display_settings
                     ), icon = Icons.Filled.DisplaySettings
                 ) {
@@ -151,9 +172,4 @@ fun SettingPage(navController: NavHostController) {
             }
         }
     }
-
-
-    //缓存
-    //显示
-    //关于
 }

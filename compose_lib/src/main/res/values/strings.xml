@@ -16,7 +16,7 @@
     <string name="add">添加</string>
     <string name="how_does_it_work">使用说明</string>
     <string name="got_it">好</string>
-    <string name="dark_theme">暗黑主题</string>
+    <string name="dark_theme">暗色主题</string>
     <string name="display">显示</string>
     <string name="video_title_sample_text">视频标题</string>
     <string name="video_creator_sample_text">视频作者</string>
@@ -25,7 +25,7 @@
     <string name="dynamic_color">动态色彩</string>
     <string name="dynamic_color_desc">将壁纸颜色应用于应用主题</string>
     <string name="additional_settings">附加设置</string>
-    <string name="high_contrast">高对比度深色主题</string>
+    <string name="high_contrast">高对比度暗色主题</string>
     <string name="contrast">对比度</string>
     <string name="use_default_theme">使用默认主题</string>
     <string name="next_step">下一步</string>
