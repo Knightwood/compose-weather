@@ -22,17 +22,26 @@ android {
     }
 
     buildTypes {
-        named("release") {
+        debug {
+            applicationIdSuffix = ".debug"
             isMinifyEnabled = false
-            setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
+            isShrinkResources = false
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -90,7 +99,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest:${Android.compose_version}")
 
     // For AppWidgets support
-    implementation (Compose.Glance.glance)
+    implementation(Compose.Glance.glance)
     // For interop APIs with Material 3
-    implementation (Compose.Glance.glance_material3)
+    implementation(Compose.Glance.glance_material3)
 }
