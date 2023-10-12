@@ -85,7 +85,6 @@ dependencies {
     implementation(Compose.navigation)
     implementation(Accompanist.systemuicontroller)
     implementation(Compose.composeConstraintLayout)
-    implementation(Compose.composeMaterialIconsExtended)
     //下拉刷新，上拉加载
     implementation(ComposeTools.pullRefresh)
     implementation(Work.manager)

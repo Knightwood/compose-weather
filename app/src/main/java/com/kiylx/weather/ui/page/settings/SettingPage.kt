@@ -1,21 +1,21 @@
 package com.kiylx.weather.ui.page.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
-import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.DisplaySettings
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.GpsNotFixed
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -27,16 +27,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.kiylx.compose_lib.component.BackButton
 import com.kiylx.compose_lib.component.LargeTopAppBar
 import com.kiylx.compose_lib.component.PreferenceItem
-import com.kiylx.compose_lib.component.PreferenceSubtitle
 import com.kiylx.compose_lib.component.PreferenceSwitch
 import com.kiylx.compose_lib.component.SettingItem
-import com.kiylx.compose_lib.component.SettingTitle
-import com.kiylx.compose_lib.component.SmallTopAppBar
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AUnit
 import com.kiylx.weather.common.AllPrefs
@@ -97,7 +93,7 @@ fun SettingPage(navController: NavHostController) {
                     openDialog = true
                 }
             }
-            item(key=R.string.gps_auto) {
+            item(key = R.string.gps_auto) {
                 //gps
                 PreferenceSwitch(
                     title = "Gps",
@@ -109,8 +105,12 @@ fun SettingPage(navController: NavHostController) {
                     AllPrefs.gpsAuto = it
                 }
             }
-            item(key=R.string.grid_weather) {
-                AnimatedVisibility(visible = gpsAutoState) {
+            item(key = R.string.grid_weather) {
+                AnimatedVisibility(
+                    visible = gpsAutoState,
+                    enter = slideInHorizontally(),
+                    exit = slideOutHorizontally()+ shrinkOut(),
+                ) {
                     //gps
                     PreferenceSwitch(
                         title = stringResource(R.string.grid_weather),
@@ -124,7 +124,7 @@ fun SettingPage(navController: NavHostController) {
                 }
 
             }
-            item(key=R.string.temp_unit) {
+            item(key = R.string.temp_unit) {
                 PreferenceSwitch(
                     title = stringResource(R.string.temp_unit),
                     description = stringResource(R.string.use_metric_unit),
@@ -136,7 +136,7 @@ fun SettingPage(navController: NavHostController) {
                         AUnit.ImperialUnits.param
                 }
             }
-            item(key=R.string.wind_speed_unit) {
+            item(key = R.string.wind_speed_unit) {
                 PreferenceSwitch(
                     title = stringResource(id = R.string.wind_speed_unit),
                     description = stringResource(R.string.wind_speed_use_km_unit),
@@ -159,7 +159,7 @@ fun SettingPage(navController: NavHostController) {
 //                    }
 //                }
 //            }
-            item(key=R.string.display) {
+            item(key = R.string.display) {
                 SettingItem(
                     title = stringResource(R.string.display), description = stringResource(
                         id = R.string.display_settings

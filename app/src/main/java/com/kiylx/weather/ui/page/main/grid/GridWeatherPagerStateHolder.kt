@@ -2,19 +2,13 @@ package com.kiylx.weather.ui.page.main.grid
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.libx.http.kotlin.basic3.flow.DataUiState
-import com.kiylx.libx.http.kotlin.common.RawResponse
-import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.http.sendRequest
 import com.kiylx.weather.repo.QWeatherRepo
 import com.kiylx.weather.repo.bean.DailyEntity
-import com.kiylx.weather.repo.bean.DayAirEntity
 import com.kiylx.weather.repo.bean.DayWeather
 import com.kiylx.weather.repo.bean.HourWeatherEntity
-import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.LocationEntity
-import com.kiylx.weather.repo.bean.WarningEntity
 import com.kiylx.weather.ui.page.main.DayWeatherType
 
 /**

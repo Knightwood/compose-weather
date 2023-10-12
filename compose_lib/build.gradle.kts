@@ -16,7 +16,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -54,7 +54,7 @@ dependencies {
 //    implementation(Accompanist.flowlayout)
     implementation(Compose.composeRuntime)
     implementation(Compose.navigation)
-    implementation(Compose.composeMaterialIconsExtended)
+    api(Compose.composeMaterialIconsExtended)
 
     implementation(AndroidX.appCompat)
     implementation(AndroidX_KTX.core)

@@ -6,7 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
@@ -61,6 +63,7 @@ import com.kiylx.compose_lib.component.BackButton
 import com.kiylx.compose_lib.component.LargeTopAppBar
 import com.kiylx.compose_lib.component.PreferenceSwitch
 import com.kiylx.compose_lib.component.PreferenceSwitchWithDivider
+import com.kiylx.compose_lib.component.PreferenceTitle
 import com.kiylx.compose_lib.component.VideoCard
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
 import com.kiylx.compose_lib.theme3.LocalColorScheme
@@ -79,13 +82,10 @@ import com.kyant.m3color.hct.Hct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
-// 外观页面，动态主题使用的https://github.com/Kyant0/m3color
-
-val colorList = ((0..11).map { it * 30.0 }).map { Color(Hct.from(it, 35.0, 40.0).toInt()) }
+val colorList = ((0..11).map { it * 31.0 }).map { Color(Hct.from(it, 45.0, 45.0).toInt()) }
 
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class
 )
 @Composable
 fun AppearancePreferences(
@@ -142,17 +142,26 @@ fun AppearancePreferences(
                         pageCount = {
                             pageCount
                         })
+
+                PreferenceTitle(
+                    title = stringResource(R.string.theme_color),
+                    icon = Icons.Outlined.ColorLens
+                )
+
                 HorizontalPager(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
                         .clearAndSetSemantics { },
                     state = pagerState,
-                    contentPadding = PaddingValues(horizontal = 12.dp)
                 ) { pageIndex ->
-                    Row(
+                    FlowRow(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) { ColorButtons(colorList[pageIndex], scope) }
+                        maxItemsInEachRow = 4,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        ColorButtons(colorList[pageIndex], scope)
+                    }
                 }
                 Row(
                     Modifier
@@ -188,7 +197,7 @@ fun AppearancePreferences(
                             }
                         })
                 }
-                val isDarkTheme =themeSetting.darkTheme.isDarkTheme()
+                val isDarkTheme = themeSetting.darkTheme.isDarkTheme()
                 PreferenceSwitchWithDivider(title = stringResource(id = R.string.dark_theme),
                     icon = if (isDarkTheme) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
                     isChecked = isDarkTheme,
@@ -227,9 +236,11 @@ fun RowScope.ColorButtons(color: Color, scope: CoroutineScope) {
 
     listOf<PaletteStyle>(
         PaletteStyle.TonalSpot,
+        PaletteStyle.Neutral,
+        PaletteStyle.Vibrant,
         PaletteStyle.Expressive,
+        PaletteStyle.Rainbow,
         PaletteStyle.FruitSalad,
-        PaletteStyle.Rainbow
     ).forEachIndexed { index, style: PaletteStyle ->
         ColorButton(
             color = color,

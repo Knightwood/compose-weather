@@ -22,7 +22,8 @@ class WeatherPagerStateHolder(location: LocationEntity) {
 
     //================================当天的===============================
     //实时天气
-    val dailyUiState: DataUiState<DailyEntity> = DataUiState(DailyEntity(updateTime = "-1"))
+    val dailyUiState: DataUiState<DailyEntity> =
+        DataUiState(initValue = DailyEntity(updateTime = "-1"))
 
     //  逐小时预报
     val dailyHourUiState: DataUiState<HourWeatherEntity> = DataUiState(HourWeatherEntity())
@@ -128,16 +129,6 @@ class WeatherPagerStateHolder(location: LocationEntity) {
                 location.value,
             )
         }
-    }
-
-    suspend fun refresh() {
-        getDailyData()
-        getDailyHourWeatherData()
-        getDayWeatherData(DayWeatherType.threeDayWeather)
-        getDayWeatherData(DayWeatherType.sevenDayWeather)
-        get5DAir()
-        getTodayIndices()
-        getWarningNow()
     }
 
 }

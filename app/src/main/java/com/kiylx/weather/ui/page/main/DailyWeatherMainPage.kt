@@ -53,6 +53,7 @@ import com.kiylx.weather.ui.page.component.CustomRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
+import kotlinx.coroutines.delay
 
 class MainPage {
     companion object {
@@ -79,7 +80,11 @@ fun DailyWeatherMainPage(
         locationData.size
     }
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+    ) {
         Surface {
             Row(
                 modifier = Modifier
@@ -136,7 +141,7 @@ fun LocationText(location: LocationEntity) {
 }
 
 @Composable
-fun LatLonText(location: LocationEntity,modifier:Modifier=Modifier) {
+fun LatLonText(location: LocationEntity, modifier: Modifier = Modifier) {
     //location text
     val locationText =
         location.toLatLonStr()
@@ -170,7 +175,14 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
                 getDailyHourWeatherData(noCache = true)
                 getMinutelyPrecipitation(noCache = true)
             }
-
+            delay(3000L)
+            if (refreshState.isRefreshing()) {
+                refreshState.refreshFlag = if (uiState.value is UiState.Success<*>) {
+                    SmartSwipeStateFlag.SUCCESS
+                } else {
+                    SmartSwipeStateFlag.IDLE
+                }
+            }
         },
         state = refreshState,
         isNeedRefresh = true,
@@ -193,9 +205,9 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
                         refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
                     }
 
-                    UiState.Loading -> {}
                     else -> {
-                        refreshState.refreshFlag = SmartSwipeStateFlag.IDLE
+                        delay(2000L)
+                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
                     }
                 }
             }
@@ -206,11 +218,10 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment =Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            //顶部信息
             DailyWeatherHeaderPage(weatherPagerStateHolder)
-            //上面是大概的信息
-            //下面是其他数据,每行都是双列
             //tab切换页
             var tabIndex by remember {
                 mutableIntStateOf(0)
@@ -221,7 +232,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             )
             TabRow(
                 selectedTabIndex = tabIndex,
-                modifier = Modifier.padding(start=16.dp,end=16.dp, bottom=8.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 indicator = { tabPositions ->
                     TabRowDefaults.PrimaryIndicator(
                         Modifier

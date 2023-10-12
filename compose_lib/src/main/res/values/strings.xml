@@ -29,4 +29,5 @@
     <string name="contrast">对比度</string>
     <string name="use_default_theme">使用默认主题</string>
     <string name="next_step">下一步</string>
+    <string name="theme_color">主题颜色</string>
 </resources>

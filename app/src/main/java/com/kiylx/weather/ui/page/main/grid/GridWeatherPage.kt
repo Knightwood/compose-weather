@@ -1,4 +1,4 @@
-package com.kiylx.weather.ui.page
+package com.kiylx.weather.ui.page.main.grid
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -28,12 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
+import com.kiylx.weather.ui.page.component.CustomRefreshHeader
 import com.kiylx.weather.ui.page.main.DayWeatherType
-import com.kiylx.weather.ui.page.main.grid.GridDailyWeatherHeaderPage
-import com.kiylx.weather.ui.page.main.grid.GridDailyWeatherInfo
-import com.kiylx.weather.ui.page.main.grid.GridDayWeather
-import com.kiylx.weather.ui.page.main.grid.GridWeatherPagerStateHolder
-import com.loren.component.view.composesmartrefresh.MyRefreshHeader
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
@@ -66,7 +62,7 @@ fun GridWeatherPage(weatherPagerStateHolder: GridWeatherPagerStateHolder) {
         isNeedRefresh = true,
         isNeedLoadMore = false,
         headerIndicator = {
-            MyRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
+            CustomRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
         },
     ) {
         //观察界面状态，修改下拉刷新状态

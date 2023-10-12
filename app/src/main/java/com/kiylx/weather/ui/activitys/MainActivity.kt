@@ -25,7 +25,6 @@ import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
-import com.kiylx.compose_lib.theme3.DynamicTheme2
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
@@ -37,9 +36,9 @@ import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
-import com.kiylx.weather.ui.page.GridWeatherPage
 import com.kiylx.weather.ui.page.LocationManagerPage
 import com.kiylx.weather.ui.page.main.DailyWeatherMainPage
+import com.kiylx.weather.ui.page.main.grid.GridWeatherPage
 import com.kiylx.weather.ui.page.settings.CachePage
 import com.kiylx.weather.ui.page.settings.SettingPage
 import com.kiylx.weather.ui.page.splash.AddLocationPage

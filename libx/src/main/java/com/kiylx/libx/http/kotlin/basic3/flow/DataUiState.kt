@@ -1,5 +1,6 @@
 package com.kiylx.libx.http.kotlin.basic3.flow
 
+import android.util.Log
 import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +50,7 @@ import kotlinx.coroutines.flow.StateFlow
  *     }
  * ```
  */
-class DataUiState<T>(
+open class DataUiState<T>(
     initValue: T,//初始数据
     initUiState: UiState = UiState.INIT,//可选的初始界面状态
 ) {
@@ -66,13 +67,14 @@ class DataUiState<T>(
     fun setStateWithData(value: RawResponse<T>) {
         when (value) {
             is RawResponse.Error -> {
-                val data = UiState.RequestErr(value)
-                _uiState.tryEmit(data)
+                val uiState = UiState.RequestErr(value)
+                _uiState.tryEmit(uiState)
             }
 
             is RawResponse.Success -> {
                 value.responseData?.let { _data.tryEmit(it) }
-                _uiState.tryEmit(UiState.Success(value.responseData))
+                val uiState = UiState.Success(value.responseData)
+                _uiState.tryEmit(uiState)
             }
         }
     }
@@ -84,10 +86,11 @@ class DataUiState<T>(
     fun setDataOrState(data: T? = null, uiState: UiState? = null) {
         data?.let {
             _data.tryEmit(it)
-        }
+        } ?: Log.e(TAG, "data is null,don't emit")
+
         uiState?.let {
             _uiState.tryEmit(it)
-        }
+        } ?: Log.e(TAG, "uiState is null,don't emit")
     }
 
     /**
@@ -107,4 +110,9 @@ class DataUiState<T>(
     fun asDataFlow(): StateFlow<T> = _data
     fun asUiStateFlow(): StateFlow<UiState> = _uiState
     fun getData(): T = _data.value
+    fun getUiState(): UiState=_uiState.value
+
+    companion object {
+        const val TAG = "tty1-DataUiState"
+    }
 }

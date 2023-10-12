@@ -18,9 +18,9 @@ fun tempUnit(): String {
 @Composable
 fun windUnit (type :Int):String{
     val unit = if (type == WindUnit.Km) {
-        stringResource(id = R.string.wind_speed_unit)
+        stringResource(id = R.string.wind_speed_unit_kmh)
     } else {
-        stringResource(id = R.string.wind_rating_unit)
+        stringResource(id = R.string.wind_speed_unit_rating)
     }
     return unit
 }

@@ -118,7 +118,7 @@ fun MultiDayWeatherPage(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " - " + it.category+" ${it.aqi}"
+                            dateStr + " " + it.category+" ${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {
@@ -220,7 +220,7 @@ fun ThreeDayWeather(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " " + it.category+"/${it.aqi}"
+                            dateStr + " " + it.category+" ${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {

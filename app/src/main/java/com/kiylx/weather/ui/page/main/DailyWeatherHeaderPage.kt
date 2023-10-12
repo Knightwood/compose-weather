@@ -121,13 +121,13 @@ fun DailyWeatherHeaderPage(stateHolder: WeatherPagerStateHolder) {
                         val windSpeed = if (AllPrefs.windUnit == WindUnit.Km) {
                             "${data.data.windSpeed} ${
                                 stringResource(
-                                    id = R.string.wind_speed_unit
+                                    id = R.string.wind_speed_unit_kmh
                                 )
                             }"
                         } else {
                             "${data.data.windScale} ${
                                 stringResource(
-                                    id = R.string.wind_rating_unit
+                                    id = R.string.wind_speed_unit_rating
                                 )
                             }"
                         }

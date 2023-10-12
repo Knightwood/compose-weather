@@ -28,7 +28,7 @@ object LocalFile {
     const val TAG = "tty1-LocalFile"
 
     //存储位置
-    val dirPath = AppCtx.instance.externalCacheDir!!.absolutePath
+    val dirPath = AppCtx.instance.filesDir.absolutePath
     var locationDir = dirPath + File.separator + "location" + File.separator
     var weatherDir = dirPath + File.separator + "weather" + File.separator
 

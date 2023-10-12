@@ -465,6 +465,51 @@ fun PreferenceSwitchWithDivider(
 }
 
 @Composable
+fun PreferenceTitle(
+    title: String,
+    description: String? = null,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    onClick: (() -> Unit) = {},
+) {
+
+    Surface(
+        modifier = Modifier.clickable(
+            onClick = onClick,
+            onClickLabel = stringResource(id = R.string.open_settings)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal.dp, vertical.dp)
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            icon?.let {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 16.dp)
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.applyOpacity(enabled)
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                PreferenceItemTitle(text = title, enabled = enabled)
+                if (!description.isNullOrEmpty()) PreferenceItemDescription(
+                    text = description,
+                    enabled = enabled
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun PreferencesCautionCard(
     title: String,
     description: String? = null,

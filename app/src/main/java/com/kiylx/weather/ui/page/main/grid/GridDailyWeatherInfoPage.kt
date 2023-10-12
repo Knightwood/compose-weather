@@ -157,9 +157,10 @@ fun GridDailyWeatherInfo(stateHolder: GridWeatherPagerStateHolder) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconText(
+                    modifier = Modifier.weight(1f),
                     title = stringResource(id = R.string.pressure),
                     icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
-                    iconSize = 38.dp,
+                    iconSize = 40.dp,
                     text = dailyState.value.data.pressure + " 百帕",
                 )
                 IconText(
