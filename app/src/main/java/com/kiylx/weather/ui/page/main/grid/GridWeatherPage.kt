@@ -57,6 +57,14 @@ fun GridWeatherPage(weatherPagerStateHolder: GridWeatherPagerStateHolder) {
                 getDailyHourWeatherData(noCache = true)
             }
 
+            delay(3000L)
+            if (refreshState.isRefreshing()) {
+                refreshState.refreshFlag = if (uiState.value is UiState.Success<*>) {
+                    SmartSwipeStateFlag.SUCCESS
+                } else {
+                    SmartSwipeStateFlag.IDLE
+                }
+            }
         },
         state = refreshState,
         isNeedRefresh = true,
