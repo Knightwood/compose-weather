@@ -1,6 +1,7 @@
 package com.kiylx.compose_lib.theme3
 
 import android.os.Build
+import android.view.Window
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -24,7 +25,7 @@ val LocalSeedColor = compositionLocalOf { ThemeHelper.seedColorInt }
 val LocalIsUseDynamicColor = compositionLocalOf { ThemeHelper.isUseDynamicColor }
 val LocalIsUseDefaultTheme = compositionLocalOf { ThemeHelper.useDefaultTheme }
 val LocalPaletteStyleIndex = compositionLocalOf { ThemeHelper.paletteStyleInt }
-
+val LocalWindows = compositionLocalOf<Window> { error("no default") }
 /**
  * 存储当前的主题色，其实作用跟[MaterialTheme.colorScheme]一样
  */
@@ -39,6 +40,7 @@ val LocalColorScheme = staticCompositionLocalOf {
  */
 @Composable
 fun ThemeSettingsProvider(
+    window: Window,
     content: @Composable () -> Unit
 ) {
     ThemeHelper.AppSettingsStateFlow.collectAsState().value.run {
@@ -46,6 +48,7 @@ fun ThemeSettingsProvider(
         val isDark: Boolean = darkTheme.isDarkTheme()
 
         CompositionLocalProvider(
+            LocalWindows provides window,
             LocalDarkThemePrefs provides this.darkTheme,
             LocalSeedColor provides this.themeColorSeed,
             LocalIsUseDynamicColor provides this.isDynamicColorEnabled,

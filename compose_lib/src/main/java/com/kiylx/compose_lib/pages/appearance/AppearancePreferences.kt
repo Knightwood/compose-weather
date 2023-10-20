@@ -64,13 +64,17 @@ import com.kiylx.compose_lib.component.LargeTopAppBar
 import com.kiylx.compose_lib.component.PreferenceSwitch
 import com.kiylx.compose_lib.component.PreferenceSwitchWithDivider
 import com.kiylx.compose_lib.component.PreferenceTitle
+import com.kiylx.compose_lib.component.RippleAnimationState
 import com.kiylx.compose_lib.component.VideoCard
+import com.kiylx.compose_lib.component.autoRippleAnimation
+import com.kiylx.compose_lib.component.rememberRippleAnimationState
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
 import com.kiylx.compose_lib.theme3.LocalColorScheme
 import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
 import com.kiylx.compose_lib.theme3.LocalIsUseDynamicColor
 import com.kiylx.compose_lib.theme3.LocalPaletteStyleIndex
 import com.kiylx.compose_lib.theme3.LocalSeedColor
+import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.compose_lib.theme3.PaletteStyle
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
@@ -105,10 +109,11 @@ fun AppearancePreferences(
         )
     }
     val scope = rememberCoroutineScope()
-
+    val rippleAnimationState = rememberRippleAnimationState()
     Scaffold(modifier = Modifier
         .fillMaxSize()
-        .nestedScroll(scrollBehavior.nestedScrollConnection),
+        .nestedScroll(scrollBehavior.nestedScrollConnection)
+        .autoRippleAnimation(LocalWindows.current, rippleAnimationState),
         topBar = {
             LargeTopAppBar(title = {
                 Text(
@@ -160,7 +165,7 @@ fun AppearancePreferences(
                         maxItemsInEachRow = 4,
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        ColorButtons(colorList[pageIndex], scope)
+                        ColorButtons(colorList[pageIndex], scope, rippleAnimationState)
                     }
                 }
                 Row(
@@ -203,7 +208,9 @@ fun AppearancePreferences(
                     isChecked = isDarkTheme,
                     description = LocalDarkThemePrefs.current.getDarkThemeDesc(),
                     onChecked = {
-                        scope.modifyDarkThemePreference(if (it) DarkThemePrefs.ON else DarkThemePrefs.OFF)
+                        rippleAnimationState.change {
+                            scope.modifyDarkThemePreference(if (it) DarkThemePrefs.ON else DarkThemePrefs.OFF)
+                        }
 
                     },
                     onClick = { navToDarkMode() })
@@ -212,8 +219,10 @@ fun AppearancePreferences(
                     title = stringResource(R.string.use_default_theme),
                     icon = Icons.Outlined.Contrast,
                     isChecked = useDefaultThemeChecked, onClick = {
-                        useDefaultThemeChecked = it
-                        scope.recoveryDefaultTheme(useDefaultTheme = it)
+                        rippleAnimationState.change {
+                            useDefaultThemeChecked = it
+                            scope.recoveryDefaultTheme(useDefaultTheme = it)
+                        }
                     }
                 )
 
@@ -225,7 +234,11 @@ fun AppearancePreferences(
  * 对于一种颜色种子，生成了多种不同的风格
  */
 @Composable
-fun RowScope.ColorButtons(color: Color, scope: CoroutineScope) {
+fun RowScope.ColorButtons(
+    color: Color,
+    scope: CoroutineScope,
+    rippleAnimationState: RippleAnimationState
+) {
     val darkPref = LocalDarkThemePrefs.current
     val isDark = darkPref.isDarkTheme()
     val contrastValue = if (isDark && darkPref.isHighContrastModeEnabled) {
@@ -249,6 +262,7 @@ fun RowScope.ColorButtons(color: Color, scope: CoroutineScope) {
             scope = scope,
             isDark = isDark,
             contrastValue = contrastValue,
+            rippleAnimationState = rippleAnimationState
         )
     }
 }
@@ -262,6 +276,7 @@ fun RowScope.ColorButton(
     scope: CoroutineScope,
     isDark: Boolean,
     contrastValue: Double,
+    rippleAnimationState: RippleAnimationState,
 ) {
     val tonalPalettes by remember {
         mutableStateOf(
@@ -278,9 +293,11 @@ fun RowScope.ColorButton(
                 && LocalSeedColor.current == color.toArgb()
                 && LocalPaletteStyleIndex.current == index
     ColorButtonImpl(modifier = modifier, colorScheme = tonalPalettes, isSelected = { isSelect }) {
-        scope.switchDynamicColor(enabled = false)
-        scope.modifyThemeSeedColor(color.toArgb(), index)
-        scope.recoveryDefaultTheme(useDefaultTheme = false)
+        rippleAnimationState.change {
+            scope.switchDynamicColor(enabled = false)
+            scope.modifyThemeSeedColor(color.toArgb(), index)
+            scope.recoveryDefaultTheme(useDefaultTheme = false)
+        }
     }
 
 }

@@ -33,6 +33,7 @@ import com.kiylx.weather.ui.page.main.DayWeatherType
 import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
 import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
 import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
+import kotlinx.coroutines.delay
 
 @Composable
 fun GridWeatherPage(weatherPagerStateHolder: GridWeatherPagerStateHolder) {

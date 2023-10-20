@@ -44,12 +44,12 @@ private tailrec fun Context.findWindow(): Window? =
 
 @Composable
 fun DynamicTheme(
+    window: Window,
     avoidSystemBar: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    ThemeSettingsProvider() {
-        val window = LocalView.current.context.findWindow()
-        window?.let {
+    ThemeSettingsProvider(window) {
+        window.let {
             WindowCompat.setDecorFitsSystemWindows(it, false)
             val isDark = LocalDarkThemePrefs.current.isDarkTheme()
             rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
@@ -84,9 +84,10 @@ fun DynamicTheme(
 
 @Composable
 fun DynamicThemeNoContent(
+    window: Window,
     content: @Composable () -> Unit
 ) {
-    ThemeSettingsProvider() {
+    ThemeSettingsProvider(window) {
         val window = LocalView.current.context.findWindow()
         window?.let {
             WindowCompat.setDecorFitsSystemWindows(it, false)
@@ -116,7 +117,7 @@ fun Activity.DynamicTheme2(
     avoidSystemBar: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    ThemeSettingsProvider() {
+    ThemeSettingsProvider(window) {
         WindowCompat.setDecorFitsSystemWindows(this.window, false)
         val isDark = LocalDarkThemePrefs.current.isDarkTheme()
         rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)
@@ -153,7 +154,7 @@ fun Activity.DynamicTheme2(
 fun Activity.DynamicTheme2NoContent(
     content: @Composable () -> Unit
 ) {
-    ThemeSettingsProvider() {
+    ThemeSettingsProvider(window) {
         WindowCompat.setDecorFitsSystemWindows(this.window, false)
         val isDark = LocalDarkThemePrefs.current.isDarkTheme()
         rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)

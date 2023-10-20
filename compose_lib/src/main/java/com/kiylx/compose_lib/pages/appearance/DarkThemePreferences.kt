@@ -36,11 +36,13 @@ import com.kiylx.compose_lib.component.PreferenceSingleChoiceItem
 import com.kiylx.compose_lib.component.PreferenceSubtitle
 import com.kiylx.compose_lib.component.PreferenceSubtitleNotFillWidth
 import com.kiylx.compose_lib.component.PreferenceSwitch
+import com.kiylx.compose_lib.component.autoRippleAnimation
+import com.kiylx.compose_lib.component.rememberRippleAnimationState
 import com.kiylx.compose_lib.theme3.DarkThemePrefs.Companion.FOLLOW_SYSTEM
 import com.kiylx.compose_lib.theme3.DarkThemePrefs.Companion.OFF
 import com.kiylx.compose_lib.theme3.DarkThemePrefs.Companion.ON
-import com.kiylx.compose_lib.theme3.LocalColorScheme
 import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
+import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
 
@@ -48,6 +50,7 @@ import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DarkThemePreferences(onBackPressed: () -> Unit) {
+    val rippleAnimationState = rememberRippleAnimationState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
         canScroll = { true }
@@ -58,7 +61,8 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .autoRippleAnimation(LocalWindows.current, rippleAnimationState),
         topBar = {
             LargeTopAppBar(
                 title = {
@@ -85,7 +89,9 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
                             text = stringResource(R.string.follow_system),
                             selected = darkThemePreference.darkThemeMode == FOLLOW_SYSTEM
                         ) {
-                            scope.modifyDarkThemePreference(FOLLOW_SYSTEM)
+                            rippleAnimationState.change {
+                                scope.modifyDarkThemePreference(FOLLOW_SYSTEM)
+                            }
                         }
                     }
                 }
@@ -93,13 +99,21 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
                     PreferenceSingleChoiceItem(
                         text = stringResource(R.string.on),
                         selected = darkThemePreference.darkThemeMode == ON
-                    ) { scope.modifyDarkThemePreference(ON) }
+                    ) {
+                        rippleAnimationState.change {
+                            scope.modifyDarkThemePreference(ON)
+                        }
+                    }
                 }
                 item {
                     PreferenceSingleChoiceItem(
                         text = stringResource(R.string.off),
                         selected = darkThemePreference.darkThemeMode == OFF
-                    ) { scope.modifyDarkThemePreference(OFF) }
+                    ) {
+                        rippleAnimationState.change {
+                            scope.modifyDarkThemePreference(OFF)
+                        }
+                    }
                 }
                 item {
                     PreferenceSubtitle(text = stringResource(R.string.additional_settings))
@@ -123,11 +137,13 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
                         ) {
                             PreferenceSubtitleNotFillWidth(
                                 modifier = Modifier.align(Alignment.CenterVertically),
-                                contentPadding = PaddingValues(start=8.dp),
+                                contentPadding = PaddingValues(start = 8.dp),
                                 text = stringResource(R.string.contrast)
                             )
                             Text(
-                                modifier = Modifier.align(Alignment.Bottom).padding(end = 16.dp, top = 8.dp),
+                                modifier = Modifier
+                                    .align(Alignment.Bottom)
+                                    .padding(end = 16.dp, top = 8.dp),
                                 fontWeight = FontWeight.Bold,
                                 text = String.format("%.1f", darkHighContrastProgress)
                             )

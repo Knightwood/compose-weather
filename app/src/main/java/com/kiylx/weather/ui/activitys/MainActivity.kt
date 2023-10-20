@@ -24,7 +24,7 @@ import androidx.navigation.navOptions
 import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
-import com.kiylx.compose_lib.theme3.DynamicTheme
+import com.kiylx.compose_lib.theme3.DynamicTheme2
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
@@ -56,8 +56,10 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             val navController = rememberNavController()
-            CompositionLocalProvider(LocalNavController provides navController) {
-                DynamicTheme {
+            CompositionLocalProvider(
+                LocalNavController provides navController,
+            ) {
+                DynamicTheme2 {
                     HomeEntity(navController = navController)
                 }
             }
