@@ -47,7 +47,7 @@ fun FirstPage(navController: NavController) {
     var innerPos = mutableStateOf(Offset.Zero)
     //1. 状态
     val rippleAnimationState = rememberRippleAnimationState {
-        animTime = 5000 //这里可以调整一些设置
+        animTime = 500 //这里可以调整一些设置
     }
     Surface(
         modifier = Modifier
@@ -59,7 +59,7 @@ fun FirstPage(navController: NavController) {
             //.rippleAnimation(window,rippleAnimationState)
             //2.2 这个modifier可以获取点击位置
         	//.extendClick {
-            //	innerPos.value = it.position
+            //innerPos.value = it.position
         	//}
     ) {
         Column(
@@ -83,7 +83,9 @@ fun FirstPage(navController: NavController) {
                     } else {
                         rippleAnimationState.animMode = AnimMode.expend
                     }
-                    //3. 调用此方法执行动画，以及切换主题，若是上面选择手动获取点击位置，或是自定义位置，可以调用change方法的时候，传入自己定义好的位置，若是自动获取点击位置，则不用传位置信息
+                    //3. 调用此方法执行动画，以及切换主题.
+                    //若是上面选择手动获取点击位置，或是自定义位置，调用change方法的时候，需要传入自己定义好的位置，
+                    //若是自动获取点击位置，则不用传位置信息，若传坐标，会覆盖自动获取的点击坐标
                     rippleAnimationState.change(){
                         //主题切换
                         if (isDark) {

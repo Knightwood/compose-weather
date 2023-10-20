@@ -34,6 +34,7 @@ fun FirstPage(navController: NavController) {
     val isDark = LocalDarkThemePrefs.current.isDarkTheme()
     val rippleAnimationState = rememberRippleAnimationState {
         animTime = 5000
+        moveUpSystemBarInsts=true
     }
     Surface(
         modifier = Modifier

@@ -14,6 +14,8 @@ import android.view.Window
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,7 +31,8 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 /*
 关于偏移、缩放与旋转，我们建议的调用顺序是 rotate -> scale -> offset
@@ -45,15 +48,23 @@ import androidx.compose.ui.platform.LocalView
 class RippleAnimationState {
     var animMode: AnimMode = AnimMode.expend
     var animTime: Long = 500
+        set(value) {
+            if (value<50){
+                return
+            }else{
+                field=value
+            }
+        }
     internal var innerPos = mutableStateOf(Offset.Zero)
 
     /**
      * 绘制时是否向上移动一个状态栏高度
+     * 若是使用脚手架就不用偏移
      */
-    var moveUpSystemBarInsts: Boolean = true
+    var moveUpSystemBarInsts: Boolean = false
 
     //when need change theme,will switch to true,when change done,will restore to false
-    var runAnim = false
+    internal var runAnim = false
     internal var offset = mutableStateOf(Offset.Zero)
 
     /**
@@ -63,7 +74,7 @@ class RippleAnimationState {
 
     /**
      * 设置主题切换的逻辑，传入坐标，以运行动画以及触发主题切换
-     * 若使用了[autoRippleAnimation]，可以不传坐标。
+     * 若使用了[autoRippleAnimation]，可以不传坐标,若传坐标，会覆盖自动获取的点击坐标
      */
     fun change(pointerOffset: Offset = innerPos.value, func: () -> Unit) {
         if (runAnim) {
@@ -96,12 +107,12 @@ fun Modifier.rippleAnimation(
     window: Window,
     state: RippleAnimationState
 ): Modifier {
-    val mRootView = LocalView.current.rootView
-//    val yTranslate = if (state.moveUpSystemBarInsts) {
-//        WindowInsets.statusBars.getTop(Density(LocalDensity.current.density))
-//    } else {
-//        0
-//    }
+    val mRootView = window.decorView.rootView
+    val yTranslate = if (state.moveUpSystemBarInsts) {
+        WindowInsets.statusBars.getTop(Density(LocalDensity.current.density))
+    } else {
+        0
+    }
     var mMaxRadius = 0
 
     var mBackground by remember {
@@ -161,30 +172,23 @@ fun Modifier.rippleAnimation(
     /**
      * 更新屏幕截图
      */
-    fun updateBackground(success:(bitmap:Bitmap)->Unit) {
+    fun updateBackground(success: (bitmap: Bitmap) -> Unit) {
         if (mBackground != null && !mBackground!!.isRecycled) {
             mBackground!!.recycle()
         }
-
-//        val bitmap = Bitmap.createBitmap(mRootView.width, mRootView.height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        canvas.translate(0f, (-yTranslate).toFloat())
-//        mRootView.draw(canvas)
-//        mBackground=bitmap
 
         // 避免Software rendering doesn't support hardware bitmaps
         val bounds = Rect()
         mRootView.getDrawingRect(bounds)
         try {
             val bitmap = Bitmap.createBitmap(
-                bounds.width().toInt(),
-                bounds.height().toInt(),
+                bounds.width(),
+                bounds.height(),
                 Bitmap.Config.ARGB_8888,
             )
-
             PixelCopy.request(
                 window,
-                bounds,
+                Rect(bounds.left, bounds.top + yTranslate, bounds.right, bounds.bottom),
                 bitmap,
                 {
                     when (it) {
@@ -228,6 +232,7 @@ fun Modifier.rippleAnimation(
         override fun onAnimationStart(p0: Animator) {
             state.block.invoke()
         }
+
         override fun onAnimationEnd(p0: Animator) {
             if (mBackground != null && !mBackground!!.isRecycled) {
                 mBackground!!.recycle()
@@ -247,8 +252,8 @@ fun Modifier.rippleAnimation(
         if (!state.runAnim && state.offset.value != Offset.Zero) {
             state.runAnim = true
             updateMaxRadius(state.offset.value)//获取圆形的最大半径
-            updateBackground{
-                mBackground=it
+            updateBackground {
+                mBackground = it
                 anim = when (state.animMode) {
                     RippleAnimationState.AnimMode.shrink -> {
                         ValueAnimator.ofFloat(mMaxRadius.toFloat(), 0f)
@@ -287,12 +292,12 @@ fun Modifier.rippleAnimation(
                                 mPaint.xfermode = null
                                 drawCircle(mStartX, mStartY, mRadius, mPaint)
                                 mPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-                                drawBitmap(mBackground!!, 0f,0f, mPaint)
+                                drawBitmap(mBackground!!, 0f, 0f, mPaint)
                             }
 
                             RippleAnimationState.AnimMode.expend -> {
                                 mPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-                                drawBitmap(mBackground!!, 0f,0f, null)
+                                drawBitmap(mBackground!!, 0f, 0f, null)
                                 drawCircle(mStartX, mStartY, mRadius, mPaint)
                             }
                         }
@@ -310,9 +315,9 @@ fun Modifier.rippleAnimation(
  * 使用此modifier，可以省略获取手动点击位置
  */
 @Composable
-fun Modifier.autoRippleAnimation(window: Window,state: RippleAnimationState): Modifier {
+fun Modifier.autoRippleAnimation(window: Window, state: RippleAnimationState): Modifier {
     return this
-        .rippleAnimation(window,state)
+        .rippleAnimation(window, state)
         .extendClick {
             state.innerPos.value = it.position
         }
