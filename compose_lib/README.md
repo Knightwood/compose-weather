@@ -53,9 +53,9 @@ fun FirstPage(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            //2.添加modifier，自动获取点击位置
+            //2.添加动画效果modifier，切换动画时将自动获取点击位置
             .autoRippleAnimation(window,rippleAnimationState)
-            //2.1 或者使用下面这个，自己手动获取点击位置
+            //2.1 或者使用下面这个，作用一样，只是调用rippleAnimationState.change切换动画方法需要手动传入一个位置
             //.rippleAnimation(window,rippleAnimationState)
             //2.2 这个modifier可以获取点击位置
         	//.extendClick {
