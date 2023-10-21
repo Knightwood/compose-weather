@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
 import androidx.core.view.WindowCompat
@@ -44,120 +44,38 @@ private tailrec fun Context.findWindow(): Window? =
 
 @Composable
 fun DynamicTheme(
-    window: Window,
+    window: Window? = null,
     avoidSystemBar: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    ThemeSettingsProvider(window) {
-        window.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-            val isDark = LocalDarkThemePrefs.current.isDarkTheme()
-            rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
-        }
-        val colorScheme = LocalColorScheme.current
-        ProvideTextStyle(
-            value = LocalTextStyle.current.copy(
-                lineBreak = LineBreak.Paragraph,
-                textDirection = TextDirection.Content
-            )
-        ) {
-            MaterialTheme(
-                colorScheme = colorScheme,
-                typography = Typography,
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize()
-                        .apply {
-                            if (avoidSystemBar) {
-                                this.systemBarsPadding()
-                            }
-                        }
-                ) {
-                    content()
+    DynamicThemeNoContent(window = window) {
+        Surface(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize()
+                .apply {
+                    if (avoidSystemBar) {
+                        this.systemBarsPadding()
+                    }
                 }
-            }
+        ) {
+            content()
         }
     }
 }
 
 @Composable
 fun DynamicThemeNoContent(
-    window: Window,
+    window: Window?=null,
     content: @Composable () -> Unit
 ) {
-    ThemeSettingsProvider(window) {
-        val window = LocalView.current.context.findWindow()
-        window?.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-            val isDark = LocalDarkThemePrefs.current.isDarkTheme()
-            rememberSystemUiController(window).setSystemBarsColor(Color.Transparent, !isDark)
-        }
-        val colorScheme = LocalColorScheme.current
-        ProvideTextStyle(
-            value = LocalTextStyle.current.copy(
-                lineBreak = LineBreak.Paragraph,
-                textDirection = TextDirection.Content
-            )
-        ) {
-            MaterialTheme(
-                colorScheme = colorScheme,
-                typography = Typography,
-            ) {
-               content()
-            }
-        }
-    }
-}
-
-
-@Composable
-fun Activity.DynamicTheme2(
-    avoidSystemBar: Boolean = false,
-    content: @Composable () -> Unit
-) {
-    ThemeSettingsProvider(window) {
-        WindowCompat.setDecorFitsSystemWindows(this.window, false)
+    val innerWindow =
+        window ?: LocalContext.current.findWindow() ?: throw Exception("no find window")
+    ThemeSettingsProvider(innerWindow) {
+        WindowCompat.setDecorFitsSystemWindows(innerWindow, false)
         val isDark = LocalDarkThemePrefs.current.isDarkTheme()
-        rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)
-        val colorScheme = LocalColorScheme.current
-        ProvideTextStyle(
-            value = LocalTextStyle.current.copy(
-                lineBreak = LineBreak.Paragraph,
-                textDirection = TextDirection.Content
-            )
-        ) {
-            MaterialTheme(
-                colorScheme = colorScheme,
-                typography = Typography,
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize()
-                        .apply {
-                            if (avoidSystemBar) {
-                                this.systemBarsPadding()
-                            }
-                        }
-                ) {
-                    content()
-                }
-            }
-        }
-    }
+        rememberSystemUiController(innerWindow).setSystemBarsColor(Color.Transparent, !isDark)
 
-}
-
-@Composable
-fun Activity.DynamicTheme2NoContent(
-    content: @Composable () -> Unit
-) {
-    ThemeSettingsProvider(window) {
-        WindowCompat.setDecorFitsSystemWindows(this.window, false)
-        val isDark = LocalDarkThemePrefs.current.isDarkTheme()
-        rememberSystemUiController(this.window).setSystemBarsColor(Color.Transparent, !isDark)
         val colorScheme = LocalColorScheme.current
         ProvideTextStyle(
             value = LocalTextStyle.current.copy(
@@ -173,7 +91,22 @@ fun Activity.DynamicTheme2NoContent(
             }
         }
     }
+}
 
+
+@Composable
+fun Activity.DynamicTheme(
+    avoidSystemBar: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    DynamicTheme(window = window, avoidSystemBar = avoidSystemBar, content = content)
+}
+
+@Composable
+fun Activity.DynamicThemeNoContent(
+    content: @Composable () -> Unit
+) {
+    DynamicThemeNoContent(window = window, content = content)
 }
 
 @Composable

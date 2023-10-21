@@ -33,6 +33,7 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,12 +41,15 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,10 +85,10 @@ import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
 import com.kiylx.compose_lib.theme3.ThemeHelper.recoveryDefaultTheme
 import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
+import com.kiylx.compose_lib.theme3.ThemeSettings
 import com.kiylx.compose_lib.theme3.mDynamicColorScheme
 import com.kyant.m3color.hct.Hct
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 val colorList = ((0..11).map { it * 31.0 }).map { Color(Hct.from(it, 45.0, 45.0).toInt()) }
 
@@ -96,7 +100,9 @@ fun AppearancePreferences(
     navController: NavHostController,
     navToDarkMode: () -> Unit
 ) {
-    val themeSetting = ThemeHelper.AppSettingsStateFlow.collectAsState().value
+    val themeSettingState = ThemeHelper.AppSettingsStateFlow.collectAsState()
+    val themeSetting = themeSettingState.value
+    val isDarkTheme = themeSetting.darkTheme.isDarkTheme()
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState(),
@@ -165,7 +171,12 @@ fun AppearancePreferences(
                         maxItemsInEachRow = 4,
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        ColorButtons(colorList[pageIndex], scope, rippleAnimationState)
+                        ColorButtons(
+                            color = colorList[pageIndex],
+                            scope = scope,
+                            rippleAnimationState = rippleAnimationState,
+                            themeState = themeSettingState
+                        )
                     }
                 }
                 Row(
@@ -197,12 +208,11 @@ fun AppearancePreferences(
                         icon = Icons.Outlined.Palette,
                         isChecked = LocalIsUseDynamicColor.current,
                         onClick = {
-                            scope.launch {
-                                switchDynamicColor()
+                            rippleAnimationState.change {
+                                scope.switchDynamicColor()
                             }
                         })
                 }
-                val isDarkTheme = themeSetting.darkTheme.isDarkTheme()
                 PreferenceSwitchWithDivider(title = stringResource(id = R.string.dark_theme),
                     icon = if (isDarkTheme) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
                     isChecked = isDarkTheme,
@@ -237,16 +247,12 @@ fun AppearancePreferences(
 fun RowScope.ColorButtons(
     color: Color,
     scope: CoroutineScope,
-    rippleAnimationState: RippleAnimationState
+    rippleAnimationState: RippleAnimationState,
+    themeState: State<ThemeSettings>
 ) {
-    val darkPref = LocalDarkThemePrefs.current
-    val isDark = darkPref.isDarkTheme()
-    val contrastValue = if (isDark && darkPref.isHighContrastModeEnabled) {
-        darkPref.contrastValue
-    } else {
-        ThemeHelper.lightThemeHighContrastValue
-    }
-
+    val isDark = themeState.value.darkTheme.isDarkTheme()
+    val contrastValue = ThemeHelper.currentThemeContrastValue()
+    val defaultColor = LocalColorScheme.current
     listOf<PaletteStyle>(
         PaletteStyle.TonalSpot,
         PaletteStyle.Neutral,
@@ -262,7 +268,8 @@ fun RowScope.ColorButtons(
             scope = scope,
             isDark = isDark,
             contrastValue = contrastValue,
-            rippleAnimationState = rippleAnimationState
+            rippleAnimationState = rippleAnimationState,
+            defaultColor = defaultColor,
         )
     }
 }
@@ -277,17 +284,19 @@ fun RowScope.ColorButton(
     isDark: Boolean,
     contrastValue: Double,
     rippleAnimationState: RippleAnimationState,
+    defaultColor: ColorScheme,
 ) {
-    val tonalPalettes by remember {
-        mutableStateOf(
-            mDynamicColorScheme(
-                color,
-                isDark,
-                tonalStyle,
-                contrastValue
-            )
-        )
+    var tonalPalettes by remember {
+        mutableStateOf(defaultColor)
     }
+    LaunchedEffect(key1 = isDark, key2 = contrastValue, block = {
+        tonalPalettes = mDynamicColorScheme(
+            color,
+            isDark,
+            tonalStyle,
+            contrastValue
+        )
+    })
     val isSelect =
         !LocalIsUseDynamicColor.current
                 && LocalSeedColor.current == color.toArgb()
@@ -309,9 +318,14 @@ fun RowScope.ColorButtonImpl(
     colorScheme: ColorScheme,
     onClick: () -> Unit = {}
 ) {
-    val containerColor: Color = LocalColorScheme.current.primaryContainer
-    val containerSize by animateDpAsState(targetValue = if (isSelected.invoke()) 28.dp else 0.dp)
-    val iconSize by animateDpAsState(targetValue = if (isSelected.invoke()) 16.dp else 0.dp)
+    val containerSize by animateDpAsState(
+        targetValue = if (isSelected.invoke()) 28.dp else 0.dp,
+        label = "ColorButtonContainerSize"
+    )
+    val iconSize by animateDpAsState(
+        targetValue = if (isSelected.invoke()) 16.dp else 0.dp,
+        label = "ColorButtonIconSize"
+    )
 
     Surface(
         modifier = modifier
@@ -320,47 +334,45 @@ fun RowScope.ColorButtonImpl(
             .weight(1f, false)
             .aspectRatio(1f),
         shape = RoundedCornerShape(16.dp),
-        color = LocalColorScheme.current.tertiaryContainer,
+        color =MaterialTheme.colorScheme.tertiaryContainer,
         onClick = onClick
     ) {
-        CompositionLocalProvider(LocalColorScheme provides colorScheme) {
-            val color1 = colorScheme.primary
-            val color2 = colorScheme.secondaryContainer
-            val color3 = colorScheme.tertiary
-            Box(Modifier.fillMaxSize()) {
-                Box(modifier = modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .drawBehind { drawCircle(color1) }
-                    .align(Alignment.Center)) {
-                    Surface(
-                        color = color2, modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .size(24.dp)
-                    ) {}
-                    Surface(
-                        color = color3, modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .size(24.dp)
-                    ) {}
-                    Box(
+        val color1 = colorScheme.primary
+        val color2 = colorScheme.secondaryContainer
+        val color3 = colorScheme.tertiary
+        Box(Modifier.fillMaxSize()) {
+            Box(modifier = modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .drawBehind { drawCircle(color1) }
+                .align(Alignment.Center)) {
+                Surface(
+                    color = color2, modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .size(24.dp)
+                ) {}
+                Surface(
+                    color = color3, modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(24.dp)
+                ) {}
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .clip(CircleShape)
+                        .size(containerSize)
+                        .drawBehind { drawCircle(colorScheme.primaryContainer) },
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Check,
+                        contentDescription = null,
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .clip(CircleShape)
-                            .size(containerSize)
-                            .drawBehind { drawCircle(containerColor) },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(iconSize)
-                                .align(Alignment.Center),
-                            tint = LocalColorScheme.current.onPrimaryContainer
-                        )
-                    }
-
+                            .size(iconSize)
+                            .align(Alignment.Center),
+                        tint = colorScheme.onPrimaryContainer
+                    )
                 }
+
             }
         }
     }

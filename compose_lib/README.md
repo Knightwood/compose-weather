@@ -1,4 +1,4 @@
-# 动态主题
+# 动态主题组件
 
 示例：在activity中应用动态主题
 
@@ -8,7 +8,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             val navController = rememberNavController()
-            DynamicTheme2 {
+            DynamicTheme {
                 HomeEntity(navController = navController)
             }
         }
@@ -38,6 +38,8 @@ animatedComposable(Route.DARK_THEME) {
 ```
 
 # 主题切换波纹动画
+
+文件位置`compose_lib/src/main/java/com/kiylx/compose_lib/component/RippleAnimation.kt`
 
 ```
 @Composable
@@ -107,5 +109,20 @@ fun FirstPage(navController: NavController) {
         }
     }
 }
+```
+
+# mmkv委托工具
+
+文件位置 `compose_lib/src/main/java/com/kiylx/compose_lib/common/MExt.kt`
+
+```
+ * 1.先搞一个mmkv实例
+ * val mv = MMKV.defaultMMKV()
+ * 2.使用委托的方式生成一个委托对象，除了[parcelableM]方法，初始值可选
+ * var example by mv.strM("kk","初始值")
+ * 3.使用赋值将值存入
+ * example="新的值"
+ * 4.直接使用即读取值，如果没有值写入，读取出来的会是默认值。
+ * log.d(TAG,example)
 ```
 

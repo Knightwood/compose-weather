@@ -2,6 +2,7 @@ package com.kiylx.compose_lib.theme3
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.google.android.material.color.DynamicColors
@@ -112,12 +113,14 @@ object ThemeHelper {
     //</editor-fold>
 //<editor-fold desc="主题修改功能，调用下面的方法动态切换主题">
 
-    fun CoroutineScope.recoveryDefaultTheme(useDefaultTheme: Boolean){
-        launch(Dispatchers.IO) {
-            themeSettingsFlow.update {
-                it.copy(useDefaultTheme=useDefaultTheme)
+    fun CoroutineScope.recoveryDefaultTheme(useDefaultTheme: Boolean) {
+        if (this@ThemeHelper.useDefaultTheme != useDefaultTheme) {
+            launch(Dispatchers.IO) {
+                themeSettingsFlow.update {
+                    it.copy(useDefaultTheme = useDefaultTheme)
+                }
+                this@ThemeHelper.useDefaultTheme = useDefaultTheme
             }
-            this@ThemeHelper.useDefaultTheme=useDefaultTheme
         }
     }
 
@@ -161,22 +164,44 @@ object ThemeHelper {
     }
 
     fun CoroutineScope.switchDynamicColor(enabled: Boolean = !themeSettingsFlow.value.isDynamicColorEnabled) {
-        launch(Dispatchers.IO) {
-            themeSettingsFlow.update {
-                it.copy(isDynamicColorEnabled = enabled)
+        //仅在不同时更新
+        if (enabled != this@ThemeHelper.isUseDynamicColor) {
+            launch(Dispatchers.IO) {
+                themeSettingsFlow.update {
+                    it.copy(isDynamicColorEnabled = enabled)
+                }
+                this@ThemeHelper.isUseDynamicColor = enabled
             }
-            this@ThemeHelper.isUseDynamicColor = enabled
+        }
+    }
+
+    /**
+     * 获取当前主题的对比度值
+     */
+    @Composable
+    fun currentThemeContrastValue(): Double {
+        val darkPref = DarkThemePrefs(
+            darkThemeMode = darkThemeMode,
+            isHighContrastModeEnabled = isDarkUseContrastMode,
+            contrastValue = darkThemeHighContrastValue,
+        )
+        return if (darkPref.isDarkTheme() && darkPref.isHighContrastModeEnabled) {
+            darkPref.contrastValue
+        } else {
+            lightThemeHighContrastValue
         }
     }
 //</editor-fold>
 }
+
 data class ThemeSettings(
     val darkTheme: DarkThemePrefs = DarkThemePrefs(),//暗色模式的设置
     val isDynamicColorEnabled: Boolean = false, //是否使用动态颜色
     val themeColorSeed: Int = ThemeHelper.DEFAULT_COLOR_SEED, //主题种子
     val paletteStyleIndex: Int = PaletteStyle.TonalSpot.ordinal, //主题调色板样式index
-    val useDefaultTheme :Boolean =true,//使用默认主题
+    val useDefaultTheme: Boolean = true,//使用默认主题
 )
+
 data class DarkThemePrefs(
     val darkThemeMode: Int = OFF,//暗色模式
     val isHighContrastModeEnabled: Boolean = false,

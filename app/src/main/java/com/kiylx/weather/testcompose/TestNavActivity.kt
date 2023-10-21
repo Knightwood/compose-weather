@@ -2,7 +2,6 @@ package com.kiylx.weather.testcompose
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.SideEffect
@@ -19,8 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.kiylx.compose_lib.common.animatedComposable
-import com.kiylx.compose_lib.theme3.DynamicTheme2
-import com.kiylx.weather.R
+import com.kiylx.compose_lib.theme3.DynamicTheme
 import com.kiylx.weather.common.Route
 import com.kiylx.weather.common.getPrevSavedState
 import com.kiylx.weather.common.navigateExt
@@ -37,7 +35,7 @@ class TestNavActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             val navController = rememberNavController()
-            DynamicTheme2 {
+            DynamicTheme {
                 //构建导航
                 NavHost(navController = navController, startDestination = Route.HOME) {
                     composable(route = Route.HOME) {
