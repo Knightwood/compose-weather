@@ -3,11 +3,13 @@ package com.kiylx.weather.ui.activitys
 import android.Manifest
 import android.location.Location
 import android.os.Bundle
+import android.view.Window
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +27,7 @@ import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
+import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
@@ -58,6 +61,7 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             CompositionLocalProvider(
                 LocalNavController provides navController,
+                LocalWindows provides window
             ) {
                 DynamicTheme {
                     HomeEntity(navController = navController)
@@ -178,25 +182,22 @@ class MainActivity : AppCompatActivity() {
      * 所以将设置页面的导航在这里设置。即嵌套导航。
      */
     private fun NavGraphBuilder.buildSettingsPage(
-        navController: NavHostController,
-        onBackPressed: () -> Unit = { navController.popBackStack() }
+        navController: NavHostController
     ) {
         navigation(startDestination = Route.SETTINGS_PAGE, route = Route.SETTINGS) {
             animatedComposable(Route.SETTINGS_PAGE) {
                 SettingPage(navController)
             }
-            animatedComposable(Route.CACHE_PAGE) {
-                CachePage(navController)
-            }
+//            animatedComposable(Route.CACHE_PAGE) {
+//                CachePage(navController)
+//            }
             animatedComposable(Route.THEME) {
-                AppearancePreferences(navController = navController, navToDarkMode = { ->
-                    navController.navigate(Route.DARK_THEME)
-                })
+                AppearancePreferences(
+                    back = { navController.popBackStack() },
+                    navToDarkMode = { -> navController.navigate(Route.DARK_THEME) })
             }
             animatedComposable(Route.DARK_THEME) {
-                DarkThemePreferences {
-                    navController.popBackStack()
-                }
+                DarkThemePreferences { navController.popBackStack() }
             }
         }
     }

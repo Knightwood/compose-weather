@@ -57,6 +57,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
@@ -86,6 +88,7 @@ import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
 import com.kiylx.compose_lib.theme3.ThemeHelper.recoveryDefaultTheme
 import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
 import com.kiylx.compose_lib.theme3.ThemeSettings
+import com.kiylx.compose_lib.theme3.findWindow
 import com.kiylx.compose_lib.theme3.mDynamicColorScheme
 import com.kyant.m3color.hct.Hct
 import kotlinx.coroutines.CoroutineScope
@@ -97,13 +100,13 @@ val colorList = ((0..11).map { it * 31.0 }).map { Color(Hct.from(it, 45.0, 45.0)
 )
 @Composable
 fun AppearancePreferences(
-    navController: NavHostController,
+    back:()->Unit,
     navToDarkMode: () -> Unit
 ) {
     val themeSettingState = ThemeHelper.AppSettingsStateFlow.collectAsState()
     val themeSetting = themeSettingState.value
     val isDarkTheme = themeSetting.darkTheme.isDarkTheme()
-
+    val window = LocalContext.current.findWindow()?: LocalWindows.current
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState(),
             canScroll = { true })
@@ -119,7 +122,7 @@ fun AppearancePreferences(
     Scaffold(modifier = Modifier
         .fillMaxSize()
         .nestedScroll(scrollBehavior.nestedScrollConnection)
-        .autoRippleAnimation(LocalWindows.current, rippleAnimationState),
+        .autoRippleAnimation(window, rippleAnimationState),
         topBar = {
             LargeTopAppBar(title = {
                 Text(
@@ -128,7 +131,7 @@ fun AppearancePreferences(
                 )
             }, navigationIcon = {
                 BackButton {
-                    navController.popBackStack()
+                    back.invoke()
                 }
             }, scrollBehavior = scrollBehavior
             )

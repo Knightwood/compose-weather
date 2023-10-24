@@ -35,7 +35,7 @@ fun Color.harmonizeWithPrimary(): Color =
     this.harmonizeWith(other = MaterialTheme.colorScheme.primary)
 
 
-private tailrec fun Context.findWindow(): Window? =
+tailrec fun Context.findWindow(): Window? =
     when (this) {
         is Activity -> window
         is ContextWrapper -> baseContext.findWindow()
@@ -71,7 +71,7 @@ fun DynamicThemeNoContent(
 ) {
     val innerWindow =
         window ?: LocalContext.current.findWindow() ?: throw Exception("no find window")
-    ThemeSettingsProvider(innerWindow) {
+    ThemeSettingsProvider() {
         WindowCompat.setDecorFitsSystemWindows(innerWindow, false)
         val isDark = LocalDarkThemePrefs.current.isDarkTheme()
         rememberSystemUiController(innerWindow).setSystemBarsColor(Color.Transparent, !isDark)

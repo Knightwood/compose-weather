@@ -1,6 +1,8 @@
 package com.kiylx.compose_lib.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Row
@@ -17,8 +19,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -106,4 +112,22 @@ fun BackButton(onClick: () -> Unit) {
             contentDescription = stringResource(R.string.back),
         )
     }
+}
+
+/**
+ * @param interval 限制点击时间间隔
+ */
+
+fun Modifier.limitClick(interval: Long): Modifier {
+    var lastClickTime = 0L
+    return this.then(Modifier.pointerInput(key1 = Unit, block = {
+        this.awaitEachGesture {
+            val firstClick = awaitFirstDown(pass = PointerEventPass.Initial)
+            if (System.currentTimeMillis() - lastClickTime < interval) {//周期内重复点击，直接拦截消费
+                firstClick.consume()
+            } else {
+                lastClickTime = System.currentTimeMillis()
+            }
+        }
+    }))
 }

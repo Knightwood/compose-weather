@@ -73,9 +73,8 @@ fun DailyWeatherMainPage(
     navigateToLocations: () -> Unit,
 ) {
     //根据地点数量显示pager页面
-    val locationData = remember {
-        QWeatherGeoRepo.allLocationState
-    }
+    val locationData = QWeatherGeoRepo.allLocationState
+
     val pagerState = rememberPagerState() {
         locationData.size
     }
@@ -102,7 +101,11 @@ fun DailyWeatherMainPage(
                     Icon(Icons.Rounded.AddLocation, contentDescription = "定位")
                 }
                 if (locationData.size > 0) {
-                    LocationText(location = locationData[pagerState.currentPage])
+                    var index = pagerState.currentPage
+                    if (index >= locationData.size) {
+                        index = locationData.size - 1
+                    }
+                    LocationText(location = locationData[index])
                 }
                 IconButton(
                     modifier = Modifier

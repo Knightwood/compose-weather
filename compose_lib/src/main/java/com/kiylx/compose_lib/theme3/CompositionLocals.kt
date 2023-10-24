@@ -40,7 +40,6 @@ val LocalColorScheme = staticCompositionLocalOf {
  */
 @Composable
 fun ThemeSettingsProvider(
-    window: Window,
     content: @Composable () -> Unit
 ) {
     ThemeHelper.AppSettingsStateFlow.collectAsState().value.run {
@@ -48,7 +47,6 @@ fun ThemeSettingsProvider(
         val isDark: Boolean = darkTheme.isDarkTheme()
 
         CompositionLocalProvider(
-            LocalWindows provides window,
             LocalDarkThemePrefs provides this.darkTheme,
             LocalSeedColor provides this.themeColorSeed,
             LocalIsUseDynamicColor provides this.isDynamicColorEnabled,
