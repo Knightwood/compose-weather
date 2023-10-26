@@ -19,7 +19,7 @@
         android:theme="@style/Theme.Weather"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activitys.MainActivity"
+            android:name=".testcompose.TestNavActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".testcompose.TestNavActivity" />
+        <activity android:name=".ui.activitys.MainActivity" />
 
 
         <receiver

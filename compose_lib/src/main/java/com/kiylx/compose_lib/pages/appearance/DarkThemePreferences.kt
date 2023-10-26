@@ -2,6 +2,7 @@ package com.kiylx.compose_lib.pages.appearance
 
 
 import android.os.Build
+import android.view.Window
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,14 +43,15 @@ import com.kiylx.compose_lib.theme3.DarkThemePrefs.Companion.FOLLOW_SYSTEM
 import com.kiylx.compose_lib.theme3.DarkThemePrefs.Companion.OFF
 import com.kiylx.compose_lib.theme3.DarkThemePrefs.Companion.ON
 import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
-import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DarkThemePreferences(onBackPressed: () -> Unit) {
+fun DarkThemePreferences(
+    window: Window,
+    onBackPressed: () -> Unit) {
     val rippleAnimationState = rememberRippleAnimationState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(),
@@ -62,7 +64,7 @@ fun DarkThemePreferences(onBackPressed: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .autoRippleAnimation(LocalWindows.current, rippleAnimationState),
+            .autoRippleAnimation(window, rippleAnimationState),
         topBar = {
             LargeTopAppBar(
                 title = {

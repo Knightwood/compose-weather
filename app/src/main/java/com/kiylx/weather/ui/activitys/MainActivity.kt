@@ -27,7 +27,6 @@ import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
-import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
@@ -61,7 +60,6 @@ class MainActivity : AppCompatActivity() {
             val navController = rememberNavController()
             CompositionLocalProvider(
                 LocalNavController provides navController,
-                LocalWindows provides window
             ) {
                 DynamicTheme {
                     HomeEntity(navController = navController)
@@ -194,10 +192,12 @@ class MainActivity : AppCompatActivity() {
             animatedComposable(Route.THEME) {
                 AppearancePreferences(
                     back = { navController.popBackStack() },
-                    navToDarkMode = { -> navController.navigate(Route.DARK_THEME) })
+                    navToDarkMode = { -> navController.navigate(Route.DARK_THEME) },
+                    window=window
+                )
             }
             animatedComposable(Route.DARK_THEME) {
-                DarkThemePreferences { navController.popBackStack() }
+                DarkThemePreferences(window=window) { navController.popBackStack() }
             }
         }
     }

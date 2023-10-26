@@ -1,6 +1,7 @@
 package com.kiylx.compose_lib.component
 
 import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.graphics.Bitmap
 import android.graphics.PorterDuff
@@ -49,10 +50,10 @@ class RippleAnimationState {
     var animMode: AnimMode = AnimMode.expend
     var animTime: Long = 500
         set(value) {
-            if (value<50){
+            if (value < 50) {
                 return
-            }else{
-                field=value
+            } else {
+                field = value
             }
         }
     internal var innerPos = mutableStateOf(Offset.Zero)
@@ -228,21 +229,18 @@ fun Modifier.rippleAnimation(
         }
     }
 
-    val mAnimatorListener: Animator.AnimatorListener = object : Animator.AnimatorListener {
-        override fun onAnimationStart(p0: Animator) {
+    val mAnimatorListener: Animator.AnimatorListener = object : AnimatorListenerAdapter() {
+        override fun onAnimationStart(animation: Animator) {
             state.block.invoke()
         }
 
-        override fun onAnimationEnd(p0: Animator) {
+        override fun onAnimationEnd(animation: Animator) {
             if (mBackground != null && !mBackground!!.isRecycled) {
                 mBackground!!.recycle()
                 mBackground = null
             }
             state.runAnim = false
         }
-
-        override fun onAnimationCancel(p0: Animator) {}
-        override fun onAnimationRepeat(p0: Animator) {}
     }
 
     /**

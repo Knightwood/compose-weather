@@ -1,4 +1,4 @@
-package com.kiylx.weather.common
+package com.kiylx.compose_lib.common
 
 import android.os.Bundle
 import android.util.Log

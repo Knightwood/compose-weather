@@ -1,5 +1,6 @@
 package com.kiylx.compose_lib.pages.appearance
 
+import android.view.Window
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -40,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -57,12 +57,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.google.android.material.color.DynamicColors
 import com.kiylx.compose_lib.R
 import com.kiylx.compose_lib.component.BackButton
@@ -80,7 +77,6 @@ import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
 import com.kiylx.compose_lib.theme3.LocalIsUseDynamicColor
 import com.kiylx.compose_lib.theme3.LocalPaletteStyleIndex
 import com.kiylx.compose_lib.theme3.LocalSeedColor
-import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.compose_lib.theme3.PaletteStyle
 import com.kiylx.compose_lib.theme3.ThemeHelper
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
@@ -88,7 +84,6 @@ import com.kiylx.compose_lib.theme3.ThemeHelper.modifyThemeSeedColor
 import com.kiylx.compose_lib.theme3.ThemeHelper.recoveryDefaultTheme
 import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
 import com.kiylx.compose_lib.theme3.ThemeSettings
-import com.kiylx.compose_lib.theme3.findWindow
 import com.kiylx.compose_lib.theme3.mDynamicColorScheme
 import com.kyant.m3color.hct.Hct
 import kotlinx.coroutines.CoroutineScope
@@ -101,12 +96,12 @@ val colorList = ((0..11).map { it * 31.0 }).map { Color(Hct.from(it, 45.0, 45.0)
 @Composable
 fun AppearancePreferences(
     back:()->Unit,
-    navToDarkMode: () -> Unit
+    navToDarkMode: () -> Unit,
+    window: Window,
 ) {
     val themeSettingState = ThemeHelper.AppSettingsStateFlow.collectAsState()
     val themeSetting = themeSettingState.value
     val isDarkTheme = themeSetting.darkTheme.isDarkTheme()
-    val window = LocalContext.current.findWindow()?: LocalWindows.current
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState(),
             canScroll = { true })

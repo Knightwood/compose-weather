@@ -13,18 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.kiylx.compose_lib.common.navigateExt2
+import com.kiylx.compose_lib.common.setSavedStateResult
 import com.kiylx.compose_lib.component.PressIconButton
 import com.kiylx.compose_lib.component.RippleAnimationState.AnimMode
 import com.kiylx.compose_lib.component.autoRippleAnimation
 import com.kiylx.compose_lib.component.rememberRippleAnimationState
 import com.kiylx.compose_lib.theme3.DarkThemePrefs
 import com.kiylx.compose_lib.theme3.LocalDarkThemePrefs
-import com.kiylx.compose_lib.theme3.LocalWindows
 import com.kiylx.compose_lib.theme3.ThemeHelper.modifyDarkThemePreference
+import com.kiylx.compose_lib.theme3.findWindow
 import com.kiylx.weather.common.Route
-import com.kiylx.weather.common.navigateExt2
-import com.kiylx.weather.common.setSavedStateResult
 
 const val TAG = "TestPage1"
 
@@ -36,11 +37,12 @@ fun FirstPage(navController: NavController) {
         animTime = 5000
         moveUpSystemBarInsts=true
     }
+    val window=LocalContext.current.findWindow()?:throw IllegalArgumentException()
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .autoRippleAnimation(LocalWindows.current,rippleAnimationState)
+            .autoRippleAnimation(window,rippleAnimationState)
     ) {
         Column(
             modifier = Modifier

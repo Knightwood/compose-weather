@@ -25,7 +25,6 @@ val LocalSeedColor = compositionLocalOf { ThemeHelper.seedColorInt }
 val LocalIsUseDynamicColor = compositionLocalOf { ThemeHelper.isUseDynamicColor }
 val LocalIsUseDefaultTheme = compositionLocalOf { ThemeHelper.useDefaultTheme }
 val LocalPaletteStyleIndex = compositionLocalOf { ThemeHelper.paletteStyleInt }
-val LocalWindows = compositionLocalOf<Window> { error("no default") }
 /**
  * 存储当前的主题色，其实作用跟[MaterialTheme.colorScheme]一样
  */
