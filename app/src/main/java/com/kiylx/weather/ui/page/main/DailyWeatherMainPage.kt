@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,9 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.pullrefresh.pullRefresh
+import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,24 +41,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.ui.activitys.MainViewModel
-import com.kiylx.weather.ui.page.component.CustomRefreshHeader
-import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
-import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
-import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainPage {
     companion object {
@@ -170,54 +170,22 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
         weatherPagerStateHolder.getDailyData()
     })
     //下拉刷新
-    val refreshState = rememberSmartSwipeRefreshState()
-    SmartSwipeRefresh(
-        modifier = Modifier.fillMaxSize(),
-        onRefresh = {
+//    val refreshState = rememberSmartSwipeRefreshState()
+    var refreshing by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
+    val pullRefreshState = rememberPullRefreshState(refreshing, onRefresh = {
+        scope.launch {
+            refreshing = true
             weatherPagerStateHolder.run {
-                getDailyData(noCache = true)
-                getDailyHourWeatherData(noCache = true)
-                getMinutelyPrecipitation(noCache = true)
+                refresh()
             }
-            delay(3000L)
-            if (refreshState.isRefreshing()) {
-                refreshState.refreshFlag = if (uiState.value is UiState.Success<*>) {
-                    SmartSwipeStateFlag.SUCCESS
-                } else {
-                    SmartSwipeStateFlag.IDLE
-                }
-            }
-        },
-        state = refreshState,
-        isNeedRefresh = true,
-        isNeedLoadMore = false,
-        headerIndicator = {
-            CustomRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
-        },
-    ) {
-        //观察界面状态，修改下拉刷新状态
-        LaunchedEffect(uiState.value) {
-            uiState.value.let {
-
-                when (it) {
-                    is UiState.Success<*> -> {
-                        refreshState.refreshFlag = SmartSwipeStateFlag.SUCCESS
-                    }
-
-                    is UiState.RequestErr,
-                    is UiState.OtherErr -> {
-                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
-                    }
-
-                    else -> {
-                        delay(2000L)
-                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
-                    }
-                }
-            }
+            delay(2400L)
+            refreshing = false
         }
-
-        //只有可滑动的时候，下载刷新才能生效，所以，这里配置了垂直滑动
+    })
+    Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
         Column(
             Modifier
                 .fillMaxSize()
@@ -282,8 +250,58 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             }
             Text(text = stringResource(R.string.data_from_hefeng), color = Color.Gray)
         }
-
+        //下拉刷新指示器
+        PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
     }
+/*    SmartSwipeRefresh(
+        modifier = Modifier.fillMaxSize(),
+        onRefresh = {
+            weatherPagerStateHolder.run {
+                getDailyData(noCache = true)
+                getDailyHourWeatherData(noCache = true)
+                getMinutelyPrecipitation(noCache = true)
+            }
+            delay(3000L)
+            if (refreshState.isRefreshing()) {
+                refreshState.refreshFlag = if (uiState.value is UiState.Success<*>) {
+                    SmartSwipeStateFlag.SUCCESS
+                } else {
+                    SmartSwipeStateFlag.IDLE
+                }
+            }
+        },
+        state = refreshState,
+        isNeedRefresh = true,
+        isNeedLoadMore = false,
+        headerIndicator = {
+            CustomRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
+        },
+    ) {
+        //观察界面状态，修改下拉刷新状态
+        LaunchedEffect(uiState.value) {
+            uiState.value.let {
+
+                when (it) {
+                    is UiState.Success<*> -> {
+                        refreshState.refreshFlag = SmartSwipeStateFlag.SUCCESS
+                    }
+
+                    is UiState.RequestErr,
+                    is UiState.OtherErr -> {
+                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
+                    }
+
+                    else -> {
+                        delay(2000L)
+                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
+                    }
+                }
+            }
+        }
+
+
+
+    }*/
 }
 
 

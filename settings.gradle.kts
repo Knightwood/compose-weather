@@ -24,3 +24,10 @@ include(":app")
 include(":icon")
 include(":libx")
 include(":compose_lib")
+
+// Your relative path or absolute path
+includeBuild("pullrefresh") {
+    dependencySubstitution {
+        substitute(module("me.omico.lux:lux-androidx-compose-material3-pullrefresh")).using(project(":"))
+    }
+}

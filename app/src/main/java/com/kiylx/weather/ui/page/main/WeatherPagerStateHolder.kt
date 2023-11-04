@@ -131,4 +131,15 @@ class WeatherPagerStateHolder(location: LocationEntity) {
         }
     }
 
+    suspend fun refresh() {
+        getDailyData(noCache = true)
+        getDailyHourWeatherData(noCache = true)
+        getMinutelyPrecipitation(noCache = true)
+        getDayWeatherData(DayWeatherType.threeDayWeather)
+        getDayWeatherData(DayWeatherType.sevenDayWeather)
+        get5DAir()
+        getTodayIndices()
+        getWarningNow()
+    }
+
 }

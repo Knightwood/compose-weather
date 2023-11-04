@@ -87,6 +87,7 @@ dependencies {
     implementation(Compose.composeConstraintLayout)
     //下拉刷新，上拉加载
     implementation(ComposeTools.pullRefresh)
+    implementation("me.omico.lux:lux-androidx-compose-material3-pullrefresh")
     implementation(Work.manager)
 
     //test
