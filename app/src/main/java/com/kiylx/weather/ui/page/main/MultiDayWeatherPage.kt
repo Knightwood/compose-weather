@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -118,7 +119,7 @@ fun MultiDayWeatherPage(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " " + it.category+" ${it.aqi}"
+                            dateStr + " " + it.category + " ${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {
@@ -192,11 +193,17 @@ fun ThreeDayWeather(
     val todayLocalDate = LocalDate.now()
     val nowTime = LocalTime.now()
 
-    TitleCard(icon = Icons.Filled.Info, title = stringResource(id = R.string.three_day_report)) {
+    TitleCard(
+        icon = Icons.Filled.Info,
+        title = stringResource(id = R.string.three_day_report),
+        colors = CardDefaults.cardColors()
+            .copy(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+    ) {
         //内容
         Column(
             modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 8.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
         ) {
             repeat(data.value.data.size) {
                 val oneDayWeather = data.value.data[it]
@@ -206,7 +213,7 @@ fun ThreeDayWeather(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(bottom = 4.dp, start=8.dp)
+                            .padding(bottom = 4.dp, start = 8.dp)
                             .align(Alignment.CenterStart)
                     ) {
                         val fxDate = LocalDate.parse(oneDayWeather.fxDate)
@@ -220,7 +227,7 @@ fun ThreeDayWeather(
                         }
                         //日期拼接上空气质量
                         val dateAndAir = airMap[oneDayWeather.fxDate]?.let {
-                            dateStr + " " + it.category+" ${it.aqi}"
+                            dateStr + " " + it.category + " ${it.aqi}"
                         } ?: dateStr
                         Text(dateAndAir)
                         if (oneDayWeather.textDay == oneDayWeather.textNight) {
@@ -231,7 +238,7 @@ fun ThreeDayWeather(
                     }
                     Row(
                         modifier = Modifier
-                            .padding(bottom=8.dp)
+                            .padding(bottom = 8.dp)
                             .align(Alignment.CenterEnd)
                     ) {
                         //早晚温度
@@ -247,12 +254,16 @@ fun ThreeDayWeather(
                         if (nowTime.hour in 6..18) {
                             WeatherIcon(
                                 code = oneDayWeather.iconDay.toInt(),
-                                modifier = Modifier.align(Alignment.CenterVertically).padding(4.dp),
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .padding(4.dp),
                             )
                         } else {
                             WeatherIcon(
                                 code = oneDayWeather.iconNight.toInt(),
-                                modifier = Modifier.align(Alignment.CenterVertically).padding(4.dp),
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .padding(4.dp),
                             )
                         }
                         // todo 未来还可以添加按钮跳转详情页

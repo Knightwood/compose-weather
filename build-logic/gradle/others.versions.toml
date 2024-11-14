@@ -1,0 +1,18 @@
+[versions]
+m3ColorUtilities="1.0"
+lottie_version = "6.4.0"
+coil_kt = "2.4.0"
+permissionx = "1.9.0"
+utilcodex = "1.31.0"
+mmkv = "1.3.0"
+svgSupport = "1.4"
+
+[libraries]
+################################## 工具 #########################################
+github-knightwood-m3ColorUtilities = { module = "com.github.knightwood:MaterialColorUtilities", version.ref = "m3ColorUtilities" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie_version" }
+coil-kt-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil_kt" }
+github-perms = { module = "com.guolindev.permissionx:permissionx", version.ref = "permissionx" }
+github-utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
+github-mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
+github-svgSupport = { module = "com.caverock:androidsvg-aar", version.ref = "svgSupport" }

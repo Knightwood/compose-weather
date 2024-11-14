@@ -3,6 +3,7 @@ package com.kiylx.weather.ui.page.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,14 +43,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kiylx.compose_lib.component.MBottomSheet
 import com.kiylx.compose_lib.component.MBottomSheetHolder
+import com.kiylx.compose_lib.component.SurfaceCard
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.WindUnit
 import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.common.windUnit
-import com.kiylx.weather.icon.IconText
-import com.kiylx.weather.icon.TwoText
+import com.kiylx.weather.icon.WithIconText
 import com.kiylx.weather.icon.WeatherIcon
 import com.kiylx.weather.repo.bean.DailyEntity
 import com.kiylx.weather.repo.bean.HourWeatherEntity
@@ -182,7 +185,9 @@ private fun Today24HourWeather(todayHourWeatherState: State<HourWeatherEntity>) 
 
     TitleCard(
         icon = Icons.Filled.AccessTimeFilled,
-        title = stringResource(R.string.hour_24_report)
+        title = stringResource(R.string.hour_24_report),
+        colors = CardDefaults.cardColors()
+            .copy(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
         Row(
             modifier = Modifier
@@ -240,7 +245,6 @@ private fun Today24HourWeather(todayHourWeatherState: State<HourWeatherEntity>) 
                         )
                     }
                 }
-
             }
         }
     }
@@ -258,26 +262,30 @@ private fun SunAndMoonAndOther(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // 日出日落
         Row(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconText(
-                modifier = Modifier.weight(1f),
-                title = stringResource(id = R.string.sunrise),
-                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_rise),
-                text = toDayWeather.sunrise,
-            )
-            IconText(
-                modifier = Modifier.weight(1f),
-                title = stringResource(id = R.string.sunset),
-                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_set),
-                text = toDayWeather.sunset,
-            )
+            SurfaceCard(modifier = Modifier.weight(1f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.sunrise),
+                    icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_rise),
+                    text = toDayWeather.sunrise,
+                )
+            }
+            SurfaceCard(modifier = Modifier.weight(1f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.sunset),
+                    icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sun_set),
+                    text = toDayWeather.sunset,
+                )
+            }
         }
 
         //月相，月初月落
@@ -286,50 +294,53 @@ private fun SunAndMoonAndOther(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TwoText(
-                modifier = Modifier.weight(1f),
-                padding = PaddingValues(4.dp),
-                title = stringResource(id = R.string.moonrise),
-                text = toDayWeather.moonrise,
-            )
-            IconText(
-                modifier = Modifier.weight(1.2f),
-                title = stringResource(id = R.string.moonPhase),
-                iconSize = 38.dp,
-                padding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-                icon = painterResource(id = WeatherIcon.getResId(toDayWeather.moonPhaseIcon.toInt())),
-                text = toDayWeather.moonPhase
-            )
-            TwoText(
-                modifier = Modifier.weight(1f),
-                padding = PaddingValues(4.dp),
-                title = stringResource(id = R.string.moonset),
-                text = toDayWeather.moonset,
-            )
+            SurfaceCard(modifier = Modifier.weight(1f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.moonrise),
+                    text = toDayWeather.moonrise,
+                )
+            }
+            SurfaceCard(modifier = Modifier.weight(1.2f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.moonPhase),
+                    icon = painterResource(id = WeatherIcon.getResId(toDayWeather.moonPhaseIcon.toInt())),
+                    text = toDayWeather.moonPhase
+                )
+            }
+            SurfaceCard(modifier = Modifier.weight(1f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.moonset),
+                    text = toDayWeather.moonset,
+                )
+            }
         }
         Row(
             modifier = Modifier,
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconText(
-                modifier = Modifier.weight(1f),
-                title = stringResource(id = R.string.pressure),
-                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
-                iconSize = 38.dp,
-                text = dailyState.value.data.pressure + " 百帕",
-            )
-            IconText(
-                modifier = Modifier.weight(1f),
-                title = stringResource(id = R.string.uvIndex),
-                icon = painterResource(id = com.kiylx.weather.icon.R.drawable.ultraviolet),
-                iconSize = 40.dp,
-                text = toDayWeather.uvIndex
-            )
-
+            SurfaceCard(modifier = Modifier.weight(1f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.pressure),
+                    icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
+                    text = dailyState.value.data.pressure + " 百帕",
+                )
+            }
+            SurfaceCard(modifier = Modifier.weight(1f)) {
+                WithIconText(
+                    modifier = Modifier,
+                    title = stringResource(id = R.string.uvIndex),
+                    icon = painterResource(id = com.kiylx.weather.icon.R.drawable.ultraviolet),
+                    text = toDayWeather.uvIndex
+                )
+            }
         }
 //            Row {
-//                IconText(
+//                WithIconText(
 //                    title = stringResource(id = R.string.vis),
 //                    text = dailyState.value.data.vis + " 公里",
 //                    icon = painterResource(id = com.kiylx.weather.icon.R.drawable.vis),
@@ -349,6 +360,8 @@ private fun DayIndices(todayIndicesState: State<IndicesEntity>) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = RoundedCornerShape(18.dp)
     ) {//运动指数1 洗车指数2 穿衣指数3 感冒指数9
         val indiectMap = todayIndicesState.value.data.stream().collect(
             Collectors.toMap(
@@ -356,38 +369,33 @@ private fun DayIndices(todayIndicesState: State<IndicesEntity>) {
                 Function.identity()
             )
         )
-
-        Card(modifier = Modifier.padding(bottom = 16.dp)) {
-            Column {
+        Box(modifier = Modifier.padding(vertical = 16.dp)) {
+            Column(modifier =Modifier.align(Alignment.Center)) {
                 Row {
-                    IconText(
+                    WithIconText(
                         modifier = Modifier.weight(1f),
                         title = stringResource(id = R.string.sportIndex),
                         icon = painterResource(id = com.kiylx.weather.icon.R.drawable.sport),
-                        iconSize = 38.dp,
                         text = indiectMap["1"]?.category ?: "",
                     )
-                    IconText(
+                    WithIconText(
                         modifier = Modifier.weight(1f),
                         title = stringResource(id = R.string.wash_car_index),
                         icon = painterResource(id = com.kiylx.weather.icon.R.drawable.wash_car),
-                        iconSize = 38.dp,
                         text = indiectMap["2"]?.category ?: "",
                     )
                 }
                 Row {
-                    IconText(
+                    WithIconText(
                         modifier = Modifier.weight(1f),
                         title = stringResource(id = R.string.dress_index),
                         icon = painterResource(id = com.kiylx.weather.icon.R.drawable.wear_dress),
-                        iconSize = 38.dp,
                         text = indiectMap["3"]?.category ?: "",
                     )
-                    IconText(
+                    WithIconText(
                         modifier = Modifier.weight(1f),
                         title = stringResource(id = R.string.cold_index),
                         icon = painterResource(id = com.kiylx.weather.icon.R.drawable.cold),
-                        iconSize = 38.dp,
                         text = indiectMap["9"]?.category ?: "",
                     )
                 }

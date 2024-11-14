@@ -3,17 +3,17 @@ package com.kiylx.compose_lib.theme3
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.kyant.m3color.dynamiccolor.MaterialDynamicColors
-import com.kyant.m3color.hct.Hct
-import com.kyant.m3color.scheme.SchemeContent
-import com.kyant.m3color.scheme.SchemeExpressive
-import com.kyant.m3color.scheme.SchemeFidelity
-import com.kyant.m3color.scheme.SchemeFruitSalad
-import com.kyant.m3color.scheme.SchemeMonochrome
-import com.kyant.m3color.scheme.SchemeNeutral
-import com.kyant.m3color.scheme.SchemeRainbow
-import com.kyant.m3color.scheme.SchemeTonalSpot
-import com.kyant.m3color.scheme.SchemeVibrant
+import com.kiylx.common.lib_materialcolorutilities.dynamiccolor.MaterialDynamicColors
+import com.kiylx.common.lib_materialcolorutilities.hct.Hct
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeContent
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeExpressive
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeFidelity
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeFruitSalad
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeMonochrome
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeNeutral
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeRainbow
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeTonalSpot
+import com.kiylx.common.lib_materialcolorutilities.scheme.SchemeVibrant
 
 /**
  * 支持的主题色调色板
@@ -90,6 +90,13 @@ fun mDynamicColorScheme(
         surfaceTint = Color(colors.surfaceTint().getArgb(scheme)),
         surfaceVariant = Color(colors.surfaceVariant().getArgb(scheme)),
         tertiary = Color(colors.tertiary().getArgb(scheme)),
-        tertiaryContainer = Color(colors.tertiaryContainer().getArgb(scheme))
+        tertiaryContainer = Color(colors.tertiaryContainer().getArgb(scheme)),
+        surfaceBright = Color(colors.surfaceBright().getArgb(scheme)),
+        surfaceDim = Color(colors.surfaceDim().getArgb(scheme)),
+        surfaceContainer = Color(colors.surfaceContainer().getArgb(scheme)),
+        surfaceContainerHigh = Color(colors.surfaceContainerHigh().getArgb(scheme)),
+        surfaceContainerHighest = Color(colors.surfaceContainerHighest().getArgb(scheme)),
+        surfaceContainerLow = Color(colors.surfaceContainerLow().getArgb(scheme)),
+        surfaceContainerLowest = Color(colors.surfaceContainerLowest().getArgb(scheme))
     )
 }

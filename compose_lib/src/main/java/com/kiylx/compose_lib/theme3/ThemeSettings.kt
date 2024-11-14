@@ -1,11 +1,11 @@
 package com.kiylx.compose_lib.theme3
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.google.android.material.color.DynamicColors
 import com.kiylx.compose_lib.R
 import com.kiylx.compose_lib.common.boolM
 import com.kiylx.compose_lib.common.doubleM
@@ -72,7 +72,7 @@ object ThemeHelper {
 
     var isUseDynamicColor by kv.boolM(
         ThemeStr.DYNAMIC_COLOR,
-        DynamicColors.isDynamicColorAvailable()
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     )
 
     /**

@@ -3,9 +3,11 @@ package com.kiylx.weather.icon
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.SparseArray
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,17 +16,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AppSettingsAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -60,125 +65,44 @@ object WeatherIcon {
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IconText(
-    iconRes: ImageVector,
-    modifier: Modifier = Modifier,
-    iconSize: Dp = 42.dp,
-    padding: PaddingValues = PaddingValues(4.dp),
-    title: String,//icon side title
-    text: String,//icon side text
-    tint: Color = MaterialTheme.colorScheme.onSecondaryContainer,
-    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    backgroundShape: Shape = CircleShape,
-    onClick: () -> Unit = {},
-    description: String? = null,//icon description
-) {
-    IconText(
-        icon = rememberVectorPainter(iconRes),
-        modifier,
-        iconSize,
-        padding,
-        title,
-        text,
-        tint,
-        backgroundColor,
-        backgroundShape,
-        onClick,
-        description
+@Preview
+fun WithIconTextPreview() {
+    WithIconText(
+        icon = Icons.Default.AppSettingsAlt,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IconText(
-    icon: Painter,
+fun WithIconText(
     modifier: Modifier = Modifier,
-    iconSize: Dp = 42.dp,
-    padding: PaddingValues = PaddingValues(4.dp),
-    title: String,//icon side title
-    text: String,//icon side text
-    tint: Color = MaterialTheme.colorScheme.secondary,
-    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    backgroundShape: Shape = CircleShape,
-    onClick: () -> Unit = {},
-    description: String? = null,//icon description
+    paddingValues: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
+    icon: Any? = null,
+    title: String = "title",
+    text: String? = "描述文本",
 ) {
-    Card(
-        onClick = onClick, modifier = modifier
-            .padding(padding)
+    Row(
+        modifier = modifier.padding(paddingValues),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .padding(start=8.dp,top=8.dp,bottom=8.dp),
-        ) {
-            Icon(
-                painter = icon,
-                contentDescription = description,
-                tint = tint,
-                modifier = Modifier
-                    .background(
-                        backgroundColor,
-                        backgroundShape
-                    )
-                    .padding(8.dp)
-                    .size(iconSize)
-                    .align(Alignment.CenterVertically),
+        icon?.let {
+            Box(modifier = Modifier.padding(end = 8.dp)) {
+                CircleIcon(model = icon)
+            }
+        }
+        Column() {
+            Text(
+                modifier = Modifier.padding(bottom = 4.dp),
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(start = 4.dp,),
-                verticalArrangement = Arrangement.Center,
-            ) {
+            text?.let {
                 Text(
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = text,
+                    text = it,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TwoText(
-    modifier: Modifier = Modifier,
-    padding: PaddingValues = PaddingValues(8.dp),
-    title: String,//icon side title
-    text: String,//icon side text
-    onClick: () -> Unit = {},
-) {
-    Card(
-        onClick = onClick,
-        modifier = modifier
-            .padding(padding)
-            .widthIn(min = 100.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                modifier = Modifier.padding(bottom = 2.dp),
-                text = title,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                modifier = Modifier.padding(bottom = 4.dp),
-                text = text,
-                style = MaterialTheme.typography.bodyMedium,
-            )
         }
     }
 }
@@ -192,20 +116,13 @@ fun WeatherIcon(
     iconSize: Dp = 42.dp, onClickListener: () -> Unit = {}
 ) {
     val resId = WeatherIcon.getResId(code)
-    Icon(
-        painter = painterResource(id = resId),
-        contentDescription = null,
-        tint=tint,
-        modifier = modifier
-            .background(
-                backgroundColor,
-                backgroundShape
-            )
-            .clickable {
-                onClickListener()
-            }
-            .padding(8.dp)
-            .size(iconSize),
+    ClickableParseIcon(
+        modifier = modifier.size(iconSize),
+        model = painterResource(id = resId),
+        backgroundColor = backgroundColor,
+        shape = backgroundShape,
+        tint = tint,
+        onClick = onClickListener
     )
 }
 

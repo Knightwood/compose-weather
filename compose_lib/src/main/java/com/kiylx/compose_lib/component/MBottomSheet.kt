@@ -84,14 +84,13 @@ fun MBottomSheet(
 
     // Sheet content
     if (sheetHolder.openBottomSheet.value) {
-        val windowInsets = if (sheetHolder.edgeToEdgeEnabled.value)
-            WindowInsets(0) else BottomSheetDefaults.windowInsets
+//        val windowInsets = if (sheetHolder.edgeToEdgeEnabled.value)
+//            WindowInsets(0) else BottomSheetDefaults.windowInsets
         ModalBottomSheet(
             onDismissRequest = {
                 sheetHolder.hide(scope)
             },
             sheetState = bottomSheetState,
-            windowInsets = windowInsets
         ) {
             content()
             NavigationBarSpacer(

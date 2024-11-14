@@ -4,6 +4,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +52,7 @@ fun SealTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = TextFieldDefaults.filledShape,
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent)
+    colors: TextFieldColors = TextFieldDefaults.colors().copy(unfocusedContainerColor = Color.Transparent)
 ) {
     TextField(
         value = value,
@@ -104,7 +105,7 @@ fun SealTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = TextFieldDefaults.filledShape,
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent)
+    colors: TextFieldColors = TextFieldDefaults.colors().copy(unfocusedContainerColor = Color.Transparent)
 ) {
     TextField(
         value,

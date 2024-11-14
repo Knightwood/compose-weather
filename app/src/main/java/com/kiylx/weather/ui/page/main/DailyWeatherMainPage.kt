@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddLocation
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,9 +32,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.pullRefresh
-import androidx.compose.material3.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,8 +52,10 @@ import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.repo.bean.LocationEntity.Companion.toLatLonStr
 import com.kiylx.weather.ui.activitys.MainViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainPage {
     companion object {
@@ -159,9 +160,10 @@ fun LatLonText(location: LocationEntity, modifier: Modifier = Modifier) {
 
 /**
  * 集成下拉刷新，获取天气状况的方法，也就是单个的pager，内部持有真的显示天气状况的页面
- * @param index 0即默认位置，如果开启了gps更新，就得定位刷新
  *
+ * @param index 0即默认位置，如果开启了gps更新，就得定位刷新
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) {
     //当天的天气状况
@@ -169,23 +171,28 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
     LaunchedEffect(key1 = Unit, block = {
         weatherPagerStateHolder.getDailyData()
     })
-    //下拉刷新
-//    val refreshState = rememberSmartSwipeRefreshState()
-    var refreshing by remember {
+    val scope = rememberCoroutineScope()
+    var isRefreshing by remember {
         mutableStateOf(false)
     }
-    val scope = rememberCoroutineScope()
-    val pullRefreshState = rememberPullRefreshState(refreshing, onRefresh = {
-        scope.launch {
-            refreshing = true
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
             weatherPagerStateHolder.run {
                 refresh()
             }
-            delay(2400L)
-            refreshing = false
         }
-    })
-    Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+    }
+    PullToRefreshBox(
+        modifier = Modifier.fillMaxSize(),
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            scope.launch {
+                delay(1000)
+                isRefreshing = false
+            }
+        }
+    ) {
         Column(
             Modifier
                 .fillMaxSize()
@@ -250,58 +257,7 @@ fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) 
             }
             Text(text = stringResource(R.string.data_from_hefeng), color = Color.Gray)
         }
-        //下拉刷新指示器
-        PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
     }
-/*    SmartSwipeRefresh(
-        modifier = Modifier.fillMaxSize(),
-        onRefresh = {
-            weatherPagerStateHolder.run {
-                getDailyData(noCache = true)
-                getDailyHourWeatherData(noCache = true)
-                getMinutelyPrecipitation(noCache = true)
-            }
-            delay(3000L)
-            if (refreshState.isRefreshing()) {
-                refreshState.refreshFlag = if (uiState.value is UiState.Success<*>) {
-                    SmartSwipeStateFlag.SUCCESS
-                } else {
-                    SmartSwipeStateFlag.IDLE
-                }
-            }
-        },
-        state = refreshState,
-        isNeedRefresh = true,
-        isNeedLoadMore = false,
-        headerIndicator = {
-            CustomRefreshHeader(flag = refreshState.refreshFlag, isNeedTimestamp = true)
-        },
-    ) {
-        //观察界面状态，修改下拉刷新状态
-        LaunchedEffect(uiState.value) {
-            uiState.value.let {
-
-                when (it) {
-                    is UiState.Success<*> -> {
-                        refreshState.refreshFlag = SmartSwipeStateFlag.SUCCESS
-                    }
-
-                    is UiState.RequestErr,
-                    is UiState.OtherErr -> {
-                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
-                    }
-
-                    else -> {
-                        delay(2000L)
-                        refreshState.refreshFlag = SmartSwipeStateFlag.ERROR
-                    }
-                }
-            }
-        }
-
-
-
-    }*/
 }
 
 

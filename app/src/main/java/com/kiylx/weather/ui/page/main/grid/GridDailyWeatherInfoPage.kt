@@ -1,24 +1,15 @@
 package com.kiylx.weather.ui.page.main.grid
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTimeFilled
-import androidx.compose.material.icons.filled.ArrowCircleRight
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,33 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kiylx.compose_lib.component.MBottomSheet
-import com.kiylx.compose_lib.component.MBottomSheetHolder
 import com.kiylx.libx.tools.LocalDateUtil
 import com.kiylx.weather.R
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.WindUnit
 import com.kiylx.weather.common.tempUnit
 import com.kiylx.weather.common.windUnit
-import com.kiylx.weather.icon.IconText
-import com.kiylx.weather.icon.TwoText
 import com.kiylx.weather.icon.WeatherIcon
+import com.kiylx.weather.icon.WithIconText
 import com.kiylx.weather.repo.bean.DailyEntity
-import com.kiylx.weather.repo.bean.IndicesEntity
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.function.Function
-import java.util.stream.Collectors
 
 
 @Composable
@@ -156,18 +137,16 @@ fun GridDailyWeatherInfo(stateHolder: GridWeatherPagerStateHolder) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconText(
+                WithIconText(
                     modifier = Modifier.weight(1f),
                     title = stringResource(id = R.string.pressure),
                     icon = painterResource(id = com.kiylx.weather.icon.R.drawable.pressure),
-                    iconSize = 40.dp,
                     text = dailyState.value.data.pressure + " 百帕",
                 )
-                IconText(
+                WithIconText(
                     modifier = Modifier.weight(1f),
                     title = stringResource(id = R.string.dew),
                     icon = painterResource(id = com.kiylx.weather.icon.R.drawable.ultraviolet),
-                    iconSize = 40.dp,
                     text = dailyState.value.data.dew
                 )
 

@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextDirection
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.android.material.color.MaterialColors
+import com.kiylx.common.lib_materialcolorutilities.blend.Blend.harmonize
 
 fun Color.applyOpacity(enabled: Boolean): Color {
     return if (enabled) this else this.copy(alpha = 0.62f)
@@ -28,7 +28,7 @@ fun Color.applyOpacity(enabled: Boolean): Color {
 
 @Composable
 fun Color.harmonizeWith(other: Color) =
-    Color(MaterialColors.harmonize(this.toArgb(), other.toArgb()))
+    Color(harmonize(this.toArgb(), other.toArgb()))
 
 @Composable
 fun Color.harmonizeWithPrimary(): Color =
@@ -66,7 +66,7 @@ fun DynamicTheme(
 
 @Composable
 fun DynamicThemeNoContent(
-    window: Window?=null,
+    window: Window? = null,
     content: @Composable () -> Unit
 ) {
     val innerWindow =

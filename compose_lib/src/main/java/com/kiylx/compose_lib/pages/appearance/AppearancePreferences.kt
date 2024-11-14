@@ -1,5 +1,6 @@
 package com.kiylx.compose_lib.pages.appearance
 
+import android.os.Build
 import android.view.Window
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
@@ -60,7 +62,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import com.google.android.material.color.DynamicColors
+import com.kiylx.common.lib_materialcolorutilities.hct.Hct
 import com.kiylx.compose_lib.R
 import com.kiylx.compose_lib.component.BackButton
 import com.kiylx.compose_lib.component.LargeTopAppBar
@@ -85,17 +87,34 @@ import com.kiylx.compose_lib.theme3.ThemeHelper.recoveryDefaultTheme
 import com.kiylx.compose_lib.theme3.ThemeHelper.switchDynamicColor
 import com.kiylx.compose_lib.theme3.ThemeSettings
 import com.kiylx.compose_lib.theme3.mDynamicColorScheme
-import com.kyant.m3color.hct.Hct
 import kotlinx.coroutines.CoroutineScope
 
-val colorList = ((0..11).map { it * 31.0 }).map { Color(Hct.from(it, 45.0, 45.0).toInt()) }
+val colorList = listOf(
+    Color(0xFFf8130d),
+    Color(0xFF7a000b),
+    Color(0xFF8a3a00),
+    Color(0xFFff7900),
+    Color(0xFFfcf721),
+    Color(0xFF88dd20),
+    Color(0xFF16B16E),
+    Color(0xFF01a0a3),
+    Color(0xFF005FFF),
+    Color(0xFFfa64e1),
+    Color(0xFFd7036a),
+    Color(0xFFdb94fe),
+    Color(0xFF7b2bec),
+    Color(0xFF022b6d),
+    Color(0xFFFFFFFF),
+    Color(0xFF000000),
+)
+//((0..11).map { it * 31.0 }).map { Color(Hct.from(it, 45.0, 45.0).toInt()) }
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class
 )
 @Composable
 fun AppearancePreferences(
-    back:()->Unit,
+    back: () -> Unit,
     navToDarkMode: () -> Unit,
     window: Window,
 ) {
@@ -156,6 +175,7 @@ fun AppearancePreferences(
                     title = stringResource(R.string.theme_color),
                     icon = Icons.Outlined.ColorLens
                 )
+                //todo 选择不同的调色盘样式
 
                 HorizontalPager(
                     modifier = Modifier
@@ -198,7 +218,7 @@ fun AppearancePreferences(
                     }
                 }
 
-                if (DynamicColors.isDynamicColorAvailable()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     PreferenceSwitch(title = stringResource(id = R.string.dynamic_color),
                         description = stringResource(
                             id = R.string.dynamic_color_desc
@@ -241,8 +261,9 @@ fun AppearancePreferences(
 /**
  * 对于一种颜色种子，生成了多种不同的风格
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RowScope.ColorButtons(
+fun FlowRowScope.ColorButtons(
     color: Color,
     scope: CoroutineScope,
     rippleAnimationState: RippleAnimationState,
@@ -332,7 +353,7 @@ fun RowScope.ColorButtonImpl(
             .weight(1f, false)
             .aspectRatio(1f),
         shape = RoundedCornerShape(16.dp),
-        color =MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
         onClick = onClick
     ) {
         val color1 = colorScheme.primary

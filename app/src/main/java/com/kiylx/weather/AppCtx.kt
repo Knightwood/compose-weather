@@ -2,7 +2,6 @@ package com.kiylx.weather
 
 import android.app.Application
 import android.util.Log
-import com.blankj.utilcode.util.AppUtils
 import com.kiylx.libx.http.kotlin.common.OkhttpClientProvider
 import com.kiylx.libx.http.okhttp_logger.Level
 import com.kiylx.libx.http.okhttp_logger.LoggingInterceptor
@@ -36,7 +35,7 @@ class AppCtx : Application() {
             dispatcher(dispatcher)
             configCache(this@AppCtx)//配置缓存策略
             var loggerInterceptor: LoggingInterceptor? = null
-            val isDebug = AppUtils.isAppDebug()
+            val isDebug = BuildConfig.DEBUG
             if (isDebug) {
                 loggerInterceptor = LoggingInterceptor.Builder()
                     .setLevel(Level.BASIC)

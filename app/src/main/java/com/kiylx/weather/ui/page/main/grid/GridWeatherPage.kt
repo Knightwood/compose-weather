@@ -27,14 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kiylx.libx.http.kotlin.basic3.UiState
 import com.kiylx.weather.R
-import com.kiylx.weather.ui.page.component.CustomRefreshHeader
 import com.kiylx.weather.ui.page.main.DayWeatherType
-import com.loren.component.view.composesmartrefresh.SmartSwipeRefresh
-import com.loren.component.view.composesmartrefresh.SmartSwipeStateFlag
-import com.loren.component.view.composesmartrefresh.rememberSmartSwipeRefreshState
-import kotlinx.coroutines.delay
 
 @Composable
 fun GridWeatherPage(weatherPagerStateHolder: GridWeatherPagerStateHolder) {
