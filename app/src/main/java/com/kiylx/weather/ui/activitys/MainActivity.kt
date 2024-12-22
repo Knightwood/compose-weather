@@ -27,7 +27,6 @@ import com.kiylx.compose_lib.common.animatedComposable
 import com.kiylx.compose_lib.pages.appearance.AppearancePreferences
 import com.kiylx.compose_lib.pages.appearance.DarkThemePreferences
 import com.kiylx.compose_lib.theme3.DynamicTheme
-import com.kiylx.libx.http.kotlin.common.RawResponse
 import com.kiylx.libx.tools.explainReason
 import com.kiylx.libx.tools.finally
 import com.kiylx.libx.tools.goToSetting
@@ -36,6 +35,7 @@ import com.kiylx.libx.tools.sonser.gps.GpsHolder
 import com.kiylx.libx.tools.sonser.gps.MyLocationListener
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.common.Route
+import com.kiylx.weather.http.isOK
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationEntity
 import com.kiylx.weather.ui.page.LocationManagerPage
@@ -257,12 +257,10 @@ class MainActivity : AppCompatActivity() {
                                     val lat = String.format("%.2f", location.latitude)
                                     val str = "${lon},${lat}"
                                     val rawResponse = QWeatherGeoRepo.queryCityList(location = str)
-                                    if (rawResponse is RawResponse.Success && rawResponse.responseData != null) {
-                                        rawResponse.responseData?.let {
-                                            //经纬度坐标查询不太可能会有两个地点，因此取了第一个去更新默认位置的信息
-                                            val locationData = it.data[0].copy(default = true)
-                                            QWeatherGeoRepo.update(locationData, 0)
-                                        }
+                                    rawResponse?.takeIf { it.isOK() }?.let {
+                                        //经纬度坐标查询不太可能会有两个地点，因此取了第一个去更新默认位置的信息
+                                        val locationData = it.data[0].copy(default = true)
+                                        QWeatherGeoRepo.update(locationData, 0)
                                     }
                                 }
                                 //如果开启了格点天气，更新一下坐标

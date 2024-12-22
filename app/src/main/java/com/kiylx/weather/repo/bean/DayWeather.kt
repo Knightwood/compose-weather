@@ -16,7 +16,7 @@ data class DayWeather(
     val fxLink: String = "",
     @SerialName("updateTime")
     val updateTime: String = ""
-) : BaseResponse()
+) : HttpData()
 
 @Serializable
 data class OneDayWeather(

@@ -71,14 +71,14 @@ import java.util.stream.Collectors
 
 @Composable
 fun DailyWeatherBodyPage(stateHolder: WeatherPagerStateHolder) {
-    val dailyState: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()
-    val todayIndicesState = stateHolder.todayIndicesData.asDataFlow().collectAsState()
-    val todayHourWeatherState = stateHolder.dailyHourUiState.asDataFlow().collectAsState()
-    val warningNowState = stateHolder.warningNowUiState.asDataFlow().collectAsState()
+    val dailyState: State<DailyEntity> = stateHolder.dailyUiState.collectAsState()
+    val todayIndicesState = stateHolder.todayIndicesData.collectAsState()
+    val todayHourWeatherState = stateHolder.dailyHourUiState.collectAsState()
+    val warningNowState = stateHolder.warningNowUiState.collectAsState()
     val minutelyPrecipitationState =
-        stateHolder.minutelyPrecipitationState.asDataFlow().collectAsState()
+        stateHolder.minutelyPrecipitationState.collectAsState()
     // 空气质量信息和杂项
-    val toDayWeatherState = stateHolder.threeDayWeatherData.asDataFlow().collectAsState()
+    val toDayWeatherState = stateHolder.threeDayWeatherData.collectAsState()
     val toDayWeather = toDayWeatherState.value.data[0]
 
     LaunchedEffect(key1 = Unit) {

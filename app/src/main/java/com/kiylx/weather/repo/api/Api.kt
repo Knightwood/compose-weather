@@ -1,5 +1,6 @@
 package com.kiylx.weather.repo.api
 
+import kotlinx.coroutines.Deferred
 import com.kiylx.weather.http.CustomHeader
 import com.kiylx.weather.repo.bean.DailyAirEntity
 import com.kiylx.weather.repo.bean.DailyEntity
@@ -9,7 +10,6 @@ import com.kiylx.weather.repo.bean.HourWeatherEntity
 import com.kiylx.weather.repo.bean.IndicesEntity
 import com.kiylx.weather.repo.bean.MinutelyPrecipitationEntity
 import com.kiylx.weather.repo.bean.WarningEntity
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
@@ -24,7 +24,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DailyEntity>
+    ): Deferred<DailyEntity?>
 
     @GET("v7/grid-weather/now")
     fun getGridDaily(
@@ -32,14 +32,14 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DailyEntity>
+    ): Deferred<DailyEntity?>
 
     @GET("v7/warning/now")
     fun getWarningNow(
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<WarningEntity>
+    ): Deferred<WarningEntity?>
 
     /**
      * 分钟级降水
@@ -49,7 +49,7 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<MinutelyPrecipitationEntity>
+    ): Deferred<MinutelyPrecipitationEntity?>
 
     @GET("v7/weather/24h")
     fun getHourWeather(
@@ -57,7 +57,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<HourWeatherEntity>
+    ): Deferred<HourWeatherEntity?>
 
     @GET("v7/grid-weather/24h")
     fun getGridHourWeather(
@@ -65,7 +65,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<HourWeatherEntity>
+    ): Deferred<HourWeatherEntity?>
 
     @GET("v7/weather/3d")
     fun getDayWeather3d(
@@ -73,7 +73,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DayWeather>
+    ): Deferred<DayWeather?>
 
     @GET("v7/grid-weather/3d")
     fun getGridDayWeather3d(
@@ -81,7 +81,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DayWeather>
+    ): Deferred<DayWeather?>
 
     @GET("v7/weather/7d")
     fun getDayWeather7d(
@@ -89,7 +89,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DayWeather>
+    ): Deferred<DayWeather?>
 
     @GET("v7/grid-weather/7d")
     fun getGridDayWeather7d(
@@ -97,7 +97,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DayWeather>
+    ): Deferred<DayWeather?>
 
     @GET("v7/weather/15d")
     fun getDayWeather15d(
@@ -105,7 +105,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("unit") unit: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DayWeather>
+    ): Deferred<DayWeather?>
 
     /**
      * 当天天气指数
@@ -116,7 +116,7 @@ interface Api {
         @Query("lang") lang: String?,
         @Query("type") type :String,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<IndicesEntity>
+    ): Deferred<IndicesEntity?>
 
     /**
      * 实时空气质量
@@ -126,7 +126,7 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DailyAirEntity>
+    ): Deferred<DailyAirEntity?>
     /**
      * 5天空气质量
      */
@@ -135,6 +135,6 @@ interface Api {
         @Query("location") location: String,
         @Query("lang") lang: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<DayAirEntity>
+    ): Deferred<DayAirEntity?>
 
 }

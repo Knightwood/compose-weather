@@ -2,15 +2,17 @@ package com.kiylx.common.logic
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 internal fun Project.configureAndroidCompose(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
-    isLibrary:Boolean,
+    isLibrary: Boolean,
 ) {
     commonExtension.apply {
         buildFeatures {
@@ -43,9 +45,6 @@ internal fun Project.configureAndroidCompose(
         project.providers.gradleProperty("enableComposeCompilerReports").onlyIfTrue()
             .relativeToRootProject("compose-reports")
             .let(reportsDestination::set)
-
-        //这个从project目录下读取compose_compiler_config.conf文件，
-        //然后将配置文件中的类或包下的所有类，视为compose中的immutable classes
         stabilityConfigurationFile =
             rootProject.layout.projectDirectory.file("compose_compiler_config.conf")
 
@@ -54,34 +53,15 @@ internal fun Project.configureAndroidCompose(
 }
 
 internal fun Project.configComposeModuleDeps() {
+    val libs = extensions.getByType<VersionCatalogsExtension>().named("composeLibs")
     dependencies {
-        val composeBomVersion = composeLibs2.findVersion("bom").get()
+        val composeBomVersion = libs.findVersion("bom").get()
         val bom = composeBomVersion.requiredVersion
-//    print(
-//        "strictVersion:" + composeBomVersion.strictVersion + "\n" +
-//                "requiredVersion:" + composeBomVersion.requiredVersion + "\n" +
-//                "preferredVersion:" + composeBomVersion.preferredVersion + "\n" +
-//                "rejectedVersions:" + composeBomVersion.rejectedVersions + "\n" +
-//                "branch:" + composeBomVersion.branch + "\n" +
-//                "displayName" + composeBomVersion.displayName + "\n"
-//    )
 
         val composeBom = platform("androidx.compose:compose-bom:${bom}")
         implementationDeps(composeBom)
         androidTestImplementationDeps(composeBom)
-
-        // Choose one of the following:
-        // Material Design 3
-        implementationDeps(composeLibs2.libFind("androidx-material3-compose"))
-//    implementationDeps("androidx.compose.material3:material3")
-        // or Material Design 2
-//          implementation("androidx.compose.material:material")
-        // or skip Material Design and build directly on top of foundational components
-//          implementation("androidx.compose.foundation:foundation")
-        // or only import the main APIs for the underlying toolkit systems,
-        // such as input and measurement/layout
-//          implementation("androidx.compose.ui:ui")
-
+        implementationDeps("androidx.compose.material3:material3")
         // Android Studio Preview support
         implementationDeps("androidx.compose.ui:ui-tooling-preview")
         debugImplementationDeps("androidx.compose.ui:ui-tooling")
@@ -100,9 +80,9 @@ internal fun Project.configComposeModuleDeps() {
         // Optional - Add window size utils
         implementationDeps("androidx.compose.material3:material3-window-size-class")
         // Optional - Integration with activities
-        implementationDeps(composeLibs2.libFind("androidx-activity-compose"))
+        implementationDeps(libs.libFind("androidx-activity-compose"))
         // Optional - Integration with ViewModels
-        implementationDeps(composeLibs2.libFind("androidx-lifecycle-viewmodel-compose"))
+        implementationDeps(libs.libFind("androidx-lifecycle-viewmodel-compose"))
         // Optional - Integration with LiveData
         implementationDeps("androidx.compose.runtime:runtime-livedata")
 

@@ -36,9 +36,9 @@ import com.kiylx.weather.ui.page.component.IconLabel
  */
 @Composable
 fun DailyWeatherHeaderPage(stateHolder: WeatherPagerStateHolder) {
-    val state: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()//页面数据
+    val state: State<DailyEntity> = stateHolder.dailyUiState.collectAsState()//页面数据
     val minutelyPrecipitationState =
-        stateHolder.minutelyPrecipitationState.asDataFlow().collectAsState()
+        stateHolder.minutelyPrecipitationState.collectAsState()
 
     state.value.let { data ->
         val navController = LocalNavController.current

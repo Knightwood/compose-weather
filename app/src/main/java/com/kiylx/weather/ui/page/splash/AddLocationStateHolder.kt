@@ -1,6 +1,6 @@
 package com.kiylx.weather.ui.page.splash
 
-import com.kiylx.libx.http.kotlin.common.RawResponse
+import com.kiylx.weather.http.isOK
 import com.kiylx.weather.repo.QWeatherGeoRepo
 import com.kiylx.weather.repo.bean.LocationListEntity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,8 +28,8 @@ class AddLocationStateHolder {
         location: String,
     ) {
         val response = QWeatherGeoRepo.queryCityList(location)
-        if (response is RawResponse.Success) {
-            _location.emit(response.responseData)
+        response?.takeIf { it.isOK() }?.let {
+            _location.emit(it)
         }
     }
 

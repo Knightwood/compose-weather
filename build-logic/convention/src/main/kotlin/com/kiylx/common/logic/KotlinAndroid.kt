@@ -12,16 +12,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 
-
-fun DependencyHandlerScope.androidTest(that: Project) {
-    // testImplementation("junit:junit:4.13.2")
-    //    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    //    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    testImplementationDeps(that.libs2.findLibrary("junit"))
-    androidTestImplementationDeps(that.libs2.findLibrary("androidx-test-ext-junit"))
-    androidTestImplementationDeps(that.libs2.findLibrary("espresso-core"))
-}
-
 /**
  * Configure base Kotlin options for JVM (non-Android)
  */

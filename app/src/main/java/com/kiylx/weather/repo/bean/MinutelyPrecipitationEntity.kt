@@ -18,7 +18,7 @@ data class MinutelyPrecipitationEntity(
     val summary: String = "",
     @SerialName("updateTime")
     val updateTime: String = ""
-) : BaseResponse() {
+) : HttpData() {
     @Serializable
     data class Minutely(
         @SerialName("fxTime")

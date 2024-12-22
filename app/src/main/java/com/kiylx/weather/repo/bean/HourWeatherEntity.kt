@@ -16,7 +16,7 @@ data class HourWeatherEntity(
     override val refer: Refer = Refer(),
     @SerialName("updateTime")
     val updateTime: String = ""
-) : BaseResponse() {
+) : HttpData() {
     @Serializable
     data class Hourly(
         @SerialName("cloud")

@@ -2,20 +2,24 @@ package com.kiylx.weather
 
 import android.app.Application
 import android.util.Log
-import com.kiylx.libx.http.kotlin.common.OkhttpClientProvider
-import com.kiylx.libx.http.okhttp_logger.Level
-import com.kiylx.libx.http.okhttp_logger.LoggingInterceptor
+import com.kiylx.libx.http.okhttp3.OkhttpClientProvider
+import com.kiylx.libx.http.okhttp3.OkhttpClientProvider.configOkHttpClient
+import com.kiylx.libx.http.okhttp3.okhttp_logger.Level
+import com.kiylx.libx.http.okhttp3.okhttp_logger.LoggingInterceptor
+import com.kiylx.libx.http.retrofit.RetrofitHolder
+import com.kiylx.weather.common.AllPrefs
+import com.kiylx.weather.common.AllPrefs.baseUrl
 import com.kiylx.weather.http.KeyInterceptor
 import com.kiylx.weather.http.NetworkCacheInterceptor.Companion.configCache
 import com.kiylx.weather.icon.WeatherIcon
 import com.kiylx.weather.repo.QWeatherGeoRepo
-import com.kiylx.weather.repo.QWeatherRepo
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.plus
+import kotlinx.serialization.json.Json
 import okhttp3.Dispatcher
 
 class AppCtx : Application() {
@@ -52,6 +56,8 @@ class AppCtx : Application() {
             //请求带上key
             addInterceptor(KeyInterceptor())
         }
+        val retrofitHolder = RetrofitHolder.create(AllPrefs.baseUrl, json = Json, true)
+            .configRetrofit()
         QWeatherGeoRepo.readAll()//读取本地存储的位置信息
     }
 

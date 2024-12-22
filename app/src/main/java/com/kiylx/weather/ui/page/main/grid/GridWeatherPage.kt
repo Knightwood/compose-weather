@@ -37,7 +37,7 @@ fun GridWeatherPage(weatherPagerStateHolder: GridWeatherPagerStateHolder) {
     //当天的天气状况
     val data = weatherPagerStateHolder.dailyUiState
 
-    val pageData = data.asDataFlow().collectAsState()//页面数据
+    val pageData = data.collectAsState()//页面数据
 
     LaunchedEffect(key1 = Unit, block = {
         weatherPagerStateHolder.getDailyData()

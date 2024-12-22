@@ -67,9 +67,9 @@ fun MultiDayWeatherPage(
         stateHolder.getDayWeatherData(type)
         stateHolder.get5DAir()
     }
-    val data: State<DayWeather> = dayUiData.asDataFlow().collectAsState() //未来的每日天气
+    val data: State<DayWeather> = dayUiData.collectAsState() //未来的每日天气
     val airData: State<DayAirEntity> =
-        stateHolder.fiveDayAirData.asDataFlow().collectAsState() //未来5天的空气质量
+        stateHolder.fiveDayAirData.collectAsState() //未来5天的空气质量
     val airMap: MutableMap<String, DayAirEntity.Daily> = airData.value.data.stream().collect(
         Collectors.toMap(
             DayAirEntity.Daily::fxDate,
@@ -175,9 +175,9 @@ fun ThreeDayWeather(
         stateHolder.getDayWeatherData(DayWeatherType.threeDayWeather)
         stateHolder.get5DAir()
     }
-    val data: State<DayWeather> = dayUiData.asDataFlow().collectAsState() //未来的每日天气
+    val data: State<DayWeather> = dayUiData.collectAsState() //未来的每日天气
     val airData: State<DayAirEntity> =
-        stateHolder.fiveDayAirData.asDataFlow().collectAsState() //未来5天的空气质量
+        stateHolder.fiveDayAirData.collectAsState() //未来5天的空气质量
     val airMap: MutableMap<String, DayAirEntity.Daily> = airData.value.data.stream().collect(
         Collectors.toMap(
             DayAirEntity.Daily::fxDate,

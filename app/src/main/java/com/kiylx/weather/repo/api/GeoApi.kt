@@ -2,7 +2,7 @@ package com.kiylx.weather.repo.api
 
 import com.kiylx.weather.http.CustomHeader
 import com.kiylx.weather.repo.bean.LocationListEntity
-import retrofit2.Call
+import kotlinx.coroutines.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
@@ -28,5 +28,5 @@ interface GeoApi {
         @Query("number") number: String?,
         @Query("lang") lang: String?,
         @Header(CustomHeader.cacheTime) cacheTime: Long?
-    ): Call<LocationListEntity>
+    ):Deferred<LocationListEntity?>
 }

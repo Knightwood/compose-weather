@@ -19,7 +19,7 @@ data class IndicesEntity(
     override val refer: Refer = Refer(),
     @SerialName("updateTime")
     val updateTime: String = ""
-) : BaseResponse(){
+) : HttpData(){
     @Serializable
     data class Daily(
         @SerialName("category")

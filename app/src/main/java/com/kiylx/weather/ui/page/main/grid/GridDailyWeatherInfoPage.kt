@@ -39,8 +39,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun GridDailyWeatherInfo(stateHolder: GridWeatherPagerStateHolder) {
-    val dailyState: State<DailyEntity> = stateHolder.dailyUiState.asDataFlow().collectAsState()
-    val todayHourWeatherState = stateHolder.dailyHourUiState.asDataFlow().collectAsState()
+    val dailyState: State<DailyEntity> = stateHolder.dailyUiState.collectAsState()
+    val todayHourWeatherState = stateHolder.dailyHourUiState.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         stateHolder.getDailyHourWeatherData() //逐小时预报

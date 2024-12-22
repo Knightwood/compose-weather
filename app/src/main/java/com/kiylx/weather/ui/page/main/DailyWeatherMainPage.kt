@@ -167,7 +167,7 @@ fun LatLonText(location: LocationEntity, modifier: Modifier = Modifier) {
 @Composable
 fun MainPagePager(weatherPagerStateHolder: WeatherPagerStateHolder, index: Int) {
     //当天的天气状况
-    val uiState = weatherPagerStateHolder.dailyUiState.asUiStateFlow().collectAsState()
+    val uiState = weatherPagerStateHolder.dailyUiState.collectAsState()
     LaunchedEffect(key1 = Unit, block = {
         weatherPagerStateHolder.getDailyData()
     })

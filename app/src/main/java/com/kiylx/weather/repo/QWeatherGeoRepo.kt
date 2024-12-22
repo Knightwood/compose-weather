@@ -3,9 +3,7 @@ package com.kiylx.weather.repo
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import com.kiylx.libx.http.kotlin.basic3.handleApi3
-import com.kiylx.libx.http.kotlin.common.RawResponse
-import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
+import com.kiylx.libx.http.retrofit.RetrofitHolder
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.repo.api.GeoApi
 import com.kiylx.weather.repo.bean.LocationEntity
@@ -15,7 +13,9 @@ import com.kiylx.weather.repo.local_file.LocalFile
 object QWeatherGeoRepo {
     const val TAG = "QWeatherGeoRepo"
     private val api by lazy {
-        Retrofit2Holder(AllPrefs.geoBaseUrl).create(GeoApi::class.java)
+        RetrofitHolder.create(AllPrefs.geoBaseUrl)
+            .configRetrofit()
+            .createApi(GeoApi::class.java)
     }
 
     /**
@@ -24,9 +24,7 @@ object QWeatherGeoRepo {
     var gpsDataState: MutableState<LocationEntity> = mutableStateOf(LocationEntity())
 
     /**
-     * 0下标是默认位置信息
-     * 若没有开启gps自动定位更新，则永远保持不变
-     * 位置信息的总和
+     * 0下标是默认位置信息 若没有开启gps自动定位更新，则永远保持不变 位置信息的总和
      */
     val allLocationState = mutableStateListOf<LocationEntity>(LocationEntity())
 
@@ -40,17 +38,15 @@ object QWeatherGeoRepo {
         range: String? = null,
         number: String? = null,
         lang: String? = null,
-    ): RawResponse<LocationListEntity> {
-        return handleApi3(
-            api.getCity(
-                location,
-                adm,
-                range,
-                number,
-                lang,
-                AllPrefs.hourWeatherInterval
-            )
-        )
+    ): LocationListEntity? {
+        return api.getCity(
+            location,
+            adm,
+            range,
+            number,
+            lang,
+            AllPrefs.hourWeatherInterval
+        ).await()
     }
 //</editor-fold>
 
@@ -86,7 +82,7 @@ object QWeatherGeoRepo {
         } ?: let {
             //如果找不到默认值，设置一个默认值
             allLocationState[0] = allLocationState[0].copy(default = true)
-            LocalFile.writeLocation(allLocationState[0],0)
+            LocalFile.writeLocation(allLocationState[0], 0)
         }
     }
 
@@ -95,8 +91,9 @@ object QWeatherGeoRepo {
 //<editor-fold desc="存储库位置信息添加/删除，以及同步本地文件的中间方法">
     /**
      * 添加位置信息
-     * @param data 位置信息
+     *
      * @param default 是否添加为默认位置
+     * @param data 位置信息
      */
     fun addLocation(locationEntity: LocationEntity, default: Boolean = false) {
         var data: LocationEntity = locationEntity
@@ -142,10 +139,11 @@ object QWeatherGeoRepo {
 
     /**
      * 更新某个坐标
+     *
      * @param i allLocationState中的index
      */
     fun update(data: LocationEntity, i: Int) {
-        allLocationState[i] =data
+        allLocationState[i] = data
         deleteLocation(i)
         LocalFile.writeLocation(data, i)
     }

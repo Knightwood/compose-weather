@@ -10,16 +10,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DayAirEntity(
     @SerialName("code")
-   override val code: String = "",
+    override val code: String = "",
     @SerialName("daily")
-   override val data: List<Daily> = listOf(Daily()),
+    override val data: List<Daily> = listOf(Daily()),
     @SerialName("fxLink")
     val fxLink: String = "",
     @SerialName("refer")
-   override val refer: Refer = Refer(),
+    override val refer: Refer = Refer(),
     @SerialName("updateTime")
     val updateTime: String = ""
-) :BaseResponse(){
+) : HttpData() {
     @Serializable
     data class Daily(
         @SerialName("aqi")

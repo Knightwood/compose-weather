@@ -10,7 +10,7 @@ data class LocationListEntity(
     override val refer: Refer = Refer(),
     @SerialName("location")
     override val data: List<LocationEntity> = listOf(),
-) : BaseResponse()
+) : HttpData()
 
 @Serializable
 data class LocationEntity(

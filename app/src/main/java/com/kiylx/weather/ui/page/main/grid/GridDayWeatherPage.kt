@@ -39,7 +39,7 @@ import java.util.stream.Collectors
 fun GridDayWeather(
     stateHolder: GridWeatherPagerStateHolder,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues= PaddingValues(8.dp),
+    paddingValues: PaddingValues = PaddingValues(8.dp),
     type: Int = DayWeatherType.threeDayWeather
 ) {
     val dayUiData = when (type) {
@@ -58,7 +58,7 @@ fun GridDayWeather(
     LaunchedEffect(key1 = Unit) {
         stateHolder.getDayWeatherData(type)
     }
-    val data: State<DayWeather> = dayUiData.asDataFlow().collectAsState() //未来的每日天气
+    val data: State<DayWeather> = dayUiData.collectAsState() //未来的每日天气
 
     Surface(
         modifier = modifier

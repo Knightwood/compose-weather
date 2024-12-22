@@ -1,8 +1,6 @@
 package com.kiylx.weather.repo
 
-import com.kiylx.libx.http.kotlin.basic3.handleApi3
-import com.kiylx.libx.http.kotlin.common.RawResponse
-import com.kiylx.libx.http.kotlin.common.Retrofit2Holder
+import com.kiylx.libx.http.retrofit.RetrofitHolder
 import com.kiylx.weather.common.AllPrefs
 import com.kiylx.weather.http.minutesToSeconds
 import com.kiylx.weather.repo.api.Api
@@ -24,60 +22,54 @@ import com.kiylx.weather.ui.page.main.DayWeatherType
 object QWeatherRepo {
 
     private val api by lazy {
-        Retrofit2Holder(AllPrefs.baseUrl).create(Api::class.java)
+        RetrofitHolder.getInstance()!!.createApi(Api::class.java)
     }
 
     //<editor-fold desc="格点天气">
     /**
-     * 获取实时天气
-     * 会查询本地副本
+     * 获取实时天气 会查询本地副本
      */
     suspend fun getDailyReport_Grid(
         location: LocationEntity,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<DailyEntity> {
+    ): DailyEntity {
         val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
-        val res = handleApi3(
+        val res =
             api.getGridDaily(
                 location.toLatLonStr(),
                 lang,
                 unit,
                 cacheTime
-            )
-        )
-        return res
+            ).await()
+        return res ?: DailyEntity()
     }
 
     /**
-     * 获取24小时天气
-     * 会查询本地副本
+     * 获取24小时天气 会查询本地副本
      */
     suspend fun getDailyHourReport_Grid(
         location: LocationEntity,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<HourWeatherEntity> {
+    ): HourWeatherEntity {
         val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
         val res =
             //默认位置且开启gps更新，需要使用经纬度获取格点数据
-            handleApi3(
-                api.getGridHourWeather(
-                    location.toLatLonStr(),
-                    lang,
-                    unit,
-                    cacheTime
-                )
-            )
+            api.getGridHourWeather(
+                location.toLatLonStr(),
+                lang,
+                unit,
+                cacheTime
+            ).await()
 
-        return res
+        return res ?: HourWeatherEntity()
     }
 
     /**
-     * 获取未来天气状况
-     * 会查询本地副本
+     * 获取未来天气状况 会查询本地副本
      */
     suspend fun getDayReport_Grid(
         location: LocationEntity,
@@ -85,9 +77,9 @@ object QWeatherRepo {
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<DayWeather> {
+    ): DayWeather {
         val cacheTime = if (noCache) null else AllPrefs.dayWeatherInterval.minutesToSeconds()
-        val res = handleApi3(
+        val res =
             when (type) {
                 DayWeatherType.threeDayWeather -> {
                     api.getGridDayWeather3d(
@@ -115,74 +107,68 @@ object QWeatherRepo {
                 else -> {
                     throw IllegalArgumentException("illegal type")
                 }
-            }
-        )
-        return res
+            }.await()
+        return res ?: DayWeather()
     }
     //</editor-fold>
 
 //<editor-fold desc="网络接口-非格点天气">
     /**
-     * 获取实时天气
-     * 会查询本地副本
+     * 获取实时天气 会查询本地副本
      */
     suspend fun getDailyReport(
         location: LocationEntity,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<DailyEntity> {
+    ): DailyEntity {
         val cacheTime = if (noCache) null else AllPrefs.dailyInterval.minutesToSeconds()
-        val res = handleApi3(api.getDaily(location.id, lang, unit, cacheTime))
-        return res
+        val res = api.getDaily(location.id, lang, unit, cacheTime).await()
+        return res ?: DailyEntity()
     }
 
     /**
-     * 获取24小时天气
-     * 会查询本地副本
+     * 获取24小时天气 会查询本地副本
      */
     suspend fun getDailyHourReport(
         location: LocationEntity,
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<HourWeatherEntity> {
+    ): HourWeatherEntity {
         val cacheTime = if (noCache) null else AllPrefs.hourWeatherInterval.minutesToSeconds()
-        val res = handleApi3(api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime))
-        return res
+        val res = api.getHourWeather(location.toLatLonStr(), lang, unit, cacheTime).await()
+        return res ?: HourWeatherEntity()
     }
 
     /**
-     * 获取天气预警
-     * 会查询本地副本
+     * 获取天气预警 会查询本地副本
      */
     suspend fun getWarningNow(
         location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<WarningEntity> {
+    ): WarningEntity {
         val cacheTime = if (noCache) null else AllPrefs.earlyWarningInterval.minutesToSeconds()
-        val res = handleApi3(api.getWarningNow(location.toLatLonStr(), lang, cacheTime))
-        return res
+        val res = api.getWarningNow(location.toLatLonStr(), lang, cacheTime).await()
+        return res ?: WarningEntity()
     }
 
     /**
-     * 获取分钟级降水预报
-     * 会查询本地副本
+     * 获取分钟级降水预报 会查询本地副本
      */
     suspend fun getMinutelyPrecipitation(
         location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<MinutelyPrecipitationEntity> {
+    ): MinutelyPrecipitationEntity {
         val cacheTime = if (noCache) null else AllPrefs.weatherMinutelyInterval.minutesToSeconds()
-        val res = handleApi3(api.getMinutelyPrecipitation(location.toLatLonStr(), lang, cacheTime))
-        return res
+        val res = api.getMinutelyPrecipitation(location.toLatLonStr(), lang, cacheTime).await()
+        return res ?: MinutelyPrecipitationEntity()
     }
 
     /**
-     * 获取未来天气状况
-     * 会查询本地副本
+     * 获取未来天气状况 会查询本地副本
      */
     suspend fun getDayReport(
         location: LocationEntity,
@@ -190,9 +176,9 @@ object QWeatherRepo {
         unit: String = AllPrefs.unit,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<DayWeather> {
+    ): DayWeather {
         val cacheTime = if (noCache) null else AllPrefs.dayWeatherInterval.minutesToSeconds()
-        val res = handleApi3(
+        val res =
             when (type) {
                 DayWeatherType.threeDayWeather -> {
                     api.getDayWeather3d(
@@ -220,54 +206,50 @@ object QWeatherRepo {
                 else -> {
                     throw IllegalArgumentException("illegal type")
                 }
-            }
-        )
-        return res
+            }.await()
+        return res ?: DayWeather()
     }
 
 
     /**
-     * 获取实时空气质量
-     * 会查询本地副本
+     * 获取实时空气质量 会查询本地副本
      */
     suspend fun getDailyAir(
         location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<DailyAirEntity> {
+    ): DailyAirEntity {
         val cacheTime = if (noCache) null else AllPrefs.weatherAirInterval.minutesToSeconds()
-        val res = handleApi3(api.getDailyAir(location.toLatLonStr(), lang, cacheTime))
-        return res
+        val res = api.getDailyAir(location.toLatLonStr(), lang, cacheTime).await()
+        return res ?: DailyAirEntity()
     }
 
     /**
-     * 获取未来5天空气质量
-     * 会查询本地副本
+     * 获取未来5天空气质量 会查询本地副本
      */
     suspend fun getDayAir(
         location: LocationEntity,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<DayAirEntity> {
+    ): DayAirEntity {
         val cacheTime = if (noCache) null else AllPrefs.weatherAirDayInterval.minutesToSeconds()
-        val res = handleApi3(api.getDayAir(location.toLatLonStr(), lang, cacheTime))
-        return res
+        val res = api.getDayAir(location.toLatLonStr(), lang, cacheTime).await()
+        return res ?: DayAirEntity()
     }
 
 
     /**
-     * 获取当天的天气指数
-     * 会查询本地副本
+     * 获取当天的天气指数 会查询本地副本
      */
     suspend fun getIndices1d(
         location: LocationEntity,
         type: String,
         lang: String = AllPrefs.lang,
         noCache: Boolean = false
-    ): RawResponse<IndicesEntity> {
+    ): IndicesEntity {
         val cacheTime = if (noCache) null else AllPrefs.weatherIndicesInterval.minutesToSeconds()
-        val res = handleApi3(api.getIndices1d(location.toLatLonStr(), lang, type, cacheTime))
-        return res
+        val res = api.getIndices1d(location.toLatLonStr(), lang, type, cacheTime).await()
+        return res ?: IndicesEntity()
     }
 
 

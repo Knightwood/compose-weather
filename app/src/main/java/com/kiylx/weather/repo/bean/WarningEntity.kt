@@ -16,7 +16,7 @@ data class WarningEntity(
     val updateTime: String = "",
     @SerialName("warning")
     override val data: List<Warning> = listOf()
-) : BaseResponse() {
+) : HttpData() {
 
     @Serializable
     data class Warning(

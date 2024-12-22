@@ -1,6 +1,5 @@
 package com.kiylx.weather.repo.bean
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -21,7 +20,7 @@ data class DailyAirEntity(
     val station: List<Station> = listOf(),
     @SerialName("updateTime")
     val updateTime: String = ""
-) : BaseResponse() {
+) : HttpData() {
     @Serializable
     data class Now(
         @SerialName("aqi")
